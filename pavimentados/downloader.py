@@ -13,7 +13,7 @@ models_url = 'https://pavimenta2-artifacts.s3.amazonaws.com/models.tar.gz'
 
 class Downloader:
 
-	def __init__(self, models_path = viasegura_path / 'models' / 'artifacts'):
+	def __init__(self, models_path = viasegura_path / 'models' ):
 		"""
 		This class allows to download de models and other model data from the Inter-American Development Bank repositories
 		
@@ -29,7 +29,7 @@ class Downloader:
 		"""
 		This function allows to check if the path for downloads exists
 		"""
-		if not Path(self.models_path).is_dir():
+		if not Path(self.models_path / 'artifacts').is_dir():
 			raise ImportError('The route for the models is not present, it means that the models are not downloaded on this environment, use viasegura.download_models function to download them propertly')
 	
 	def check_files(self, filePath):

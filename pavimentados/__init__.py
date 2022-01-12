@@ -1,5 +1,6 @@
 from pavimentados.processing import processors, workflows, sources
-from pavimentados.analizer import calculators, gpu_sources
+from pavimentados.analyzers import calculators, gps_sources
+from pavimentados.downloader import Downloader
 import os
 import sys
 
