@@ -1,4 +1,5 @@
-from models.yolo import YoloV3
+from pavimentados.models.yolo import YoloV3
+from pavimentados.configs.utils import Config_Basic
 from pathlib import Path
 import tensorflow as tf
 import json
@@ -6,8 +7,7 @@ import cv2
 from tqdm import tqdm
 import os
 import numpy as np
-import joblib	
-from configs.utils import Config_Basic
+import joblib
 
 def image_encoder(FILTERS, KERNEL, STRIDE, POOL, USE_BATCH_NORM, USE_DROPOUT, SIAMESE_IMAGE_SIZE):
 	inputs = tf.keras.layers.Input(SIAMESE_IMAGE_SIZE)
@@ -227,7 +227,7 @@ class Siamese_Model(Pav_Model):
 
 class State_Signal_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = Path('configs')  / 'state_signal_config.json', general_config_file = Path('configs')   / 'models_general.json'):
+	def __init__(self,device = None, config_file = Path('configs')  / 'state_signal_config.json', general_config_file = Path('configs')	/ 'models_general.json'):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)

@@ -1,4 +1,4 @@
-from analyzers.utils import total_distance, area_calc, box_center, box_height, box_width, fail_id_generator, stack_columns_dataset, assign_group_calculations
+from pavimentados.analyzers.utils import total_distance, area_calc, box_center, box_height, box_width, fail_id_generator, stack_columns_dataset, assign_group_calculations
 import numpy as np
 import pandas as pd
 

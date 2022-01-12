@@ -7,7 +7,7 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 import numpy as np
 from tqdm import tqdm
-from analyzers.utils import total_distance
+from pavimentados.analyzers.utils import total_distance
 from scipy.interpolate import interp1d
 
 
