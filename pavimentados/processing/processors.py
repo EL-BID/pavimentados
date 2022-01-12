@@ -4,9 +4,9 @@ import json
 import os
 import cv2
 import numpy as np
-from models.structures import Yolo_Model, Siamese_Model, State_Signal_Model
-from image.utils import transform_images
-from configs.utils import Config_Basic
+from pavimentados.models.structures import Yolo_Model, Siamese_Model, State_Signal_Model
+from pavimentados.image.utils import transform_images
+from pavimentados.configs.utils import Config_Basic
 from tqdm import tqdm
 
 class Image_Processor(Config_Basic):

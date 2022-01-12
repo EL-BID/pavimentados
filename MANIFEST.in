@@ -1,0 +1,6 @@
+include pavimentados/configs/images_processor.json
+include pavimentados/configs/models_general.json
+include pavimentados/configs/processor.json
+include pavimentados/configs/siamese_config.json
+include pavimentados/configs/state_signal_config.json
+include pavimentados/configs/yolo_config.json

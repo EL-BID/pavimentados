@@ -3,7 +3,7 @@ import numpy as np
 import random
 from pathlib import Path
 import os
-from configs.utils import Config_Basic
+from pavimentados.configs.utils import Config_Basic
 
 def load_video(video_path):
 	"""
@@ -48,10 +48,10 @@ class ListRoutesImages:
 		return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial,idx_inicial+batch_size)])
 
 class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file = Path('configs') / 'images_processor.json' ):
-        self.load_config(config_file)
-        folder = Path(route)
-        self.routes = list(filter(lambda x: str(x).lower().split('.')[-1] in self.config['images_allowed'], map(lambda x: folder / x , os.listdir(folder))))
+	def __init__(self, route, config_file = Path('configs') / 'images_processor.json' ):
+		self.load_config(config_file)
+		folder = Path(route)
+		self.routes = list(filter(lambda x: str(x).lower().split('.')[-1] in self.config['images_allowed'], map(lambda x: folder / x , os.listdir(folder))))
 
 class VideoCaptureImages:
 	def __init__(self, route):
@@ -79,7 +79,7 @@ class VideoCaptureImages:
 
 source_options_dict = {
 	'image_routes' : ListRoutesImages, 
-    'image_folder' : FolderRoutesImages,
+	'image_folder' : FolderRoutesImages,
 	'images' : ListImages, 
 	'video'  : VideoCaptureImages
 }

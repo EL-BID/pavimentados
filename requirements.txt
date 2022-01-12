@@ -1,0 +1,9 @@
+pandas==1.0.3
+numpy==1.19.5
+pynmea2==1.15.0
+tensorflow-gpu==2.6.0
+tqdm
+Pillow==7.0.0
+opencv-contrib-python>=4.2.0.34
+boto3>=1.14.37
+scipy==1.4.1

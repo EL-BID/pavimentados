@@ -1,6 +1,6 @@
-from analyzers.gps_sources import GPS_Data_Loader
-from analyzers.calculators import Results_Calculator as calculator
-from processing.sources import Image_Source_Loader
+from pavimentados.analyzers.gps_sources import GPS_Data_Loader
+from pavimentados.analyzers.calculators import Results_Calculator as calculator
+from pavimentados.processing.sources import Image_Source_Loader
 
 class Workflow_Processor:
 	def __init__(self, images_input, **kwargs):
