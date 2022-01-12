@@ -1,0 +1,14 @@
+{
+	"siamese_path":"siamese_model",
+	"FILTERS" : [8, 8, 16, 32, 64, 128, 128],
+	"KERNEL" : [3,3,3,3,3,3,3],
+	"STRIDE" : [1,1,1,1,1,1,1],
+	"POOL" : [2,2,2,2,2,2,2],
+	"USE_BATCH_NORM" : true,
+	"USE_DROPOUT" : false,
+	"SIAMESE_IMAGE_SIZE": [256,256,3],
+	"FIRST_COMPARISON_EXAMPLES_NUMBER":4,
+	"SECOND_COMPARISON_EXAMPLES_NUMBER":2,
+	"FIRST_COMPARISON_FOLDER":"comparation_data_first",
+	"SECOND_COMPARISON_FOLDER":"comparation_data"
+}
