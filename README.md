@@ -29,7 +29,7 @@ Some of the features now available are as follows:
 - Workflows for image acquisition and assessment
 - Evaluation of gps information to determine the location of faults and elements.
 - Image or video support
-- Support for GPS data in different formats (GMMRA, csv, embedded in image)
+- Support for GPS data in different formats (GPRRA, csv, embedded in image)
 - Download models directly into the root of the package
 
 ## Instalation
@@ -62,3 +62,81 @@ download_models(aws_access_key = <aws_access_key>, signature = <signature>, expi
 To obtain the corresponding credentials for downloading the models, please contact the Inter-American Development Bank.
 
 You can also clone the repository but remember that the package is configured to download the models and place them in the root of the environment.
+
+## Quick Start
+---
+
+To make use of the tool import the components that create a workflow with images
+
+```
+from pavimentados.processing.processors import MultiImage_Processor
+from pavimentados.processing.workflows import Workflow_Processor
+```
+
+In this example, we have the image processor object MultiImage_Processor, which is in charge of taking the images and analyzing them individually using the models. In addition, we have the Workflow_Processor object that is in charge of the image processing workflow. 
+
+Internally, the Workflow_Processor has objects that can interpret different image sources or GPS information. 
+
+Among the allowed image sources we have:
+
+ - image_routes: A list of image routes
+ - image_folder: a folder with all images
+ - images: images already loaded in numpy format
+ - video: The path to a video file
+
+Among the allowed GPS data sources we have:
+
+ - image_routes: A list of the routes of the images that have the gps data embedded in them.
+ - image_folder: A folder with all the images that have the gps data embedded in them.
+ - loc: A file in GPRRA format
+ - csv: A gps file with the gps information in columns and rows.
+
+Once these elements are imported, the processor is instantiated as follows
+
+```
+ml_processor = MultiImage_Processor(assign_devices = True, gpu_enabled = True)
+```
+
+The processor has the ability to allocate GPU usage automatically assuming that 6GB is available, it can be parameterized so that it is not automatically allocated, pass the allocation as a parameter, or even not work with the GPU.
+
+You can modify the devices used according to the TensorFlow documentation regarding GPU usage (see https://www.tensorflow.org/guide/gpu)
+
+The workflow object is able to receive the instantiated processor, without it it is not able to execute the workflow.
+
+```
+workflow = Workflow_Processor(route, image_source_type='image_folder', gps_source_type = 'image_folder')
+```
+
+The complete execution code would be as follows:
+
+```
+from pavimentados.processing.processors import MultiImage_Processor
+from pavimentados.processing.workflows import Workflow_Processor
+from pathlib import Path
+
+### Image with the GPS data embebed
+route = Path(<route with the images for processing>)
+
+ml_processor = MultiImage_Processor(assign_devices = True, gpu_enabled = True)
+
+workflow = Workflow_Processor(route, image_source_type='image_folder', gps_source_type = 'image_folder')
+
+results = workflow.execute(ml_processor)
+```
+
+In results you will find the following:
+
+ 1. table_summary_sections: DataFrame with summary table by sections.
+ 2. data_resulting: DataFrame with results per frame
+ 3. data_resulting_fails: DataFrame with results by unique faults encountered.
+ 4. signals_summary: DataFrame with all the information about the signals.
+ 5. raw_results: Raw results totals
+
+ ## Autores
+---
+
+This package has been developed by:
+
+<a href="https://github.com/J0s3M4rqu3z" target="blank">Jose Maria Marquez Blanco</a>
+<br/>
+<a href="https://www.linkedin.com/in/joancerretani/" target="blank">Joan Alberto Cerretani</a>
