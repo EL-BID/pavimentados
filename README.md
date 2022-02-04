@@ -18,5 +18,5 @@ So far the system uses 4 models involved in different phases of detection and ca
 | Signage classification | Classifies the signage detected                     | 314     |
 | Signage State          | Detect if the signage is in good or bad state       | 3       |
 
-
+To understand each model in detail see the [models](https://github.com/J0s3M4rqu3z/pavimentados/blob/main/MODELS.md) section.
 
