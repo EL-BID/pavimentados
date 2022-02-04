@@ -42,7 +42,7 @@ The output of the model is similar to what you get from the pavement fault detec
 
 This model has a Siamese architecture, where we focus on comparing two images, in this case the images of known signals from our database with the signal found in the image.
 
-The main classes are the followingÑ
+The main classes are the following
 
 1. Warning signs (yellow diamonds)
 2. Regulatory signs (red circles with or without prohibitions).
