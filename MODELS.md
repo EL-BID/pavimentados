@@ -15,3 +15,11 @@ This model is based on Yolo version 3, which allows to identify objects or eleme
 3. Transverse Linear Cracks: These are cracks in the pavement that are transversely located.
 
 4. Transverse Linear Intervals: These are cracks in the pavement that represent joints of sections and are not faults.
+
+5. Crocodile skin: These are clusters of fissures that are usually found in blocks in such a way that they look like the scaly skin of a crocodile.
+
+6. Protrusions or Potholes: These are holes found in the pavement that may or may not be scaled.
+
+7. White line blur: Occurs when the delineation or demarcation on the pavement is out of focus or blurred.
+
+8. Other faults: It is the grouping of all the other faults that could not be grouped in the previous ones.
