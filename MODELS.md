@@ -23,3 +23,11 @@ This model is based on Yolo version 3, which allows to identify objects or eleme
 7. White line blur: Occurs when the delineation or demarcation on the pavement is out of focus or blurred.
 
 8. Other faults: It is the grouping of all the other faults that could not be grouped in the previous ones.
+
+The model returns the following information:
+
+ - Class of the identified object
+ - Location within the image
+ - Probability with which that detection is considered
+
+ 
