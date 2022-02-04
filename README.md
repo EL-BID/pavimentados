@@ -32,3 +32,33 @@ Some of the features now available are as follows:
 - Support for GPS data in different formats (GMMRA, csv, embedded in image)
 - Download models directly into the root of the package
 
+## Instalation
+---
+
+To install you can use the following commands
+
+```
+pip install pavimentados
+
+```
+
+Then to download the models use the following commands
+
+```
+from pavimentados import download_models
+
+download_models(url = <signed_url>)
+```
+
+Or alternativily
+
+```
+from viasegura import download_models
+
+download_models(aws_access_key = <aws_access_key>, signature = <signature>, expires = <expiration_time>)
+```
+
+
+To obtain the corresponding credentials for downloading the models, please contact the Inter-American Development Bank.
+
+You can also clone the repository but remember that the package is configured to download the models and place them in the root of the environment.
