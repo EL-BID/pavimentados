@@ -20,3 +20,15 @@ So far the system uses 4 models involved in different phases of detection and ca
 
 To understand each model in detail see the [models](https://github.com/J0s3M4rqu3z/pavimentados/blob/main/MODELS.md) section.
 
+## Main Features
+---
+
+Some of the features now available are as follows:
+
+- Scoring using the models already developed
+- Workflows for image acquisition and assessment
+- Evaluation of gps information to determine the location of faults and elements.
+- Image or video support
+- Support for GPS data in different formats (GMMRA, csv, embedded in image)
+- Download models directly into the root of the package
+
