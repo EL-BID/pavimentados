@@ -30,4 +30,30 @@ The model returns the following information:
  - Location within the image
  - Probability with which that detection is considered
 
- 
+## Signal detection
+---
+
+This model is based on Yolo version 3, which allows to identify objects or elements within an image. It was retrained to detect 1 type of element, and is capable of finding signage on the path.
+
+The output of the model is similar to what you get from the pavement fault detection model only that it has a single output class.
+
+## Classification of signage
+---
+
+This model has a Siamese architecture, where we focus on comparing two images, in this case the images of known signals from our database with the signal found in the image.
+
+The main classes are the followingÑ
+
+1. Warning signs (yellow diamonds)
+2. Regulatory signs (red circles with or without prohibitions).
+3. Stop signs
+4. Information signs (blue signs with route information).
+5. Information signs (brown signs with information about the route).
+6. Road information signs (green signs with specifics of the route to be followed).
+7. White signs with specific information of the area.
+8. Other
+
+## Condition of the signage
+---
+
+This model identifies whether the signal is in good or bad condition, or if the signal is rotated so that no status can be determined on that image.
