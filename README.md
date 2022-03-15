@@ -43,7 +43,6 @@ To install you can use the following commands
 
 ```
 pip install pavimentados
-
 ```
 
 Then to download the models use the following commands
