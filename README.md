@@ -57,7 +57,7 @@ download_models(url = <signed_url>)
 Or alternativily
 
 ```
-from viasegura import download_models
+from pavimentados import download_models
 
 download_models(aws_access_key = <aws_access_key>, signature = <signature>, expires = <expiration_time>)
 ```
