@@ -9,6 +9,8 @@ import os
 import numpy as np
 import joblib
 
+pavimentados_path = Path(__file__).parent
+
 def image_encoder(FILTERS, KERNEL, STRIDE, POOL, USE_BATCH_NORM, USE_DROPOUT, SIAMESE_IMAGE_SIZE):
 	inputs = tf.keras.layers.Input(SIAMESE_IMAGE_SIZE)
 
@@ -60,9 +62,9 @@ class ComparationLayer(tf.keras.layers.Layer):
 		return {'IM2_compress_c'+str(i+1): self.IM2_compress_list[i] for i in range(len(self.IM2_compress_list))}
 
 class Pav_Model(Config_Basic):
-	def __init__(self, device = '/device:CPU:0', config_file = Path('configs')  / 'models_general.json'):
+	def __init__(self, device = '/device:CPU:0', config_file = pavimentados_path / 'configs'  / 'models_general.json'):
 		self.load_config(config_file)
-		self.general_path = Path(self.config['general_path'])
+		self.general_path = pavimentados_path / Path(self.config['general_path'])
 		self.model = None
 		self.device = device
 		
@@ -75,7 +77,7 @@ class Pav_Model(Config_Basic):
 
 class Yolo_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = Path('configs')  / 'yolo_config.json', general_config_file = Path('configs') / 'models_general.json'):
+	def __init__(self,device = None, config_file = pavimentados_path / 'configs'  / 'yolo_config.json', general_config_file = pavimentados_path /'configs' / 'models_general.json'):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)
@@ -121,11 +123,11 @@ class Yolo_Model(Pav_Model):
 
 class Siamese_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = Path('configs')  / 'siamese_config.json', general_config_file = Path('configs')  / 'models_general.json'):
+	def __init__(self,device = None, config_file = pavimentados_path / 'configs'  / 'siamese_config.json', general_config_file = pavimentados_path / 'configs'  / 'models_general.json'):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)
-		self.siamese_path = self.general_path / self.config['siamese_path']
+		self.siamese_path = pavimentados_path / self.general_path / self.config['siamese_path']
 		self.load_model()
 	
 	def load_model(self):
@@ -227,11 +229,11 @@ class Siamese_Model(Pav_Model):
 
 class State_Signal_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = Path('configs')  / 'state_signal_config.json', general_config_file = Path('configs')	/ 'models_general.json'):
+	def __init__(self,device = None, config_file = pavimentados_path/ 'configs'  / 'state_signal_config.json', general_config_file = pavimentados_path / 'configs'	/ 'models_general.json'):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)
-		self.state_signal_model_path = self.general_path / self.config['state_signal_model_path']
+		self.state_signal_model_path = pavimentados_path / self.general_path / self.config['state_signal_model_path']
 		self.load_model()
 	
 	def load_model(self):
