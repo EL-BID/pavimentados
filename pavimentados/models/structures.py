@@ -9,7 +9,7 @@ import os
 import numpy as np
 import joblib
 
-pavimentados_path = Path(__file__).parent
+pavimentados_path = Path(__file__).parent.parent
 
 def image_encoder(FILTERS, KERNEL, STRIDE, POOL, USE_BATCH_NORM, USE_DROPOUT, SIAMESE_IMAGE_SIZE):
 	inputs = tf.keras.layers.Input(SIAMESE_IMAGE_SIZE)

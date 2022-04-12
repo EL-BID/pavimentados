@@ -9,7 +9,7 @@ from pavimentados.image.utils import transform_images
 from pavimentados.configs.utils import Config_Basic
 from tqdm import tqdm
 
-pavimentados_path = Path(__file__).parent
+pavimentados_path = Path(__file__).parent.parent
 
 class Image_Processor(Config_Basic):
 	def __init__(self, yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0', config_file = pavimentados_path / 'configs' / 'processor.json'):
