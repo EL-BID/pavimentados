@@ -58,7 +58,7 @@ class Image_Processor(Config_Basic):
 
 
 class Group_Processor(Config_Basic):
-	def __init__(self, processor_config_file = config_file = pavimentados_path / 'configs' / 'processor.json', assign_devices = False, gpu_enabled = False, total_mem = 6144, 
+	def __init__(self, processor_config_file = pavimentados_path / 'configs' / 'processor.json', assign_devices = False, gpu_enabled = False, total_mem = 6144, 
 				 yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0'):
 			
 		self.assign_model_devices(assign_devices, gpu_enabled, total_mem, yolo_device, siamese_device, state_device)
@@ -97,7 +97,7 @@ class Group_Processor(Config_Basic):
 
 
 class MultiImage_Processor(Group_Processor):
-	def __init__(self, config_file = config_file = pavimentados_path / 'configs' / 'images_processor.json' , processor_config_file = Path('configs') / 'processor.json', assign_devices = False, gpu_enabled = False, total_mem = 6144, 
+	def __init__(self, config_file = pavimentados_path / 'configs' / 'images_processor.json' , processor_config_file = pavimentados_path / 'configs' / 'processor.json', assign_devices = False, gpu_enabled = False, total_mem = 6144, 
 				 yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0'):
 		super().__init__(processor_config_file = processor_config_file, assign_devices = assign_devices, gpu_enabled = gpu_enabled, total_mem = total_mem, 
 				 yolo_device = yolo_device, siamese_device = siamese_device, state_device = state_device)
