@@ -8,12 +8,12 @@ from urllib import parse, request
 import tarfile
 
 logger = logging.getLogger()
-viasegura_path = Path(__file__).parent
+pavimentados_path = Path(__file__).parent
 models_url = 'https://pavimenta2-artifacts.s3.amazonaws.com/models.tar.gz'
 
 class Downloader:
 
-	def __init__(self, models_path = viasegura_path / 'models' ):
+	def __init__(self, models_path = pavimentados_path / 'models' ):
 		"""
 		This class allows to download de models and other model data from the Inter-American Development Bank repositories
 		
