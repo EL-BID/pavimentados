@@ -22,8 +22,12 @@ class GPS_Processer:
 		list_values = np.linspace(0,self.gps_df.seconds_from_start.max(), number_images).astype('float')
 		f2 = interp1d(self.gps_df['seconds_from_start'].values, self.gps_df['longitude'].values, kind='linear')
 		f3 = interp1d(self.gps_df['seconds_from_start'].values, self.gps_df['latitude'].values, kind='linear')
+		initial_latitud = self.gps_df.loc[0].latitude
+		initial_longitude = self.gps_df.loc[0].longitude
 		final_longitude = f2(list_values)
 		final_latitude= f3(list_values)
+		final_longitude[0] = initial_longitude
+		final_latitude[0] = initial_latitud
 		self.gps_df = pd.DataFrame({'latitude':final_latitude, 'longitude':final_longitude})
 
 	def generate_gps_metrics(self, min_distance_group):
