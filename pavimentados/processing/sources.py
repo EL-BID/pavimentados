@@ -3,7 +3,7 @@ import numpy as np
 import random
 from pathlib import Path
 import os
-from configs.utils import Config_Basic
+from pavimentados.configs.utils import Config_Basic
 
 pavimentados_path = Path(__file__).parent.parent
 
