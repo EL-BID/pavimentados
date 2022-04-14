@@ -5,6 +5,9 @@ from pathlib import Path
 import os
 from configs.utils import Config_Basic
 
+pavimentados_path = Path(__file__).parent.parent
+
+
 def load_video(video_path):
 	"""
 	Carga el video.
@@ -48,7 +51,7 @@ class ListRoutesImages:
 		return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial,idx_inicial+batch_size)])
 
 class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file = Path('configs') / 'images_processor.json' ):
+    def __init__(self, route, config_file = pavimentados_path / 'configs' / 'images_processor.json' ):
         self.load_config(config_file)
         folder = Path(route)
         self.routes = list(filter(lambda x: str(x).lower().split('.')[-1] in self.config['images_allowed'], map(lambda x: folder / x , os.listdir(folder))))
