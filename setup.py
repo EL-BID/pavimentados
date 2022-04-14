@@ -3,7 +3,7 @@ import pkg_resources
 from pathlib import Path
 
 this_directory = Path(__file__).parent
-VERSION = '0.17.1' 
+VERSION = '0.18.0' 
 DESCRIPTION = 'A python package Library which implement IA algorithims to detect cracks and failures on roads. The package is wrapper around all the models and provides an interfaces to use them properly'
 
 LONG_DESCRIPTION = (this_directory / "README.md").read_text()
