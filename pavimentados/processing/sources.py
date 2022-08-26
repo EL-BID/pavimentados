@@ -51,10 +51,10 @@ class ListRoutesImages:
 		return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial,idx_inicial+batch_size)])
 
 class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file = pavimentados_path / 'configs' / 'images_processor.json' ):
-        self.load_config(config_file)
-        folder = Path(route)
-        self.routes = list(filter(lambda x: str(x).lower().split('.')[-1] in self.config['images_allowed'], map(lambda x: folder / x , os.listdir(folder))))
+	def __init__(self, route, config_file = pavimentados_path / 'configs' / 'images_processor.json' ):
+		self.load_config(config_file)
+		folder = Path(route)
+		self.routes = list(filter(lambda x: str(x).lower().split('.')[-1] in self.config['images_allowed'], map(lambda x: folder / x , os.listdir(folder))))
 
 class VideoCaptureImages:
 	def __init__(self, route, images_per_second = 2):
@@ -71,27 +71,34 @@ class VideoCaptureImages:
 
 	def get_altura_base(self):
 		return self.img_shape
-	
+
 	def get_len(self):
 		return self.lenght
-	
+
 	def get_batch(self, idx_inicial, batch_size = 8):
 		images = []
 		i = 0
+		past_img = np.full((*self.img_shape,3), 255)
 		while i<batch_size:
 			state, img = self.vidcap.read()
 			self.actual_vidcap_count+=1
-			if state:
+			if state | (self.actual_vidcap_count<self.lenght):
 				if self.images_dict.get(self.actual_vidcap_count, False):
-					images.append(img)
+					img = img if not (img is None) else past_img
+					if not (img is None):
+						images.append(img)
+					past_img=np.full((*self.img_shape,3), 255)
 					i+=1
+				elif not (img is None):
+					past_img = img.copy()
 			else:
 				break
 		return np.array(images)
+	
 
 source_options_dict = {
 	'image_routes' : ListRoutesImages, 
-    'image_folder' : FolderRoutesImages,
+	'image_folder' : FolderRoutesImages,
 	'images' : ListImages, 
 	'video'  : VideoCaptureImages
 }
