@@ -17,8 +17,8 @@ class Workflow_Processor:
 		self.gps_data.generate_gps_metrics(gps_sections_distance)
 		self.executed = False
 	
-	def execute_model(self, processor, batch_size = 8):
-		self.results = processor.process_images_group(self.img_obj, batch_size = batch_size)
+	def execute_model(self, processor, batch_size = 8, video_output_file=None, image_folder_output = None):
+		self.results = processor.process_images_group(self.img_obj, batch_size = batch_size, video_output_file=video_output_file, image_folder_output = image_folder_output)
 		self.executed = True
 		
 	def process_result(self, processor, min_fotogram_distance = 5):
@@ -36,9 +36,9 @@ class Workflow_Processor:
 			'raw_results':self.results
 		}
 	
-	def execute(self, processor, min_fotogram_distance = 5, batch_size = 8, return_results = True):
+	def execute(self, processor, min_fotogram_distance = 5, batch_size = 8, return_results = True, video_output_file=None, image_folder_output = None):
 		self.paviment_classes_names = list(processor.processor.yolo_model.config['yolo_pav_dict_clases'].values())
-		self.execute_model(processor, batch_size = batch_size)
+		self.execute_model(processor, batch_size = batch_size, video_output_file=video_output_file, image_folder_output = image_folder_output)
 		self.classes_names_yolo_signal = processor.processor.yolo_model.full_classes[processor.processor.yolo_model.num_classes_paviment:]
 		self.process_result(self, min_fotogram_distance = min_fotogram_distance)
 		if return_results:
