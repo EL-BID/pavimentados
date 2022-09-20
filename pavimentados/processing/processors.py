@@ -7,7 +7,7 @@ import numpy as np
 from pavimentados.models.structures import Yolo_Model, Siamese_Model, State_Signal_Model
 from pavimentados.image.utils import transform_images
 from pavimentados.configs.utils import Config_Basic
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 
 pavimentados_path = Path(__file__).parent.parent
 
