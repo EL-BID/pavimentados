@@ -11,8 +11,21 @@ from tqdm import tqdm
 
 pavimentados_path = Path(__file__).parent.parent
 
+
+def draw_outputs(img, outputs):
+    boxes, objectness, classes = outputs
+    boxes, objectness, classes = boxes[0], objectness[0], classes[0]
+    wh = np.flip(img.shape[0:2])
+    for i in range(len(boxes)):
+        x1y1 = tuple((np.array(boxes[i][0:2]) * wh).astype(np.int32))
+        x2y2 = tuple((np.array(boxes[i][2:4]) * wh).astype(np.int32))
+        img = cv2.rectangle(img, x1y1, x2y2, (255, 0, 0), 2)
+    return img
+
+
 class Image_Processor(Config_Basic):
-	def __init__(self, yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0', config_file = pavimentados_path / 'configs' / 'processor.json'):
+	def __init__(self, yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0', config_file = pavimentados_path / 'configs' / 'processor.json', artifacts_path = None):
+		self.artifacts_path = artifacts_path
 		self.yolo_device = yolo_device
 		self.siamese_device = siamese_device
 		self.state_device = state_device
@@ -20,9 +33,9 @@ class Image_Processor(Config_Basic):
 		self.load_models()
 
 	def load_models(self):
-		self.yolo_model = Yolo_Model(device = self.yolo_device)
-		self.siamese_model = Siamese_Model(device = self.siamese_device)
-		self.state_signal_model = State_Signal_Model(device = self.state_device)
+		self.yolo_model = Yolo_Model(device = self.yolo_device, artifacts_path = self.artifacts_path)
+		self.siamese_model = Siamese_Model(device = self.siamese_device, artifacts_path = self.artifacts_path)
+		self.state_signal_model = State_Signal_Model(device = self.state_device, artifacts_path = self.artifacts_path)
 	
 	def get_yolo_output(self, images):
 		return self.yolo_model.model.predict(images)
@@ -37,7 +50,10 @@ class Image_Processor(Config_Basic):
 	
 	def crop_img(self, box, img):
 		img_crop = img[int(box[1]*img.shape[0]):int(box[3]*img.shape[0]),int(box[0]*img.shape[1]):int(box[2]*img.shape[1])]
-		img_crop = cv2.resize(img_crop, tuple(self.siamese_model.config['SIAMESE_IMAGE_SIZE'])[:2], interpolation = cv2.INTER_AREA).astype(float)/255
+		try:
+			img_crop = cv2.resize(img_crop, tuple(self.siamese_model.config['SIAMESE_IMAGE_SIZE'])[:2], interpolation = cv2.INTER_AREA).astype(float)/255
+		except:
+			img_crop = tf.image.resize(img_crop,(256,256)).numpy().astype(float)/255
 		return img_crop
 	
 	def predict_signal_state_single(self, image, box):
@@ -59,11 +75,10 @@ class Image_Processor(Config_Basic):
 
 class Group_Processor(Config_Basic):
 	def __init__(self, processor_config_file = pavimentados_path / 'configs' / 'processor.json', assign_devices = False, gpu_enabled = False, total_mem = 6144, 
-				 yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0'):
-			
+				 yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0', artifacts_path = None):
 		self.assign_model_devices(assign_devices, gpu_enabled, total_mem, yolo_device, siamese_device, state_device)
 		self.processor = Image_Processor(yolo_device = self.yolo_device, siamese_device = self.siamese_device, 
-										 state_device = self.state_device, config_file = processor_config_file)
+										 state_device = self.state_device, config_file = processor_config_file, artifacts_path = artifacts_path)
 	
 	def assign_model_devices(self, assign_devices, gpu_enabled, total_mem, yolo_device, siamese_device, state_device):
 		if assign_devices == True:
@@ -98,24 +113,38 @@ class Group_Processor(Config_Basic):
 
 class MultiImage_Processor(Group_Processor):
 	def __init__(self, config_file = pavimentados_path / 'configs' / 'images_processor.json' , processor_config_file = pavimentados_path / 'configs' / 'processor.json', assign_devices = False, gpu_enabled = False, total_mem = 6144, 
-				 yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0'):
+				 yolo_device = '/device:CPU:0', siamese_device = '/device:CPU:0', state_device = '/device:CPU:0', artifacts_path = None):
 		super().__init__(processor_config_file = processor_config_file, assign_devices = assign_devices, gpu_enabled = gpu_enabled, total_mem = total_mem, 
-				 yolo_device = yolo_device, siamese_device = siamese_device, state_device = state_device)
+				 yolo_device = yolo_device, siamese_device = siamese_device, state_device = state_device, artifacts_path = artifacts_path)
 		self.load_config(config_file)
 	
-	def _process_batch(self, img_batch):
+	def _process_batch(self, img_batch, video_output=None, image_folder_output = None):
 		transformed_batch = tf.convert_to_tensor([transform_images(img, 416) for img in img_batch]).numpy()
 		prediction = self.processor.get_yolo_output(transformed_batch)
 		boxes_pav, scores_pav, classes_pav = self.processor.select_detections(prediction[0], 'paviment')
 		boxes_signal, scores_signal, classes_signal = self.processor.select_detections(prediction[1], 'signals')
 		final_signal_classes, signal_base_predictions, state_predictions = self.processor.predict_signal_state(img_batch, boxes_signal)
+		if (video_output!=None) or (image_folder_output!=None):
+			j = 0
+			for img in img_batch:
+				img = img.astype('uint8')
+				img = draw_outputs(img, ([boxes_pav[j]], [scores_pav[j]], [classes_pav[j]]))
+				if video_output:
+					video_output.write(img)
+				j+=1
 		return (list(boxes_pav), list(boxes_signal), list(scores_pav), list(scores_signal),  
 					list(classes_pav), list(classes_signal), final_signal_classes, 
 					signal_base_predictions, state_predictions)
 		
-	def process_images_group(self, img_obj, batch_size = 8):#image_type = 'routes', batch_size = 8):
+	def process_images_group(self, img_obj, batch_size = 8, video_output_file=None, image_folder_output = None):#image_type = 'routes', batch_size = 8):
 		len_imgs = img_obj.get_len()
-		results = list(tqdm(map(lambda x: self._process_batch(img_obj.get_batch(x, batch_size)), [offset for offset in range(0,img_obj.get_len(), batch_size)]), total = int(len_imgs//batch_size)+int((len_imgs%batch_size)>0) ))
+		if video_output_file:
+			altura, base = img_obj.get_altura_base()
+			print(base, altura)
+			video_output = cv2.VideoWriter(video_output_file,0, 3, (base,altura))
+		else:
+			video_output =  None
+		results = list(tqdm(map(lambda x: self._process_batch(img_obj.get_batch(x, batch_size), video_output = video_output, image_folder_output = image_folder_output), [offset for offset in range(0,img_obj.get_len(), batch_size)]), total = int(len_imgs//batch_size)+int((len_imgs%batch_size)>0) ))
 		results = list(zip(*results))
 		return {
 			'boxes_pav': sum(results[0], []), 

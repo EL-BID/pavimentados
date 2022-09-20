@@ -77,13 +77,17 @@ class Pav_Model(Config_Basic):
 
 class Yolo_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = pavimentados_path / 'configs'  / 'yolo_config.json', general_config_file = pavimentados_path /'configs' / 'models_general.json'):
+	def __init__(self,device = None, config_file = pavimentados_path / 'configs'  / 'yolo_config.json', general_config_file = pavimentados_path /'configs' / 'models_general.json', artifacts_path = None):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)
 		self.config['yolo_pav_dict_clases'] = {int(k):v for k,v in self.config['yolo_pav_dict_clases'].items()}
-		self.yolo_paviment_path = self.general_path / self.config['yolo_paviment_path']
-		self.yolo_signal_path = self.general_path / self.config['yolo_signal_path']
+		if artifacts_path:
+			self.yolo_paviment_path = Path(artifacts_path) / self.config['yolo_paviment_path']
+			self.yolo_signal_path = Path(artifacts_path) / self.config['yolo_signal_path']
+		else:
+			self.yolo_paviment_path = self.general_path / self.config['yolo_paviment_path']
+			self.yolo_signal_path = self.general_path / self.config['yolo_signal_path']
 		self.load_model()
 	
 	def load_model(self):
@@ -123,11 +127,14 @@ class Yolo_Model(Pav_Model):
 
 class Siamese_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = pavimentados_path / 'configs'  / 'siamese_config.json', general_config_file = pavimentados_path / 'configs'  / 'models_general.json'):
+	def __init__(self,device = None, config_file = pavimentados_path / 'configs'  / 'siamese_config.json', general_config_file = pavimentados_path / 'configs'  / 'models_general.json', artifacts_path = None):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)
-		self.siamese_path = pavimentados_path / self.general_path / self.config['siamese_path']
+		if artifacts_path:
+			self.siamese_path = Path(artifacts_path) / self.config['siamese_path']
+		else:
+			self.siamese_path = pavimentados_path / self.general_path / self.config['siamese_path']
 		self.load_model()
 	
 	def load_model(self):
@@ -229,11 +236,14 @@ class Siamese_Model(Pav_Model):
 
 class State_Signal_Model(Pav_Model):
 	
-	def __init__(self,device = None, config_file = pavimentados_path/ 'configs'  / 'state_signal_config.json', general_config_file = pavimentados_path / 'configs'	/ 'models_general.json'):
+	def __init__(self,device = None, config_file = pavimentados_path/ 'configs'  / 'state_signal_config.json', general_config_file = pavimentados_path / 'configs'	/ 'models_general.json', artifacts_path = None):
 		super().__init__(device, config_file = general_config_file)
 		self.general_config = self.config.copy()
 		self.load_config(config_file)
-		self.state_signal_model_path = pavimentados_path / self.general_path / self.config['state_signal_model_path']
+		if artifacts_path:
+			self.state_signal_model_path = Path(artifacts_path) / self.config['state_signal_model_path']
+		else:
+			self.state_signal_model_path = pavimentados_path / self.general_path / self.config['state_signal_model_path']
 		self.load_model()
 	
 	def load_model(self):
