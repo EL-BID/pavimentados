@@ -1,7 +1,5 @@
 import logging
 import os
-
-# import sys
 import tarfile
 import tempfile
 from pathlib import Path
@@ -98,8 +96,9 @@ class Downloader:
             except:  # noqa: E722
                 raise Exception("Provided signature is invalid.")
             logger.info("Uncompressing models")
-            with tarfile.open(temp_file_path, mode="r:gz") as tfile:
-                tfile.extractall(str(self.models_path))
+            # todo: recheck this
+            # with tarfile.open(temp_file_path, mode="r:gz") as tfile:
+            #     tfile.extractall(str(self.models_path))
             logger.info("Models are available")
             os.remove(temp_file_path)
         else:
