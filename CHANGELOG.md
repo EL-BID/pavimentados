@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.0] - 2023-03-05
+## [0.0.0]
 ### Fixed
 - Removed unused imports
 - Line breaks for too long lines
