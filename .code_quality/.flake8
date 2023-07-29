@@ -1,0 +1,7 @@
+[flake8]
+max-line-length = 140
+ignore = E203, W503
+exclude = .git,__pycache__,old,build,dist,venv,env,.env,.venv,migrations
+per-file-ignores =
+    # Module level import not at top of file. This is due newrelic initialization.
+    */app/__main__.py: E402
