@@ -236,4 +236,4 @@ class MultiImage_Processor(Group_Processor):
         image_list = list(
             filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
         )
-        return self.process_images_group(image_list, image_type="routes", batch_size=batch_size)
+        return self.process_images_group(image_list)  # , image_type="routes", batch_size=batch_size

@@ -1,5 +1,5 @@
 import os
-import random
+import secrets
 from pathlib import Path
 
 import cv2
@@ -79,7 +79,7 @@ class VideoCaptureImages:
             )
         }
         self.lenght = len(self.images_dict.keys())
-        vidcap.set(cv2.CAP_PROP_POS_FRAMES, random.randint(0, self.number_of_frames))
+        vidcap.set(cv2.CAP_PROP_POS_FRAMES, secrets.randbelow(self.number_of_frames))
         state, img = vidcap.read()
         self.img_shape = img.shape[:2]
         self.vidcap, fps, number_of_frames = load_video(self.route)
