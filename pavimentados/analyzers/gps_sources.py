@@ -157,7 +157,9 @@ class GPS_Image_Route_Loader(GPS_Processer):
                     data = data.decode()
                 d[tag] = data
             except:  # noqa: E722
-                raise Exception("Error in decode tag")
+                # print(f"Error in decode tag: {tag}")
+                pass
+
         lat = np.array(d["GPSInfo"][2])
         lon = np.array(d["GPSInfo"][4])
         lat = sum(np.array(lat[:, 0] / lat[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][1] == "S" else 1)
