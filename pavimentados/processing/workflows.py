@@ -7,7 +7,7 @@ class Workflow_Processor:
     def __init__(self, images_input, **kwargs):
         image_source_type = kwargs.get("image_source_type", "image_folder")
         gps_source_type = kwargs.get("gps_source_type", "image_folder")
-        gps_in = kwargs.get("gps_input", images_input if gps_source_type == image_source_type else kwargs.get("gps_input", None))
+        gps_in = kwargs.get("gps_input", images_input if gps_source_type == image_source_type else None)
         adjust_gps = kwargs.get("adjust_gps", False)
         gps_sections_distance = kwargs.get("gps_sections_distance", 100)
 
