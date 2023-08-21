@@ -156,8 +156,7 @@ class GPS_Image_Route_Loader(GPS_Processer):
                 if isinstance(data, bytes):
                     data = data.decode()
                 d[tag] = data
-            except:  # noqa: E722
-                # print(f"Error in decode tag: {tag}")
+            except ValueError:  # noqa: E722
                 pass
 
         lat = np.array(d["GPSInfo"][2])

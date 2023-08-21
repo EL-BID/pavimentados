@@ -1,5 +1,6 @@
 import logging
 import os
+import tarfile
 
 # import tarfile
 import tempfile
@@ -82,9 +83,8 @@ class Downloader:
                 raise Exception("Provided signature is invalid.")
 
             logger.info("Uncompressing models")
-            # todo: recheck this
-            # with tarfile.open(temp_file_path, mode="r:gz") as tfile:
-            #     tfile.extractall(str(self.models_path))
+            with tarfile.open(temp_file_path, mode="r:gz") as tfile:
+                tfile.extractall(str(self.models_path))
             logger.info("Models are available")
             os.remove(temp_file_path)
         elif aws_access_key:
@@ -98,9 +98,8 @@ class Downloader:
             except:  # noqa: E722
                 raise Exception("Provided signature is invalid.")
             logger.info("Uncompressing models")
-            # todo: recheck this
-            # with tarfile.open(temp_file_path, mode="r:gz") as tfile:
-            #     tfile.extractall(str(self.models_path))
+            with tarfile.open(temp_file_path, mode="r:gz") as tfile:
+                tfile.extractall(str(self.models_path))
             logger.info("Models are available")
             os.remove(temp_file_path)
         else:
