@@ -12,6 +12,7 @@ from urllib import parse, request
 logger = logging.getLogger()
 pavimentados_path = Path(__file__).parent
 models_url = "https://pavimenta2-artifacts.s3.amazonaws.com/models.tar.gz"
+THRESHOLD_ENTRIES = 10000
 
 
 class Downloader:
@@ -83,8 +84,16 @@ class Downloader:
                 raise Exception("Provided signature is invalid.")
 
             logger.info("Uncompressing models")
+            # with tarfile.open(temp_file_path, mode="r:gz") as tfile:
+            #     tfile.extractall(str(self.models_path))
+            total_entry_archive = 0
             with tarfile.open(temp_file_path, mode="r:gz") as tfile:
-                tfile.extractall(str(self.models_path))
+                members = tfile.getmembers()
+                for member in members:
+                    total_entry_archive += 1
+                    if total_entry_archive > THRESHOLD_ENTRIES:
+                        break
+                    tfile.extract(member, str(self.models_path))
             logger.info("Models are available")
             os.remove(temp_file_path)
         elif aws_access_key:
@@ -98,8 +107,16 @@ class Downloader:
             except:  # noqa: E722
                 raise Exception("Provided signature is invalid.")
             logger.info("Uncompressing models")
+            # with tarfile.open(temp_file_path, mode="r:gz") as tfile:
+            #     tfile.extractall(str(self.models_path))
+            total_entry_archive = 0
             with tarfile.open(temp_file_path, mode="r:gz") as tfile:
-                tfile.extractall(str(self.models_path))
+                members = tfile.getmembers()
+                for member in members:
+                    total_entry_archive += 1
+                    if total_entry_archive > THRESHOLD_ENTRIES:
+                        break
+                    tfile.extract(member, str(self.models_path))
             logger.info("Models are available")
             os.remove(temp_file_path)
         else:
