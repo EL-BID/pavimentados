@@ -5,9 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.31.0] - 2023-11-30
+### Added
+- `Signals detected`: add boxes column on results dataframe.
+### Changed
+- `Signals detected`: remove duplicated detections resulting from stopped vehicle.
+
+## [0.30.1] - 2023-08-21
+### Added
+- `notebooks` folder for process put samples and notebooks
+- Samples of images and videos processing 
+
 ## [0.30.0] - 2023-08-01
 ### Added
-- `Models` folder for extract downloaded model tar file 
+- `models` folder for extract downloaded model tar file 
 ### Fixed
 - Removed unused imports
 - Line breaks for too long lines
@@ -22,3 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.29.1] - 2023-04-12
 ### Fixed
 - Fix tensorflow and open-cv version on requirements.txt 
+
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
