@@ -1,3 +1,5 @@
+from math import atan2, cos, radians, sin, sqrt
+
 import numpy as np
 import pandas as pd
 
@@ -27,6 +29,21 @@ second_aggregation_dict = {
 }
 
 third_aggregation_dict = {"width": "sum", "distances": np.mean, "boxes": "count"}
+
+
+def dist(lat1, lon1, lat2, lon2):
+    R = 6373.0
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    distance = R * c
+    return 1000.0 * distance
 
 
 class Results_Calculator:
@@ -202,6 +219,7 @@ class Results_Calculator:
                     int(CLASSES_SIGNAL[f][i]),
                     final_latitude[f],
                     final_longitude[f],
+                    BOXES_SIGNAL[f][i],
                 ]
                 rows.append(r)
 
@@ -217,6 +235,7 @@ class Results_Calculator:
                 "signal_class",
                 "latitude",
                 "longitude",
+                "boxes",
             ],
         )
 
@@ -241,12 +260,20 @@ class Results_Calculator:
 
         # cantidad de fotogramas a sacar repetidas.
         N_fotogram = 5
+        # distancia mínima en metros entre detecciones iguales.
+        meters_dist = 20
 
         for i in range(len(df) - 1, 0, -1):
             if (
                 (df.loc[i - 1, "final_classes"] == df.loc[i, "final_classes"])
                 & (df.loc[i - 1, "position_boxes"] == df.loc[i, "position_boxes"])
-                & (np.abs(df.loc[i - 1, "fotogram"] - df.loc[i, "fotogram"]) <= N_fotogram)
+                & (
+                    (np.abs(df.loc[i - 1, "fotogram"] - df.loc[i, "fotogram"]) <= N_fotogram)
+                    or (
+                        dist(df.loc[i, "latitude"], df.loc[i, "longitude"], df.loc[i - 1, "latitude"], df.loc[i - 1, "longitude"])
+                        <= meters_dist
+                    )
+                )
                 & (df.loc[i, "final_classes"] != "OTRO")
             ):
                 df.loc[i - 1, "ID"] = df.loc[i, "ID"]
