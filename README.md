@@ -9,7 +9,7 @@
 
 Pavimentados is a tool that allows the identification of pavement faults located on highways or roads, as well as vertical and horizontal signage. This library is an environment around the computer vision models developed to allow the detection of the different elements. The faults and detected elements are then used to generate metrics that help in road maintenance planning.
 
-To use it you must contact the Inter-American Development Bank to obtain the credentials that give access to the models with which the API works.
+You can download models files from this [link](https://github.com/EL-BID/pavimentados/raw/e1cdb42d01f6ae323b7dc02d6e05d3c8b3b625a8/models/models.tar.gz?download=).
 
 These models require images or videos taken with the specifications that will be explained in later sections. 
 
