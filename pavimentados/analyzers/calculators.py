@@ -204,7 +204,7 @@ class Results_Calculator:
             else:
                 return 2
 
-        position_boxes = [[position((box[1] + box[3]) / 2) for box in BOXES_SIGNAL[f]] for f in range(len(BOXES_SIGNAL))]
+        position_boxes = [[position((box[0] + box[2]) / 2) for box in BOXES_SIGNAL[f]] for f in range(len(BOXES_SIGNAL))]
 
         rows = []
         for f in fotograma:
