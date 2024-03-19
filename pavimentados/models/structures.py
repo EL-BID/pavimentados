@@ -55,7 +55,7 @@ class ComparationLayer(tf.keras.layers.Layer):
         if self.layer_type == 0:
             x = tf.concat(x_l, axis=1)
             x = tf.keras.backend.argmax(x, axis=1)
-            out = tf.math.floormod(x, 16)
+            out = tf.math.floormod(x, 17)
             return out
         else:
             out = tf.concat([tf.expand_dims(x_l[i], axis=1) for i in range(len(x_l))], axis=1)
