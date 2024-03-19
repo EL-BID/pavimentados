@@ -134,6 +134,8 @@ dmypy.json
 
 # Models
 models/artifacts
+models/*.tar.gz
+docs/
 
 *.csv
 *.mp4
