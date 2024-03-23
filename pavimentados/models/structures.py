@@ -39,9 +39,10 @@ def image_encoder(FILTERS, KERNEL, STRIDE, POOL, USE_BATCH_NORM, USE_DROPOUT, SI
 
 
 class ComparationLayer(tf.keras.layers.Layer):
-    def __init__(self, comparison_matrix, layer_type, **kwargs):
+    def __init__(self, comparison_matrix, layer_type, classes_number, **kwargs):
         self.IM2_compress_list = comparison_matrix
         self.layer_type = layer_type
+        self.classes_number = classes_number
         super(ComparationLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
@@ -55,7 +56,7 @@ class ComparationLayer(tf.keras.layers.Layer):
         if self.layer_type == 0:
             x = tf.concat(x_l, axis=1)
             x = tf.keras.backend.argmax(x, axis=1)
-            out = tf.math.floormod(x, 17)
+            out = tf.math.floormod(x, self.classes_number)
             return out
         else:
             out = tf.concat([tf.expand_dims(x_l[i], axis=1) for i in range(len(x_l))], axis=1)
@@ -163,6 +164,7 @@ class Siamese_Model(Pav_Model):
         Carga los modelos de YOLO.
         """
         with tf.device(self.device):
+            FIRST_COMPARISON_CLASSES_NUMBER = self.config["FIRST_COMPARISON_CLASSES_NUMBER"]
             FIRST_COMPARISON_EXAMPLES_NUMBER = self.config["FIRST_COMPARISON_EXAMPLES_NUMBER"]
             SECOND_COMPARISON_EXAMPLES_NUMBER = self.config["SECOND_COMPARISON_EXAMPLES_NUMBER"]
             FIRST_COMPARISON_FOLDER = self.config["FIRST_COMPARISON_FOLDER"]
@@ -253,8 +255,8 @@ class Siamese_Model(Pav_Model):
             input_model = tf.keras.layers.Input(SIAMESE_IMAGE_SIZE)
             x1 = image_conv_encoder(input_model)
             x2 = image_conv_encoder_last(input_model)
-            out1 = ComparationLayer(IM2_compress_c, 0)(x1)
-            out2 = ComparationLayer(IM2_compress_last_c, 1)(x2)
+            out1 = ComparationLayer(IM2_compress_c, 0, classes_number=FIRST_COMPARISON_CLASSES_NUMBER)(x1)
+            out2 = ComparationLayer(IM2_compress_last_c, 1, classes_number=FIRST_COMPARISON_CLASSES_NUMBER)(x2)
             self.model = tf.keras.Model(input_model, [out1, out2])
 
     def predict(self, data):
