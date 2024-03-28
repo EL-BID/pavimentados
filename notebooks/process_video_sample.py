@@ -12,14 +12,8 @@ if __name__ == "__main__":
     input_path = Path("./road_videos")
     models_path = Path("../models/artifacts")
 
-    input_video_file = input_path / "sample.mp4"
-    input_gps_file = input_path / "sample.LOG"
-
-    # Check CPU/GPU Status
-    if GPU:
-        print(tf.config.list_physical_devices("GPU"))
-    else:
-        print(tf.config.list_physical_devices("CPU"))
+    input_video_file = input_path / "SAMPLE.MP4"
+    input_gps_file = input_path / "SAMPLE.LOG"
 
     # Create processor
     ml_processor = MultiImage_Processor(assign_devices=True, gpu_enabled=GPU, artifacts_path=str(models_path))

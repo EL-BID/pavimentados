@@ -11,12 +11,6 @@ if __name__ == "__main__":
     input_path = Path("road_images/")
     models_path = Path("../models/artifacts")
 
-    # Check CPU/GPU Status
-    if GPU:
-        print(tf.config.list_physical_devices("GPU"))
-    else:
-        print(tf.config.list_physical_devices("CPU"))
-
     # Create processor
     ml_processor = MultiImage_Processor(assign_devices=True, gpu_enabled=GPU, artifacts_path=str(models_path))
 

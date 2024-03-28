@@ -15,5 +15,6 @@ dependencies:
   - pip
   - pip:
       - -e .
-      - Pillow==7.0.0
+      - Pillow==9.0.1
       - opencv-python>=4.3.0.34
+
