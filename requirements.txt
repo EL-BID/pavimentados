@@ -4,7 +4,7 @@ pynmea2>=1.15.0
 tensorflow<2.11
 keras>=2.6.0
 tqdm
-Pillow==7.0.0
+Pillow==9.0.1
 opencv-python>=4.3.0.34
 boto3>=1.14.37
 scipy>=1.4.1
