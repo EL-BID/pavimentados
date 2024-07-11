@@ -85,7 +85,7 @@ class Downloader:
 
             logger.info("Uncompressing models")
             with tarfile.open(temp_file_path, mode="r:gz") as tfile:  # NOSONAR
-                tfile.extractall(str(self.models_path))
+                tfile.extractall(str(self.models_path))  # nosec
             logger.info("Models are available")
             os.remove(temp_file_path)
         elif aws_access_key:
@@ -100,7 +100,7 @@ class Downloader:
                 raise Exception("Provided signature is invalid.")
             logger.info("Uncompressing models")
             with tarfile.open(temp_file_path, mode="r:gz") as tfile:  # NOSONAR
-                tfile.extractall(str(self.models_path))
+                tfile.extractall(str(self.models_path))  # nosec
             logger.info("Models are available")
             os.remove(temp_file_path)
         else:

@@ -11,9 +11,7 @@ pavimentados_path = Path(__file__).parent.parent
 
 
 def load_video(video_path):
-    """
-    Carga el video.
-    """
+    """Carga el video."""
     vidcap = cv2.VideoCapture(video_path)
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -61,6 +59,7 @@ class FolderRoutesImages(ListRoutesImages, Config_Basic):
         self.routes = list(
             filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
         )
+        self.routes = sorted(self.routes)
 
 
 class VideoCaptureImages:

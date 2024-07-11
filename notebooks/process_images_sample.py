@@ -1,14 +1,13 @@
 from pathlib import Path
 
 import pandas as pd
-import tensorflow as tf
 
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.workflows import Workflow_Processor
 
 if __name__ == "__main__":
     GPU = False
-    input_path = Path("road_images/")
+    input_path = Path("road_images")
     models_path = Path("../models/artifacts")
 
     # Create processor

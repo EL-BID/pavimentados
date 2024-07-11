@@ -102,26 +102,24 @@ class Yolo_Model(Pav_Model):
         self.load_model()
 
     def load_model(self):
-        """
-        Carga los modelos de YOLO.
-        """
+        """Carga los modelos de YOLO."""
         with tf.device(self.device):
             # Carga las clases de modelo de pavimentos.
-            classes_paviment = list(
+            self.classes_paviment = list(
                 {
                     name: idx for idx, name in enumerate(open(self.yolo_paviment_path / "classes" / "classes.names").read().splitlines())
                 }.keys()
             )
-            self.num_classes_paviment = len(classes_paviment)
+            self.num_classes_paviment = len(self.classes_paviment)
 
             # Carga las clases de modelo de señales,
-            classes_signal = list(
+            self.classes_signal = list(
                 {name: idx for idx, name in enumerate(open(self.yolo_signal_path / "classes" / "classes.names").read().splitlines())}.keys()
             )
-            self.num_classes_signal = len(classes_signal)
+            self.num_classes_signal = len(self.classes_signal)
 
             # Une las clases de ambos modelos.
-            self.full_classes = [*classes_paviment, *classes_signal]
+            self.full_classes = [*self.classes_paviment, *self.classes_signal]
 
             # Carga el path de los pesos de yolo de pavimentos y señales.
             path_weights_paviment = self.yolo_paviment_path / "checkpoints_model" / "yolov3_train_8.tf"
@@ -129,17 +127,17 @@ class Yolo_Model(Pav_Model):
 
             # Instancia los modelos.
             yolo_paviment = YoloV3(classes=self.num_classes_paviment, model_name="yolov3_paviment")
-            yolo_signal = YoloV3(classes=self.num_classes_signal, model_name="yolov3_signal")
+            # yolo_signal = YoloV3(classes=self.num_classes_signal, model_name="yolov3_signal")
 
             # Carga los pesos.
             yolo_paviment.load_weights(path_weights_paviment).expect_partial()
-            yolo_signal.load_weights(path_weights_signal).expect_partial()
+            # yolo_signal.load_weights(path_weights_signal).expect_partial()
 
             # Genera modelo final.
             input_model = tf.keras.Input(shape=(416, 416, 3), name="image")
             paviment_output = yolo_paviment(input_model)
-            signal_output = yolo_signal(input_model)
-            self.model = tf.keras.models.Model(input_model, [paviment_output, signal_output])
+            # signal_output = yolo_signal(input_model)
+            self.model = tf.keras.models.Model(input_model, [paviment_output]) # , signal_output
 
 
 class Siamese_Model(Pav_Model):
@@ -160,9 +158,7 @@ class Siamese_Model(Pav_Model):
         self.load_model()
 
     def load_model(self):
-        """
-        Carga los modelos de YOLO.
-        """
+        """Carga los modelos de YOLO."""
         with tf.device(self.device):
             FIRST_COMPARISON_CLASSES_NUMBER = self.config["FIRST_COMPARISON_CLASSES_NUMBER"]
             FIRST_COMPARISON_EXAMPLES_NUMBER = self.config["FIRST_COMPARISON_EXAMPLES_NUMBER"]

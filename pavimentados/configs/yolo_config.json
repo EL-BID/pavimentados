@@ -1,6 +1,8 @@
 {
 	"yolo_paviment_path":"paviment_model",
 	"yolo_signal_path":"signal_model",
+	"yolov8_signal_path":"signal_model/yolov8-signals-240707-2106",
+	"yolov8_paviment_path":"paviment_model/yolov8-road-damage-5classes-240709-2132",
 	"yolo_pav_dict_clases" : {
 		"0":"Grieta Lineal Longitudinal",
 		"1":"Intervalo Lineal Longitudinal",
