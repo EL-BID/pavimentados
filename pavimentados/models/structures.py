@@ -152,9 +152,9 @@ class Siamese_Model(Pav_Model):
         self.general_config = self.config.copy()
         self.load_config(config_file)
         if artifacts_path:
-            self.siamese_path = Path(artifacts_path) / self.config["siamese_path"]
+            self.siamese_path = Path(artifacts_path) / self.config["SIAMESE_PATH"]
         else:
-            self.siamese_path = pavimentados_path / self.general_path / self.config["siamese_path"]
+            self.siamese_path = pavimentados_path / self.general_path / self.config["SIAMESE_PATH"]
         self.load_model()
 
     def load_model(self):

@@ -23,7 +23,7 @@ if __name__ == "__main__":
     )
 
     # Process inputs
-    results = workflow.execute(ml_processor, video_output_file="out.mp4")
+    results = workflow.execute(ml_processor, video_output_file="out_yolov8_siames.mp4", batch_size=16)
 
     # Save results to outputs directory
     for result_name in results.keys():

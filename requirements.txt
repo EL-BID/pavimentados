@@ -10,4 +10,5 @@ boto3>=1.14.37
 scipy>=1.4.1
 joblib
 onnxruntime>=1.18.0
+onnxruntime-gpu>=1.18.0
 ultralytics>=8.2.0

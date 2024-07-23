@@ -1,25 +1,10 @@
-import json
 from pathlib import Path
 
 from ultralytics import YOLO
 
+from pavimentados.models.base import BaseModel
+
 pavimentados_path = Path(__file__).parent.parent
-
-
-class BaseModel:
-    def __init__(self, device=""):
-        self.model = None
-        self.device = None
-
-    def predict(self, data):
-        pass
-
-    def load_model(self):
-        pass
-
-    def load_config(self, config_file):
-        with open(config_file, "r") as f:
-            return json.loads(f.read())
 
 
 class YoloV8Model(BaseModel):
@@ -48,7 +33,8 @@ class YoloV8Model(BaseModel):
         self.load_model()
 
     def load_model(self):
-        self.classes_names_idx = {name: idx for idx, name in enumerate(open(self.yolo_signal_path / "classes.names").read().splitlines())}
+        self.classes_names_idx = {name: idx for idx, name in
+                                  enumerate(open(self.yolo_signal_path / "classes.names").read().splitlines())}
         self.classes_idx_names = {idx: name for name, idx in self.classes_names_idx.items()}
         self.classes_names = list(self.classes_names_idx.keys())
 

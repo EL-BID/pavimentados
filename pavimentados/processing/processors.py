@@ -8,7 +8,9 @@ from tqdm.autonotebook import tqdm
 
 from pavimentados.configs.utils import Config_Basic
 from pavimentados.image.utils import transform_images
-from pavimentados.models.structures import Siamese_Model, State_Signal_Model, Yolo_Model
+# from pavimentados.models.structures import Siamese_Model
+from pavimentados.models.structures import State_Signal_Model
+from pavimentados.models.siamese import Siamese_Model
 from pavimentados.models.yolov8 import YoloV8Model
 
 pavimentados_path = Path(__file__).parent.parent
@@ -67,7 +69,7 @@ class Image_Processor(Config_Basic):
                                                  model_path_config_key="yolov8_paviment_path")
 
         self.siamese_model = Siamese_Model(device=self.siamese_device, artifacts_path=self.artifacts_path)
-        self.state_signal_model = State_Signal_Model(device=self.state_device, artifacts_path=self.artifacts_path)
+        # self.state_signal_model = State_Signal_Model(device=self.state_device, artifacts_path=self.artifacts_path)
 
         self.yolov8_signal_model = YoloV8Model(device=self.yolo_device, artifacts_path=self.artifacts_path,
                                                model_path_config_key="yolov8_signal_path")
@@ -104,8 +106,9 @@ class Image_Processor(Config_Basic):
         if len(box) > 0:
             crop_images = list(map(lambda x: self.crop_img(x, image), box))
             signal_pred_scores, pred_signal_base, pred_signal = self.siamese_model.predict(np.array(crop_images))
-            pred_state = np.argmax(self.state_signal_model.predict(np.array(crop_images)), axis=1).tolist()
-            return pred_signal, pred_signal_base, pred_state
+            # pred_state = np.argmax(self.state_signal_model.predict(np.array(crop_images)), axis=1).tolist()
+            # return pred_signal, pred_signal_base, pred_state
+            return pred_signal, pred_signal_base, pred_signal
         else:
             return [], [], []
 
