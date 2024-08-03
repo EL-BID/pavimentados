@@ -11,7 +11,7 @@ if __name__ == "__main__":
     models_path = Path("../models/artifacts")
 
     # Create processor
-    ml_processor = MultiImage_Processor(assign_devices=True, gpu_enabled=GPU, artifacts_path=str(models_path))
+    ml_processor = MultiImage_Processor(artifacts_path=str(models_path))
 
     # Create workflow
     workflow = Workflow_Processor(input_path, image_source_type="image_folder", gps_source_type="image_folder")

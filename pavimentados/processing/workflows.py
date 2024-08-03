@@ -80,7 +80,7 @@ class Workflow_Processor:
         min_fotogram_distance: int = 5,
         batch_size: int = 8,
         return_results: bool = True,
-        video_output_file: bool = None,
+        video_output_file: str = None,
         image_folder_output: bool = None,
     ) -> None | dict[str, any]:
         """Execute the workflow.
@@ -106,10 +106,3 @@ class Workflow_Processor:
         self.process_result(min_fotogram_distance=min_fotogram_distance)
         if return_results:
             return self.get_results()
-
-    # def adjust_results(self, min_fotogram_distance=5, return_results=True):
-    #     if not self.executed:
-    #         raise ValueError("Workflow not yet executed, use execute method to store the results after executing models")
-    #     self.process_result(self, min_fotogram_distance=min_fotogram_distance)
-    #     if return_results:
-    #         return self.get_results()

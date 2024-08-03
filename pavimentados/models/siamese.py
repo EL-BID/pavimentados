@@ -3,48 +3,41 @@ from pathlib import Path
 
 import numpy as np
 import onnxruntime
-import tensorflow as tf
 
 from pavimentados.models.base import BaseModel
 
 pavimentados_path = Path(__file__).parent.parent
 
 
-# def preprocess_image(image_path, image_size):
-#     image = tf.io.read_file(image_path)
-#     image = tf.image.decode_jpeg(image, channels=3)
-#     image = tf.image.resize(image, image_size)
-#     image = image / 255.0
-#     return image
-
-
 class Siamese_Model(BaseModel):
     def __init__(
             self,
-            device=None,
-            config_file=pavimentados_path / "configs" / "siamese_config.json",
-            general_config_file=pavimentados_path / "configs" / "models_general.json",
-            artifacts_path=None,
+            device="0",
+            config_file=pavimentados_path / "configs" / "models_general.json",
+            model_config_key: str = "",
+            artifacts_path: str = None
     ):
         super().__init__()
         self.device = device
         self.config = self.load_config(config_file)
-        self.general_config = self.load_config(general_config_file)
 
         if artifacts_path:
-            self.siamese_path = Path(artifacts_path) / self.config["SIAMESE_PATH"]
+            self.general_path = Path(artifacts_path)
         else:
-            self.siamese_path = pavimentados_path / self.general_path / self.config["SIAMESE_PATH"]
+            self.general_path = Path(self.config["general_path"])
 
-        self.image_size = tuple(self.config["SIAMESE_IMAGE_SIZE"])
+        self.siamese_path = self.general_path / self.config[model_config_key]["path"]
+        self.image_size = tuple(self.config[model_config_key]["image_size"])
+        self.embeddings_filename = self.config[model_config_key]["embeddings_filename"]
+        self.model_filename = self.config[model_config_key]["model_filename"]
 
-        with open(str(self.siamese_path / 'embeddings_references.pickle'), 'rb') as f:
+        with open(str(self.siamese_path / self.embeddings_filename), 'rb') as f:
             self.embeddings_references = pickle.load(f)
 
         self.load_model()
 
     def load_model(self):
-        self.model = onnxruntime.InferenceSession(str(self.siamese_path / 'onnx_siamese_model.onnx'))
+        self.model = onnxruntime.InferenceSession(str(self.siamese_path / self.model_filename))
 
     def predict(self, data):
         img = np.float32(data)
@@ -54,6 +47,8 @@ class Siamese_Model(BaseModel):
         pred = self.model.run([output_name], {input_name: img})[0]
 
         score = np.max(pred, axis=1).tolist()
-        prediction = [sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[-1][1] for p in pred]
+        prediction = [
+            sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[
+                -1][1] for p in pred]
 
         return score, prediction, prediction

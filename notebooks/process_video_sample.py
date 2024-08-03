@@ -15,7 +15,7 @@ if __name__ == "__main__":
     input_gps_file = input_path / "sample.log"
 
     # Create processor
-    ml_processor = MultiImage_Processor(assign_devices=True, gpu_enabled=GPU, artifacts_path=str(models_path))
+    ml_processor = MultiImage_Processor(artifacts_path=str(models_path))
 
     # Create workflow
     workflow = Workflow_Processor(
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     )
 
     # Process inputs
-    results = workflow.execute(ml_processor, video_output_file="out_yolov8-road-damage-old-classes-240724-1800.mp4", batch_size=16)
+    results = workflow.execute(ml_processor, video_output_file="out.mp4", batch_size=16)
 
     # Save results to outputs directory
     for result_name in results.keys():

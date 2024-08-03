@@ -1,4 +1,0 @@
-{
-	"SIAMESE_PATH":"siamese_model/new_model",
-	"SIAMESE_IMAGE_SIZE": [64,64,3]
-}
