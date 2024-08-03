@@ -1,4 +1,4 @@
-import pickle
+import pickle  # nosec B403
 from pathlib import Path
 
 import numpy as np
@@ -32,7 +32,7 @@ class Siamese_Model(BaseModel):
         self.model_filename = self.config[model_config_key]["model_filename"]
 
         with open(str(self.siamese_path / self.embeddings_filename), "rb") as f:
-            self.embeddings_references = pickle.load(f)
+            self.embeddings_references = pickle.load(f)  # nosec B301
 
         self.load_model()
 
