@@ -7,9 +7,9 @@ import tensorflow as tf
 from tqdm.autonotebook import tqdm
 
 from pavimentados.configs.utils import Config_Basic
-from pavimentados.image.utils import transform_images
+# from pavimentados.image.utils import transform_images
 # from pavimentados.models.structures import Siamese_Model
-from pavimentados.models.structures import State_Signal_Model
+# from pavimentados.models.structures import State_Signal_Model
 from pavimentados.models.siamese import Siamese_Model
 from pavimentados.models.yolov8 import YoloV8Model
 

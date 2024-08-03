@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0] - 2024-08-01
+### Changed
+- Borrar codigo viejo
+  - pavimentados/downloader.py
+  - pavimentados/models/structures.py
+  - pavimentados/models/yolo.py
+- Simplificar archivos de configuración
+  - Integrar pavimentados/configs/state_signal_config.json en yolo_config.json
+  - integrar yolo_config.json -> models_general.json
+  - integrar siamese_config.json -> models_general.json
+  - integrar processor.json -> models_general.json
+  - integrar images_processor.json -> models_general.json
+  - tener en cuenta el parametro yolo_paviment_max_detections
+- Ver si se puede simplificar image/utils.py y moverlo para otro lado. Ver si se puede sacar tensorflow para que no sea una dependencia.
+- Agregar documentación en los métodos y validar los que existen
+- Revisar requeriments.txt para ver que queden las libs que tienen que ser.
+
+
+
+
+
+
 ## [0.31.3] - 2024-03-23
 ### Changed
 - Sets number of classes parameter in the model configuration file.

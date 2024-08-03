@@ -6,7 +6,7 @@ pynmea2>=1.15.0
 tqdm
 Pillow==9.0.1
 opencv-python>=4.3.0.34
-boto3>=1.14.37
+# boto3>=1.14.37
 scipy>=1.4.1
 joblib
 onnxruntime>=1.18.0

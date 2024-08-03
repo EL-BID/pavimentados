@@ -1,3 +1,33 @@
 {
-	"general_path":"models/artifacts"
+	"general_path":"models/artifacts",
+	"yolo_signal_path":"signal_model/yolov8-signals-240707-2106",
+	"yolo_paviment_path":"paviment_model/yolov8-road-damage-old-classes-240724-1800",
+//	"state_signal_model_path":"state_signal_model",
+	"yolo_paviment_dict_clases" : {
+		"0":"Grieta Lineal Longitudinal",
+		"1":"Intervalo Lineal Longitudinal",
+		"2":"Grieta Lineal Transversal",
+		"3":"Intervalo Lineal Transversal",
+		"4":"Piel de Cocodrilo",
+		"5":"Protuberancia, Bache",
+		"6":"Desenfoque Paso Peatonal",
+		"7":"Desenfoque Linea Blanca",
+		"8":"Otras Fallas"
+	},
+	"image_size":416,
+
+	"SIAMESE_PATH":"siamese_model/new_model",
+	"SIAMESE_IMAGE_SIZE": [64,64,3],
+
+	"yolo_signal_threshold":0.10,
+	"yolo_signal_iou":0.45,
+	"yolo_signal_max_detections": 100,
+
+	"yolo_paviment_threshold":0.10,
+	"yolo_paviment_iou":0.45,
+	"yolo_paviment_max_detections": 100,
+
+	"images_allowed":["jpg", "jpeg", "png"],
+
+
 }

@@ -1,8 +1,6 @@
 {
-	"yolo_paviment_path":"paviment_model",
-	"yolo_signal_path":"signal_model",
 	"yolov8_signal_path":"signal_model/yolov8-signals-240707-2106",
-	"yolov8_paviment_path":"paviment_model/yolov8-road-damage-5classes-240709-2132",
+	"yolov8_paviment_path":"paviment_model/yolov8-road-damage-old-classes-240724-1800",
 	"yolo_pav_dict_clases" : {
 		"0":"Grieta Lineal Longitudinal",
 		"1":"Intervalo Lineal Longitudinal",
@@ -12,7 +10,7 @@
 		"5":"Protuberancia, Bache",
 		"6":"Desenfoque Paso Peatonal",
 		"7":"Desenfoque Linea Blanca",
-		"8":"Otras Fallas"	
-	}, 
+		"8":"Otras Fallas"
+	},
 	"image_size":416
 }
