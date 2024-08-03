@@ -11,7 +11,7 @@ pavimentados_path = Path(__file__).parent.parent
 
 
 def load_video(video_path):
-    """Carga el video."""
+    """Loads a video from the specified path."""
     vidcap = cv2.VideoCapture(video_path)
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))

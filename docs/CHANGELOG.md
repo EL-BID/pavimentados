@@ -13,14 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove TensorFlow and Joblib from dependencies.
 ### Changed
 - Unified config: all configurations in only one json file. 
-### Fixed
-- 
 ### Added
-- 
-
-- Agregar documentación en los métodos y validar los que existen
-
-
+- Docstrings to some classes and methods.
 
 ## [0.31.3] - 2024-03-23
 ### Changed
