@@ -9,11 +9,11 @@ pavimentados_path = Path(__file__).parent.parent
 
 class YoloV8Model(BaseModel):
     def __init__(
-            self,
-            device="0",
-            config_file=pavimentados_path / "configs" / "models_general.json",
-            model_config_key: str = "",
-            artifacts_path: str = None
+        self,
+        device="0",
+        config_file=pavimentados_path / "configs" / "models_general.json",
+        model_config_key: str = "",
+        artifacts_path: str = None,
     ):
         super().__init__()
         self.device = device
@@ -40,21 +40,18 @@ class YoloV8Model(BaseModel):
         self.load_model()
 
     def load_model(self):
-        self.classes_names_idx = {name: idx for idx, name in
-                                  enumerate(open(self.yolo_signal_path / self.classes_filename).read().splitlines())}
+        self.classes_names_idx = {
+            name: idx for idx, name in enumerate(open(self.yolo_signal_path / self.classes_filename).read().splitlines())
+        }
         self.classes_idx_names = {idx: name for name, idx in self.classes_names_idx.items()}
         self.classes_names = list(self.classes_names_idx.keys())
         self.classes_count = len(self.classes_names)
 
         model_path = Path(self.yolo_signal_path) / self.model_filename
-        self.model = YOLO(model_path, task='detect')
+        self.model = YOLO(model_path, task="detect")
 
     def predict(self, data):
-        results = self.model(list(data),
-                             conf=self.yolo_threshold,
-                             iou=self.yolo_iou,
-                             max_det=self.yolo_max_detections,
-                             verbose=False)
+        results = self.model(list(data), conf=self.yolo_threshold, iou=self.yolo_iou, max_det=self.yolo_max_detections, verbose=False)
         boxes = [r.boxes.xyxyn.cpu().numpy().tolist() for r in results]
         classes = [r.boxes.cls.cpu().int().tolist() for r in results]
         scores = [r.boxes.conf.cpu().numpy().tolist() for r in results]

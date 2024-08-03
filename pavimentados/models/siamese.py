@@ -11,11 +11,11 @@ pavimentados_path = Path(__file__).parent.parent
 
 class Siamese_Model(BaseModel):
     def __init__(
-            self,
-            device="0",
-            config_file=pavimentados_path / "configs" / "models_general.json",
-            model_config_key: str = "",
-            artifacts_path: str = None
+        self,
+        device="0",
+        config_file=pavimentados_path / "configs" / "models_general.json",
+        model_config_key: str = "",
+        artifacts_path: str = None,
     ):
         super().__init__()
         self.device = device
@@ -31,7 +31,7 @@ class Siamese_Model(BaseModel):
         self.embeddings_filename = self.config[model_config_key]["embeddings_filename"]
         self.model_filename = self.config[model_config_key]["model_filename"]
 
-        with open(str(self.siamese_path / self.embeddings_filename), 'rb') as f:
+        with open(str(self.siamese_path / self.embeddings_filename), "rb") as f:
             self.embeddings_references = pickle.load(f)
 
         self.load_model()
@@ -48,7 +48,7 @@ class Siamese_Model(BaseModel):
 
         score = np.max(pred, axis=1).tolist()
         prediction = [
-            sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[
-                -1][1] for p in pred]
+            sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[-1][1] for p in pred
+        ]
 
         return score, prediction, prediction
