@@ -8,6 +8,7 @@
 		"model_filename": "model.pt",
 		"classes_filename": "classes.names",
 		"yolo_threshold": 0.10,
+
 		"yolo_iou": 0.45,
 		"yolo_max_detections": 100
 	},

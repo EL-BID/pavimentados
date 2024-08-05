@@ -81,7 +81,7 @@ class Workflow_Processor:
         batch_size: int = 8,
         return_results: bool = True,
         video_output_file: str = None,
-        image_folder_output: bool = None,
+        image_folder_output: str = None,
     ) -> None | dict[str, any]:
         """Execute the workflow.
 

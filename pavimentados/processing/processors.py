@@ -167,7 +167,7 @@ class MultiImage_Processor(Config_Basic):
         final_signal_classes, signal_base_predictions, state_predictions = self.processor.predict_signal_state(
             img_batch, boxes_signal)
 
-        if (video_output is not None) or (image_folder_output is not None):
+        if video_output or image_folder_output:
             j = 0
             for img in img_batch:
                 img = img.astype("uint8")
@@ -184,6 +184,9 @@ class MultiImage_Processor(Config_Basic):
 
                 if video_output:
                     video_output.write(img)
+                if image_folder_output:
+                    frame_file = str(Path(image_folder_output) / f'frame_{j:0>6}.png')
+                    cv2.imwrite(frame_file, img)
                 j += 1
         return (
             list(boxes_pav),
@@ -210,8 +213,8 @@ class MultiImage_Processor(Config_Basic):
             tqdm(
                 map(
                     lambda x: self._process_batch(
-                        img_obj.get_batch(x, batch_size), video_output=video_output,
-                        image_folder_output=image_folder_output
+                        img_obj.get_batch(x, batch_size),
+                        video_output=video_output, image_folder_output=image_folder_output
                     ),
                     [offset for offset in range(0, len_imgs, batch_size)],
                 ),
