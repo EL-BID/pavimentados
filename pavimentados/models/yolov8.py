@@ -16,8 +16,8 @@ class YoloV8Model(BaseModel):
         model_config_key: str = "",
         artifacts_path: str = None,
     ):
-        """
-        Initializes the YoloV8Model with the specified device, configuration file, model configuration key, and artifacts path.
+        """Initializes the YoloV8Model with the specified device, configuration
+        file, model configuration key, and artifacts path.
 
         Args:
             device (str): The device to use for the model, default is "0".
@@ -53,8 +53,7 @@ class YoloV8Model(BaseModel):
         self.load_model()
 
     def load_model(self) -> None:
-        """
-        Load the YOLOv8 model and initialize the necessary attributes.
+        """Load the YOLOv8 model and initialize the necessary attributes.
 
         This function loads the classes names and their corresponding indices from the classes file. It then creates a dictionary
         mapping the class names to their indices and vice versa. The class names are extracted from the dictionary keys and
@@ -81,8 +80,7 @@ class YoloV8Model(BaseModel):
         self.model = YOLO(model_path, task="detect")
 
     def predict(self, data: np.ndarray) -> tuple[list, list, list]:
-        """
-        Predict boxes, scores, and classes for the given data.
+        """Predict boxes, scores, and classes for the given data.
 
         Args:
             data (np.ndarray): The images to predict.

@@ -6,8 +6,7 @@ class Config_Basic:
         pass
 
     def load_config(self, config_file) -> None:
-        """
-        Loads a configuration from the specified file.
+        """Loads a configuration from the specified file.
 
         Args:
             config_file (str): The path to the configuration file.

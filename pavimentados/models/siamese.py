@@ -11,19 +11,20 @@ pavimentados_path = Path(__file__).parent.parent
 
 class Siamese_Model(BaseModel):
     def __init__(
-            self,
-            device="0",
-            config_file=pavimentados_path / "configs" / "models_general.json",
-            model_config_key: str = "",
-            artifacts_path: str = None,
+        self,
+        device="0",
+        config_file=pavimentados_path / "configs" / "models_general.json",
+        model_config_key: str = "",
+        artifacts_path: str = None,
     ):
-        """
-        Initializes a new instance of the Siamese_Model class.
+        """Initializes a new instance of the Siamese_Model class.
 
         Args:
             device (str, optional): The device to use for computations. Defaults to "0".
-            config_file (Path, optional): The path to the configuration file. Defaults to pavimentados_path / "configs" / "models_general.json".
-            model_config_key (str, optional): The key for the model configuration in the configuration file. Defaults to "".
+            config_file (Path, optional): The path to the configuration file. Defaults to pavimentados_path / "configs"
+            / "models_general.json".
+            model_config_key (str, optional): The key for the model configuration in the configuration file.
+            Defaults to "".
             artifacts_path (str, optional): The path to the artifacts directory. Defaults to None.
 
         Initializes the following attributes:
@@ -58,8 +59,7 @@ class Siamese_Model(BaseModel):
         self.load_model()
 
     def load_model(self) -> None:
-        """
-        Loads the model.
+        """Loads the model.
 
         Returns:
             None
@@ -68,8 +68,7 @@ class Siamese_Model(BaseModel):
         self.model = onnxruntime.InferenceSession(str(self.siamese_path / self.model_filename))
 
     def predict(self, data):
-        """
-        Predicts the class labels for the given input data.
+        """Predicts the class labels for the given input data.
 
         Args:
             data (numpy.ndarray): The input data to be predicted.
@@ -96,8 +95,7 @@ class Siamese_Model(BaseModel):
 
         score = np.max(pred, axis=1).tolist()
         prediction = [
-            sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[
-                -1][1] for p in pred
+            sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[-1][1] for p in pred
         ]
 
         return score, prediction, prediction
