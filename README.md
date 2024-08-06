@@ -20,7 +20,7 @@ So far the system uses 3 models involved in different phases of detection and ca
 | Model Name             | Description                                         | Classes |
 |------------------------|---------------------------------------------------- |---------|
 | Paviment failures      | Detection of failures on the road and classifies it | 8       |
-| Signage detection      | Detection of signage on the road                    | 2       |
+| Signage detection      | Detection of signage on the road                    | 1       |
 | Signage classification | Classifies the signage detected                     | 314     |
 
 To understand each model in detail see the [models](docs/MODELS.md) section.
@@ -28,13 +28,13 @@ To understand each model in detail see the [models](docs/MODELS.md) section.
 ## Main Features
 ---
 
-Some of the features now available are as follows:
+Some of the features available are:
 
-- Scoring using the models already developed
-- Workflows for image acquisition and assessment
+- Scoring using the models already developed.
+- Workflows for image acquisition and assessment.
 - Evaluation of gps information to determine the location of faults and elements.
-- Image or video support
-- Support for GPS data in different formats (GPRRA, csv, embedded in image)
+- Image or video support.
+- Support for GPS data in different formats (GPRRA, csv, embedded in image).
 
 ## Instalation
 ---
@@ -45,7 +45,7 @@ To install you can use the following commands
 pip install pavimentados
 ```
 
-The next step is download the model artifact and decompress it to any folder. For instance `models` folder.
+The next step is to download the model artifact and decompress it to any folder. For instance the `models` folder.
 
 
 ## Quick Start
@@ -54,7 +54,7 @@ The next step is download the model artifact and decompress it to any folder. Fo
 In the `notebooks` folder you find a complete example of how to process both images and videos present
 in `notebooks/road_videos` or `notebooks/road_images` and save the results in `notebooks/outputs`.
 
-The first step is import the components that create a workflow with images:
+The first step is to import the components that create a workflow with images:
 ```
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.workflows import Workflow_Processor
@@ -68,8 +68,8 @@ Internally, the Workflow_Processor has objects that can interpret different imag
 Among the allowed image sources we have:
 
  - image_routes: A list of image routes
- - image_folder: a folder with all images
- - images: images already loaded in numpy format
+ - image_folder: A folder with all images
+ - images: Images already loaded in numpy format
  - video: The path to a video file
 
 Among the allowed GPS data sources we have:
@@ -79,7 +79,7 @@ Among the allowed GPS data sources we have:
  - loc: A file in GPRRA format
  - csv: A gps file with the gps information in columns and rows.
 
-Once these elements are imported, the processor is instantiated as follows
+Once these elements are imported, the processor is instantiated as follows:
 
 ```
 models_path = Path("../models/artifacts")  # Path to downloaded model
@@ -106,13 +106,13 @@ The last step is to execute the workflow:
 results = workflow.execute(ml_processor, video_output_file="./outputs/processed_video.mp4", batch_size=16)
 ```
 
-The parameters `video_output_file` and `image_folder_output` are optional and only is to save output video or image 
+The parameters `video_output_file` and `image_folder_output` are optional and are only to save output video or image 
 files along detections.
 
-In `results` object you will find the following:
+In the `results` object you will find the following:
 
  1. table_summary_sections: DataFrame with summary table by sections.
- 2. data_resulting: DataFrame with results per frame
+ 2. data_resulting: DataFrame with results per frame.
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
  4. signals_summary: DataFrame with all the information about the signals.
  5. raw_results: Raw results totals
@@ -121,10 +121,10 @@ In `results` object you will find the following:
 ## Project structure
 ---
 * `docs`: Documentation files.
-* `models`: Reference path where the downloaded model artifact should be left. 
+* `models`: Reference path where the downloaded model artifact should be placed. 
 * `notebooks`: Examples of how to process images and videos.
 * `pavimentados/analyzers`: Modules for image/video processing and generation of the final output.
-* `pavimentados/configs`: Configuration and parameters of each of the models and general.
+* `pavimentados/configs`: General configuration and parameters of the models.
 * `pavimentados/models`: Modules for YoloV8 and Siamese models.
 * `pavimentados/processing`: Workflows for processing.
 
