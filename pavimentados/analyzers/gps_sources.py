@@ -1,5 +1,6 @@
 import datetime as dt
 import os
+import secrets
 from pathlib import Path
 
 import numpy as np
@@ -168,7 +169,7 @@ class GPS_Image_Route_Loader(GPS_Processer):
         except:  # noqa: E722
             from random import random
 
-            random_float = random()  # NOSONAR
+            random_float = secrets.SystemRandom().random()
             lat = -24.0 + random_float
             lon = -49.0 + random_float
             time = dt.datetime.now()
