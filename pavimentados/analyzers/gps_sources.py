@@ -168,7 +168,7 @@ class GPS_Image_Route_Loader(GPS_Processer):
         except:  # noqa: E722
             from random import random
 
-            random_float = random()
+            random_float = random()  # NOSONAR
             lat = -24.0 + random_float
             lon = -49.0 + random_float
             time = dt.datetime.now()
