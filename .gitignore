@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-pavimentados/models/artifacts/
 
 # C extensions
 *.so
@@ -131,13 +130,12 @@ dmypy.json
 
 .idea/
 .DS_Store
+.tmp/
 
 # Models
 models/artifacts
-models/*.tar.gz
-docs/
 
+# Results files
 *.csv
 *.mp4
-*.log
 *.jpg

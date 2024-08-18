@@ -1,0 +1,9 @@
+{
+	"signal_model": {
+		"yolo_threshold": 0.20
+	},
+
+	"paviment_model": {
+		"yolo_threshold": 0.20
+	}
+}

@@ -1,185 +1,192 @@
-# import json
 import os
 from pathlib import Path
 
 import cv2
 import numpy as np
-import tensorflow as tf
 from tqdm.autonotebook import tqdm
 
 from pavimentados.configs.utils import Config_Basic
-from pavimentados.image.utils import transform_images
-from pavimentados.models.structures import Siamese_Model, State_Signal_Model, Yolo_Model
+from pavimentados.models.siamese import Siamese_Model
+from pavimentados.models.yolov8 import YoloV8Model
 
 pavimentados_path = Path(__file__).parent.parent
 
 
-def draw_outputs(img, outputs):
+def draw_outputs(img, outputs, classes_labels, final_classes=None):
+    """Draws bounding boxes and labels on an image based on the outputs from a
+    model.
+
+    Args:
+        img (np.ndarray): The input image.
+        outputs (Tuple[np.ndarray, np.ndarray, np.ndarray]): The outputs from the model.
+        classes_labels (List[str]): The list of class labels.
+        final_classes (Optional[List[str]]): The final class labels.
+
+    Returns:
+        np.ndarray: The image with bounding boxes and labels drawn on it.
+    """
+
+    color = (255, 0, 0)
     boxes, objectness, classes = outputs
     boxes, objectness, classes = boxes[0], objectness[0], classes[0]
     wh = np.flip(img.shape[0:2])
     for i in range(len(boxes)):
         x1y1 = tuple((np.array(boxes[i][0:2]) * wh).astype(np.int32))
         x2y2 = tuple((np.array(boxes[i][2:4]) * wh).astype(np.int32))
-        img = cv2.rectangle(img, x1y1, x2y2, (255, 0, 0), 2)
+        img = cv2.rectangle(img, x1y1, x2y2, color, 2)
+
+        # Create the label text with class name and score
+        label = f"{classes_labels[int(classes[i])]}"
+        label = f"{final_classes[i]}" if final_classes is not None else label
+        (label_width, label_height), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+
+        # Calculate the position of the label text
+        x1, y1 = x1y1
+        label_x = x1
+        label_y = y1 - 10 if y1 - 10 > label_height else y1 + 10
+
+        # Draw a filled rectangle as the background for the label text
+        cv2.rectangle(img, (label_x, label_y - label_height), (label_x + label_width, label_y + 10), color, cv2.FILLED)
+
+        # Draw the label text on the image
+        cv2.putText(img, label, (label_x, label_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
     return img
 
 
-class Image_Processor(Config_Basic):
+class Image_Processor:
+    """Predicts the signals over frames."""
+
     def __init__(
         self,
-        yolo_device="/device:CPU:0",
-        siamese_device="/device:CPU:0",
-        state_device="/device:CPU:0",
-        config_file=pavimentados_path / "configs" / "processor.json",
-        artifacts_path=None,
+        yolo_device: str = "0",
+        siamese_device: str = "0",
+        artifacts_path: str = None,
+        config: dict = None,
     ):
         self.artifacts_path = artifacts_path
         self.yolo_device = yolo_device
         self.siamese_device = siamese_device
-        self.state_device = state_device
-        self.load_config(config_file)
+        self.config = config
         self.load_models()
 
-    def load_models(self):
-        self.yolo_model = Yolo_Model(device=self.yolo_device, artifacts_path=self.artifacts_path)
-        self.siamese_model = Siamese_Model(device=self.siamese_device, artifacts_path=self.artifacts_path)
-        self.state_signal_model = State_Signal_Model(device=self.state_device, artifacts_path=self.artifacts_path)
+    def load_models(self) -> None:
+        """Load the models required for the object detection and tracking
+        tasks.
 
-    def get_yolo_output(self, images):
-        return self.yolo_model.model.predict(images)
+        This function initializes and loads the following models:
+        - `yolov8_signal_model`: A YoloV8Model object for detecting signals in the input images.
+        - `yolov8_paviment_model`: A YoloV8Model object for detecting pavements in the input images.
+        - `siamese_model`: A Siamese_Model object for tracking objects across frames.
 
-    def select_detections(self, predictions, selection_type="paviment"):
-        boxes, scores, classes, numbers = predictions
-        thresholds = [
-            np.array([self.config["thressholds"][selection_type].get(elem, 0.2) for elem in classes[j]]) for j in range(len(classes))
-        ]
-        classes = [classes[j][scores[j] > thresholds[j]].tolist() for j in range(len(classes))]
-        boxes = [boxes[j][scores[j] > thresholds[j]].tolist() for j in range(len(boxes))]
-        scores = [scores[j][scores[j] > thresholds[j]].tolist() for j in range(len(scores))]
-        return boxes, scores, classes
+        Args:
+            None
 
-    def crop_img(self, box, img):
+        Returns:
+            None
+        """
+        self.yolov8_signal_model = YoloV8Model(
+            device=self.yolo_device, model_config_key="signal_model", artifacts_path=self.artifacts_path, config=self.config
+        )
+        self.yolov8_paviment_model = YoloV8Model(
+            device=self.yolo_device, model_config_key="paviment_model", artifacts_path=self.artifacts_path, config=self.config
+        )
+        self.siamese_model = Siamese_Model(
+            device=self.siamese_device, model_config_key="siamese_model", artifacts_path=self.artifacts_path, config=self.config
+        )
+
+    def crop_img(self, box: list[float], img: np.ndarray) -> np.ndarray:
+        """Crop the image based on the provided box.
+
+        Args:
+            box (list[float]): The box to crop the image.
+            img (np.ndarray): The image to crop.
+
+        Returns:
+            np.ndarray: The cropped image.
+        """
         img_crop = img[int(box[1] * img.shape[0]) : int(box[3] * img.shape[0]), int(box[0] * img.shape[1]) : int(box[2] * img.shape[1])]
-        try:
-            img_crop = (
-                cv2.resize(img_crop, tuple(self.siamese_model.config["SIAMESE_IMAGE_SIZE"])[:2], interpolation=cv2.INTER_AREA).astype(float)
-                / 255
-            )
-        except:  # noqa: E722
-            img_crop = tf.image.resize(img_crop, (256, 256)).numpy().astype(float) / 255
+        img_crop = cv2.resize(img_crop, tuple(self.siamese_model.image_size)[:2], interpolation=cv2.INTER_AREA).astype(float) / 255
         return img_crop
 
-    def predict_signal_state_single(self, image, box):
+    def predict_signal_state_single(self, image: np.ndarray, box: list[float]):
+        """Predict the signal state of the object in the provided image and
+        box.
+
+        Args:
+            image (np.ndarray): The image to predict the signal state.
+            box (list[float]): The box to crop the image.
+
+        Returns:
+            tuple: A tuple containing the predicted signal state, the predicted signal base, and the predicted signal.
+        """
         if len(box) > 0:
             crop_images = list(map(lambda x: self.crop_img(x, image), box))
             signal_pred_scores, pred_signal_base, pred_signal = self.siamese_model.predict(np.array(crop_images))
-            pred_state = np.argmax(self.state_signal_model.predict(np.array(crop_images)), axis=1).tolist()
-            return pred_signal, pred_signal_base, pred_state
+            return pred_signal, pred_signal_base, pred_signal
         else:
             return [], [], []
 
-    def predict_signal_state(self, images, boxes):
+    def predict_signal_state(self, images: np.ndarray, boxes: list[list[float]]) -> tuple[list, list, list]:
+        """
+        Predict the signal state of the objects in the provided images and boxes.
+        Args:
+            images: Images to predict the signal state.
+            boxes: List of boxes to crop the images.
+
+        Returns:
+            tuple: A tuple containing the predicted signal state, the predicted signal base, and the predicted signal.
+        """
         mixed_results = map(lambda img, box: self.predict_signal_state_single(img, box), images, boxes)
 
         signal_predictions, signal_base_predictions, state_predictions = list(zip(*mixed_results))
         return list(signal_predictions), list(signal_base_predictions), list(state_predictions)
 
 
-class Group_Processor(Config_Basic):
+class MultiImage_Processor(Config_Basic):
     def __init__(
         self,
-        processor_config_file=pavimentados_path / "configs" / "processor.json",
-        assign_devices=False,
-        gpu_enabled=False,
-        total_mem=6144,
-        yolo_device="/device:CPU:0",
-        siamese_device="/device:CPU:0",
-        state_device="/device:CPU:0",
+        config_file: Path = None,
+        yolo_device: str = "0",
+        siamese_device: str = "0",
         artifacts_path=None,
     ):
-        self.assign_model_devices(assign_devices, gpu_enabled, total_mem, yolo_device, siamese_device, state_device)
+        super().__init__()
+        self.yolo_device = yolo_device
+        self.siamese_device = siamese_device
+
+        config_file_default = pavimentados_path / "configs" / "models_general.json"
+
+        self.load_config(config_file_default, config_file)
+
         self.processor = Image_Processor(
-            yolo_device=self.yolo_device,
-            siamese_device=self.siamese_device,
-            state_device=self.state_device,
-            config_file=processor_config_file,
-            artifacts_path=artifacts_path,
+            yolo_device=self.yolo_device, siamese_device=self.siamese_device, artifacts_path=artifacts_path, config=self.config
         )
-
-    def assign_model_devices(self, assign_devices, gpu_enabled, total_mem, yolo_device, siamese_device, state_device):
-        if assign_devices is True:
-            if gpu_enabled is True:
-                self.assign_gpu_devices(total_mem)
-            else:
-                self.yolo_device = "/device:CPU:0"
-                self.siamese_device = "/device:CPU:0"
-                self.state_device = "/device:CPU:0"
-        else:
-            self.yolo_device = yolo_device
-            self.siamese_device = siamese_device
-            self.state_device = state_device
-
-    def assign_gpu_devices(self, total_mem):
-        memory_unit = int(total_mem / 6)
-        gpus = tf.config.experimental.list_physical_devices("GPU")
-        if gpus:
-            try:
-                tf.config.experimental.set_virtual_device_configuration(
-                    gpus[0],
-                    [
-                        tf.config.experimental.VirtualDeviceConfiguration(memory_limit=4 * memory_unit),
-                        tf.config.experimental.VirtualDeviceConfiguration(memory_limit=memory_unit),
-                        tf.config.experimental.VirtualDeviceConfiguration(memory_limit=memory_unit),
-                    ],
-                )
-                logical_gpus = tf.config.experimental.list_logical_devices("GPU")
-                print(len(gpus), "Physical GPU,", len(logical_gpus), "Logical GPUs")
-            except RuntimeError as e:
-                print(e)
-        self.yolo_device = logical_gpus[0].name
-        self.siamese_device = logical_gpus[1].name
-        self.state_device = logical_gpus[2].name
-
-
-class MultiImage_Processor(Group_Processor):
-    def __init__(
-        self,
-        config_file=pavimentados_path / "configs" / "images_processor.json",
-        processor_config_file=pavimentados_path / "configs" / "processor.json",
-        assign_devices=False,
-        gpu_enabled=False,
-        total_mem=6144,
-        yolo_device="/device:CPU:0",
-        siamese_device="/device:CPU:0",
-        state_device="/device:CPU:0",
-        artifacts_path=None,
-    ):
-        super().__init__(
-            processor_config_file=processor_config_file,
-            assign_devices=assign_devices,
-            gpu_enabled=gpu_enabled,
-            total_mem=total_mem,
-            yolo_device=yolo_device,
-            siamese_device=siamese_device,
-            state_device=state_device,
-            artifacts_path=artifacts_path,
-        )
-        self.load_config(config_file)
 
     def _process_batch(self, img_batch, video_output=None, image_folder_output=None):
-        transformed_batch = tf.convert_to_tensor([transform_images(img, 416) for img in img_batch]).numpy()
-        prediction = self.processor.get_yolo_output(transformed_batch)
-        boxes_pav, scores_pav, classes_pav = self.processor.select_detections(prediction[0], "paviment")
-        boxes_signal, scores_signal, classes_signal = self.processor.select_detections(prediction[1], "signals")
+        boxes_pav, scores_pav, classes_pav = self.processor.yolov8_paviment_model.predict(img_batch)
+        boxes_signal, scores_signal, classes_signal = self.processor.yolov8_signal_model.predict(img_batch)
         final_signal_classes, signal_base_predictions, state_predictions = self.processor.predict_signal_state(img_batch, boxes_signal)
-        if (video_output is not None) or (image_folder_output is not None):
+
+        if video_output or image_folder_output:
             j = 0
             for img in img_batch:
                 img = img.astype("uint8")
-                img = draw_outputs(img, ([boxes_pav[j]], [scores_pav[j]], [classes_pav[j]]))
+                img = draw_outputs(
+                    img, ([boxes_pav[j]], [scores_pav[j]], [classes_pav[j]]), self.processor.yolov8_paviment_model.classes_names
+                )
+                img = draw_outputs(
+                    img,
+                    ([boxes_signal[j]], [scores_signal[j]], [classes_signal[j]]),
+                    self.processor.yolov8_signal_model.classes_names,
+                    final_signal_classes[j],
+                )
+
                 if video_output:
                     video_output.write(img)
+                if image_folder_output:
+                    frame_file = str(Path(image_folder_output) / f"frame_{j:0>6}.png")
+                    cv2.imwrite(frame_file, img)
                 j += 1
         return (
             list(boxes_pav),
@@ -193,23 +200,22 @@ class MultiImage_Processor(Group_Processor):
             state_predictions,
         )
 
-    def process_images_group(
-        self, img_obj, batch_size=8, video_output_file=None, image_folder_output=None
-    ):  # image_type = 'routes', batch_size = 8):
+    def process_images_group(self, img_obj, batch_size=8, video_output_file=None, image_folder_output=None):
         len_imgs = img_obj.get_len()
         if video_output_file:
             altura, base = img_obj.get_altura_base()
-            print(base, altura)
-            video_output = cv2.VideoWriter(video_output_file, 0, 3, (base, altura))
+            fourcc = cv2.VideoWriter.fourcc("m", "p", "4", "v")
+            video_output = cv2.VideoWriter(video_output_file, fourcc, 20.0, (base, altura))
         else:
             video_output = None
+
         results = list(
             tqdm(
                 map(
                     lambda x: self._process_batch(
                         img_obj.get_batch(x, batch_size), video_output=video_output, image_folder_output=image_folder_output
                     ),
-                    [offset for offset in range(0, img_obj.get_len(), batch_size)],
+                    [offset for offset in range(0, len_imgs, batch_size)],
                 ),
                 total=int(len_imgs // batch_size) + int((len_imgs % batch_size) > 0),
             )
@@ -223,8 +229,7 @@ class MultiImage_Processor(Group_Processor):
             "classes_pav": sum(results[4], []),
             "classes_signal": sum(results[5], []),
             "final_pav_clases": [
-                [self.processor.yolo_model.config["yolo_pav_dict_clases"].get(elem, "<UNK>") for elem in item]
-                for item in sum(results[4], [])
+                [self.processor.yolov8_paviment_model.classes_idx_names.get(elem, "<UNK>") for elem in item] for item in sum(results[4], [])
             ],
             "final_signal_classes": sum(results[6], []),
             "signal_base_predictions": sum(results[7], []),
@@ -236,4 +241,4 @@ class MultiImage_Processor(Group_Processor):
         image_list = list(
             filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
         )
-        return self.process_images_group(image_list)  # , image_type="routes", batch_size=batch_size
+        return self.process_images_group(image_list)

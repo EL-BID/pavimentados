@@ -1,11 +1,10 @@
 pandas>=1.0.3
-numpy>=1.19.5
+numpy<2.0.0
 pynmea2>=1.15.0
-tensorflow<2.11
-keras>=2.6.0
 tqdm
-Pillow
+Pillow==9.3.0
 opencv-python>=4.3.0.34
-boto3>=1.14.37
 scipy>=1.4.1
-joblib
+onnxruntime>=1.18.0
+onnxruntime-gpu>=1.18.0
+ultralytics>=8.2.0

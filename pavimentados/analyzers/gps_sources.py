@@ -159,17 +159,26 @@ class GPS_Image_Route_Loader(GPS_Processer):
             except ValueError:  # noqa: E722
                 pass
 
-        lat = np.array(d["GPSInfo"][2])
-        lon = np.array(d["GPSInfo"][4])
-        lat = sum(np.array(lat[:, 0] / lat[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][1] == "S" else 1)
-        lon = sum(np.array(lon[:, 0] / lon[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][3] == "W" else 1)
-        time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
+        try:
+            lat = np.array(d["GPSInfo"][2])
+            lon = np.array(d["GPSInfo"][4])
+            lat = sum(np.array(lat[:, 0] / lat[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][1] == "S" else 1)
+            lon = sum(np.array(lon[:, 0] / lon[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][3] == "W" else 1)
+            time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
+        except:  # noqa: E722
+            from random import random
+
+            random_float = random()
+            lat = -24.0 + random_float
+            lon = -49.0 + random_float
+            time = dt.datetime.now()
+
         return {"timestamp": time, "longitude": lon, "latitude": lat}
 
 
 class GPS_Image_Folder_Loader(GPS_Image_Route_Loader):
     def __init__(self, route, **kwargs):
-        self.routes = [Path(route) / item for item in os.listdir(Path(route))]
+        self.routes = [Path(route) / item for item in os.listdir(Path(route)) if not item.startswith(".")]
         self.load_gps_data()
         super(GPS_Image_Route_Loader, self).__init__()
 

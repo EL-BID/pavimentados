@@ -11,9 +11,7 @@ pavimentados_path = Path(__file__).parent.parent
 
 
 def load_video(video_path):
-    """
-    Carga el video.
-    """
+    """Loads a video from the specified path."""
     vidcap = cv2.VideoCapture(video_path)
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -55,12 +53,13 @@ class ListRoutesImages:
 
 
 class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file=pavimentados_path / "configs" / "images_processor.json"):
+    def __init__(self, route, config_file=pavimentados_path / "configs" / "models_general.json"):
         self.load_config(config_file)
         folder = Path(route)
         self.routes = list(
             filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
         )
+        self.routes = sorted(self.routes)
 
 
 class VideoCaptureImages:
