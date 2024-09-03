@@ -184,7 +184,7 @@ class MultiImage_Processor(Config_Basic):
 
                 if video_output:
                     video_output.write(img)
-                if image_folder_output:
+                elif image_folder_output:
                     frame_file = str(Path(image_folder_output) / f"frame_{j:0>6}.png")
                     cv2.imwrite(frame_file, img)
                 j += 1

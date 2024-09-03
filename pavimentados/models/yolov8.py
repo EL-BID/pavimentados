@@ -44,6 +44,7 @@ class YoloV8Model(BaseModel):
         self.yolo_threshold = self.config[model_config_key]["yolo_threshold"]
         self.yolo_iou = self.config[model_config_key]["yolo_iou"]
         self.yolo_max_detections = self.config[model_config_key]["yolo_max_detections"]
+        self.augment = self.config[model_config_key]["yolo_augment"]
 
         self.classes_count = None
         self.classes_names = None
@@ -88,7 +89,13 @@ class YoloV8Model(BaseModel):
         Returns:
             tuple: A tuple containing the predicted boxes, scores, and classes.
         """
-        results = self.model(list(data), conf=self.yolo_threshold, iou=self.yolo_iou, max_det=self.yolo_max_detections, verbose=False)
+        results = self.model(list(data),
+                             conf=self.yolo_threshold,
+                             iou=self.yolo_iou,
+                             max_det=self.yolo_max_detections,
+                             verbose=False,
+                             augment=self.augment
+                             )
         boxes = [r.boxes.xyxyn.cpu().numpy().tolist() for r in results]
         classes = [r.boxes.cls.cpu().int().tolist() for r in results]
         scores = [r.boxes.conf.cpu().numpy().tolist() for r in results]

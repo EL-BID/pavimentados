@@ -1,9 +1,23 @@
 {
+	"general_path": "models/artifacts",
+
 	"signal_model": {
-		"yolo_threshold": 0.20
+		"yolo_threshold": 0.20,
+		"yolo_iou": 0.45
 	},
 
 	"paviment_model": {
-		"yolo_threshold": 0.20
+		"yolo_threshold": 0.20,
+		"yolo_iou": 0.45
+	},
+
+	"extra_paviment_model": {
+		"path": "models/extra_paviment_model/...",
+		"model_filename": "model.pt",
+		"classes_filename": "classes.names",
+		"yolo_threshold": 0.10,
+		"yolo_iou": 0.45,
+		"yolo_max_detections": 100,
+		"yolo_augment": false
 	}
 }

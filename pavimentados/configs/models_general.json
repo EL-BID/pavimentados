@@ -8,9 +8,9 @@
 		"model_filename": "model.pt",
 		"classes_filename": "classes.names",
 		"yolo_threshold": 0.10,
-
 		"yolo_iou": 0.45,
-		"yolo_max_detections": 100
+		"yolo_max_detections": 100,
+		"yolo_augment": false
 	},
 
 	"paviment_model": {
@@ -20,6 +20,7 @@
 		"yolo_threshold": 0.10,
 		"yolo_iou": 0.45,
 		"yolo_max_detections": 100,
+		"yolo_augment": false,
 		"classes": {
 			"0": "Grieta Lineal Longitudinal",
 			"1": "Intervalo Lineal Longitudinal",

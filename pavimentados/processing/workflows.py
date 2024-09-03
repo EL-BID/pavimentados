@@ -98,12 +98,8 @@ class Workflow_Processor:
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
         """
-        # self.paviment_classes_names = list(processor.processor.yolo_model.config["yolo_pav_dict_clases"].values())
         self.classes_names_yolo_paviment = processor.processor.yolov8_paviment_model.classes_names
-
-        # self.classes_names_yolo_signal = processor.processor.yolo_model.classes_signal
         self.classes_names_yolo_signal = processor.processor.yolov8_signal_model.classes_names
-
         self._execute_model(processor, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output)
         self.process_result(min_fotogram_distance=min_fotogram_distance)
         if return_results:
