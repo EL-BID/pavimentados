@@ -1,3 +1,0 @@
-models/*.tar.gz filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-*.log filter=lfs diff=lfs merge=lfs -text

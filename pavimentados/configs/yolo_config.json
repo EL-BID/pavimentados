@@ -1,0 +1,16 @@
+{
+	"yolo_paviment_path":"paviment_model",
+	"yolo_signal_path":"signal_model",
+	"yolo_pav_dict_clases" : {
+		"0":"Grieta Lineal Longitudinal",
+		"1":"Intervalo Lineal Longitudinal",
+		"2":"Grieta Lineal Transversal",
+		"3":"Intervalo Lineal Transversal",
+		"4":"Piel de Cocodrilo",
+		"5":"Protuberancia, Bache",
+		"6":"Desenfoque Paso Peatonal",
+		"7":"Desenfoque Linea Blanca",
+		"8":"Otras Fallas"	
+	}, 
+	"image_size":416
+}

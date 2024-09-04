@@ -5,23 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024-08-18
-### Removed
-- Modules: Downloader, image/utils.
-- YoloV3 models classes.
-- Unnecessary JSON config files.
-- Remove TensorFlow and Joblib from dependencies.
-### Changed
-- Unified config: all configurations in only one json file.
-- Documentation updated.
-- Siamese model upgraded to 128x128 detections.
-### Added
-- Docstrings to some classes and methods.
-
-## [0.31.3] - 2024-03-23
-### Changed
-- Sets number of classes parameter in the model configuration file.
-
 ## [0.31.1] - 2024-03-19
 ### Changed
 - Update pre-commit hooks.

@@ -28,7 +28,7 @@ second_aggregation_dict = {
     "boxes": "sum",
 }
 
-third_aggregation_dict = {"width": "sum", "distances": "mean", "boxes": "count"}
+third_aggregation_dict = {"width": "sum", "distances": np.mean, "boxes": "count"}
 
 
 def dist(lat1, lon1, lat2, lon2):
@@ -63,7 +63,9 @@ class Results_Calculator:
             "Otras fallas",
         ],
     ):
-        """Genera la table final de resultados de pavimentos."""
+        """
+        Genera la table final de resultados de pavimentos.
+        """
         # Genero el dataset.
         data = gps_obj.gps_df.copy()
         data["scores"] = results_obj["scores_pav"]
@@ -162,7 +164,26 @@ class Results_Calculator:
     def generate_final_results_signal(
         results_obj,
         gps_obj,
-        classes_names_yolo_signal=None,
+        classes_names_yolo_signal=[
+            "ADTCIA",
+            "CIRCROJO",
+            "CRUZAMLLA",
+            "CUADBCO",
+            "CUADCAFE",
+            "CUADVERDE",
+            "CUADZUL",
+            "CUAMLLO",
+            "CURVA",
+            "INDAZUL",
+            "OBRA",
+            "OTRO",
+            "PROBROJO",
+            "ROMAMLLO",
+            "RUTA",
+            "SEMAFORO",
+            "STOP",
+            "TRIROJO",
+        ],
     ):
         BOXES_SIGNAL = results_obj["boxes_signal"]
         CLASSES_SIGNAL = results_obj["classes_signal"]

@@ -3,7 +3,9 @@ import pandas as pd
 
 
 def total_distance(lat1, lon1, lat2, lon2):
-    """Calcula la distancia entre dos puntos (lat1, lon1) y (lat2, lon2)."""
+    """
+    Calcula la distancia entre dos puntos (lat1, lon1) y (lat2, lon2).
+    """
 
     R = 6373.0  # approximate radius of earth in km.
 
@@ -23,7 +25,9 @@ def total_distance(lat1, lon1, lat2, lon2):
 
 
 def area_calc(boxes, altura, base):
-    """Calcula el area de la caja."""
+    """
+    Calcula el area de la caja.
+    """
     if len(boxes) > 0:
         return ((boxes[2] - boxes[0]) * altura) * ((boxes[3] - boxes[1]) * base)
     else:
@@ -31,7 +35,9 @@ def area_calc(boxes, altura, base):
 
 
 def box_center(boxes, altura, base):
-    """Calcula el centro de la caja."""
+    """
+    Calcula el centro de la caja.
+    """
     if len(boxes) > 0:
         return (((boxes[3] + boxes[1]) / 2) * base), (((boxes[2] + boxes[0]) / 2) * altura)
     else:
@@ -39,7 +45,9 @@ def box_center(boxes, altura, base):
 
 
 def box_height(boxes, altura):
-    """Calcula la altura de la caja."""
+    """
+    Calcula la altura de la caja.
+    """
     if len(boxes) > 0:
         return (boxes[2] - boxes[0]) * altura
     else:
@@ -47,7 +55,9 @@ def box_height(boxes, altura):
 
 
 def box_width(boxes, base):
-    """Calcula la base de la caja."""
+    """
+    Calcula la base de la caja.
+    """
     if len(boxes) > 0:
         return (boxes[3] - boxes[1]) * base
     else:
@@ -55,10 +65,9 @@ def box_width(boxes, base):
 
 
 def fail_id_generator(df, min_photogram_distance):
-    """Genera un ID de fail.
-
-    Esto se realiza ya que cada fail es detectada en fotogramas
-    simultaneos y es necesario identificarla como una misma fail.
+    """
+    Genera un ID de fail. Esto se realiza ya que cada fail es detectada en
+    fotogramas simultaneos y es necesario identificarla como una misma fail.
     """
 
     df_id_fails = []
