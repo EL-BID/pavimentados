@@ -167,8 +167,6 @@ class GPS_Image_Route_Loader(GPS_Processer):
             lon = sum(np.array(lon[:, 0] / lon[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][3] == "W" else 1)
             time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
         except:  # noqa: E722
-            from random import random
-
             random_float = secrets.SystemRandom().random()
             lat = -24.0 + random_float
             lon = -49.0 + random_float

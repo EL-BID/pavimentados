@@ -69,11 +69,12 @@ class Results_Calculator:
         """
         # Reemplazo las clases D01 y D11 por D00 y D10.
         replace_classes_dict = {
-            'D01': 'D00',
-            'D11': 'D10',
+            "D01": "D00",
+            "D11": "D10",
         }
         final_pav_clases = [
-            [replace_classes_dict[item] if item in replace_classes_dict.keys() else item for item in sublist] for sublist in results_obj["final_pav_clases"]
+            [replace_classes_dict[item] if item in replace_classes_dict.keys() else item for item in sublist]
+            for sublist in results_obj["final_pav_clases"]
         ]
 
         # Genero el dataset.

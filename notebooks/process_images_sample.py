@@ -22,12 +22,10 @@ if __name__ == "__main__":
     ml_processor = MultiImage_Processor(artifacts_path=str(models_path), config_file="./models_config.json")
 
     # Create workflow
-    workflow = Workflow_Processor(
-        input_path, image_source_type="image_folder", gps_source_type="image_folder")
+    workflow = Workflow_Processor(input_path, image_source_type="image_folder", gps_source_type="image_folder")
 
     # Process inputs
-    results = workflow.execute(ml_processor,
-                               image_folder_output=str(output_path))
+    results = workflow.execute(ml_processor, image_folder_output=str(output_path))
 
     # Save results to outputs directory
     for result_name in results.keys():

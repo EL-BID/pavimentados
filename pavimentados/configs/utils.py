@@ -4,8 +4,7 @@ from pathlib import Path
 
 
 def setup_logging(level=logging.DEBUG):
-    """
-    Setup logging.
+    """Setup logging.
 
     Args:
         level: The logging level to use.
@@ -13,14 +12,14 @@ def setup_logging(level=logging.DEBUG):
     Returns:
         None
     """
-    format = '%(asctime)s - %(levelname)s - %(message)s' \
-        if level == logging.INFO \
-        else '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+    format = (
+        "%(asctime)s - %(levelname)s - %(message)s" if level == logging.INFO else "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+    )
 
     logging.basicConfig(
         level=level,
         format=format,
-        datefmt='%Y-%m-%d %H:%M:%S',
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
 
