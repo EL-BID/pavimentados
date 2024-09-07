@@ -1,9 +1,12 @@
+import logging
 from typing import Union
 
 from pavimentados.analyzers.calculators import Results_Calculator as calculator
 from pavimentados.analyzers.gps_sources import GPS_Data_Loader
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.sources import Image_Source_Loader
+
+logger = logging.getLogger(__name__)
 
 
 class Workflow_Processor:
@@ -36,7 +39,8 @@ class Workflow_Processor:
             None
         """
         self.results = processor.process_images_group(
-            self.img_obj, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output
+            self.img_obj, batch_size=batch_size, video_output_file=video_output_file,
+            image_folder_output=image_folder_output
         )
         self.executed = True
 
@@ -49,6 +53,7 @@ class Workflow_Processor:
         Returns:
             None
         """
+        logger.info("Processing results...")
         self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
             self.results,
             self.img_obj,
@@ -67,7 +72,8 @@ class Workflow_Processor:
             dict: Dictionary containing the results of the workflow.
         """
         if not self.executed:
-            raise ValueError("Workflow not yet executed, use execute method to store the results after executing models")
+            raise ValueError(
+                "Workflow not yet executed, use execute method to store the results after executing models")
         return {
             "table_summary_sections": self.table_summary_sections,
             "data_resulting": self.data_resulting,
@@ -77,13 +83,13 @@ class Workflow_Processor:
         }
 
     def execute(
-        self,
-        processor: MultiImage_Processor,
-        min_fotogram_distance: int = 5,
-        batch_size: int = 8,
-        return_results: bool = True,
-        video_output_file: str = None,
-        image_folder_output: str = None,
+            self,
+            processor: MultiImage_Processor,
+            min_fotogram_distance: int = 5,
+            batch_size: int = 8,
+            return_results: bool = True,
+            video_output_file: str = None,
+            image_folder_output: str = None,
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -98,13 +104,12 @@ class Workflow_Processor:
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
         """
-        # self.paviment_classes_names = list(processor.processor.yolo_model.config["yolo_pav_dict_clases"].values())
+        logger.info("Executing workflow")
+
         self.classes_names_yolo_paviment = processor.processor.yolov8_paviment_model.classes_names
-
-        # self.classes_names_yolo_signal = processor.processor.yolo_model.classes_signal
         self.classes_names_yolo_signal = processor.processor.yolov8_signal_model.classes_names
-
-        self._execute_model(processor, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output)
+        self._execute_model(processor, batch_size=batch_size, video_output_file=video_output_file,
+                            image_folder_output=image_folder_output)
         self.process_result(min_fotogram_distance=min_fotogram_distance)
         if return_results:
             return self.get_results()

@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 
 import cv2
@@ -9,6 +10,7 @@ from pavimentados.configs.utils import Config_Basic
 from pavimentados.models.siamese import Siamese_Model
 from pavimentados.models.yolov8 import YoloV8Model
 
+logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
 
@@ -62,7 +64,7 @@ class Image_Processor:
         yolo_device: str = "0",
         siamese_device: str = "0",
         artifacts_path: str = None,
-        config: dict = None,
+        config: dict = None
     ):
         self.artifacts_path = artifacts_path
         self.yolo_device = yolo_device
@@ -85,6 +87,7 @@ class Image_Processor:
         Returns:
             None
         """
+        logger.info("Loading models...")
         self.yolov8_signal_model = YoloV8Model(
             device=self.yolo_device, model_config_key="signal_model", artifacts_path=self.artifacts_path, config=self.config
         )
@@ -149,18 +152,19 @@ class MultiImage_Processor(Config_Basic):
         config_file: Path = None,
         yolo_device: str = "0",
         siamese_device: str = "0",
-        artifacts_path=None,
+        artifacts_path=None
     ):
         super().__init__()
         self.yolo_device = yolo_device
         self.siamese_device = siamese_device
 
+        logger.info("Loading config...")
         config_file_default = pavimentados_path / "configs" / "models_general.json"
-
         self.load_config(config_file_default, config_file)
 
         self.processor = Image_Processor(
-            yolo_device=self.yolo_device, siamese_device=self.siamese_device, artifacts_path=artifacts_path, config=self.config
+            yolo_device=self.yolo_device, siamese_device=self.siamese_device, artifacts_path=artifacts_path,
+            config=self.config
         )
 
     def _process_batch(self, img_batch, video_output=None, image_folder_output=None):
@@ -217,7 +221,7 @@ class MultiImage_Processor(Config_Basic):
                     ),
                     [offset for offset in range(0, len_imgs, batch_size)],
                 ),
-                total=int(len_imgs // batch_size) + int((len_imgs % batch_size) > 0),
+                total=int(len_imgs // batch_size) + int((len_imgs % batch_size) > 0), desc="Processing batches",
             )
         )
         results = list(zip(*results))

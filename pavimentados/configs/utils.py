@@ -1,5 +1,27 @@
 import json
+import logging
 from pathlib import Path
+
+
+def setup_logging(level=logging.DEBUG):
+    """
+    Setup logging.
+
+    Args:
+        level: The logging level to use.
+
+    Returns:
+        None
+    """
+    format = '%(asctime)s - %(levelname)s - %(message)s' \
+        if level == logging.INFO \
+        else '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+
+    logging.basicConfig(
+        level=level,
+        format=format,
+        datefmt='%Y-%m-%d %H:%M:%S',
+    )
 
 
 def update(d, u):

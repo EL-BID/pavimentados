@@ -53,22 +53,34 @@ class Results_Calculator:
         img_obj,
         gps_obj,
         min_fotogram_distance=5,
-        columns_to_have=[
-            "Grieta Lineal Longitudinal",
-            "Intervalo Lineal Longitudinal",
-            "Grieta Lineal Transversal",
-            "Intervalo Lineal Transversal",
-            "Piel de Cocodrilo",
-            "Protuberancia, Bache",
-            "Otras fallas",
-        ],
+        columns_to_have=None,
     ):
-        """Genera la table final de resultados de pavimentos."""
+        """
+        Genera la tabla final de resultados de pavimentos.
+        Args:
+            results_obj: Results object.
+            img_obj: Image object.
+            gps_obj: GPS object.
+            min_fotogram_distance: Distancia mínima entre fotogramas para considerarlos.
+            columns_to_have: Columnas a incluir en la tabla.
+
+        Returns:
+            Table of paviment results.
+        """
+        # Reemplazo las clases D01 y D11 por D00 y D10.
+        replace_classes_dict = {
+            'D01': 'D00',
+            'D11': 'D10',
+        }
+        final_pav_clases = [
+            [replace_classes_dict[item] if item in replace_classes_dict.keys() else item for item in sublist] for sublist in results_obj["final_pav_clases"]
+        ]
+
         # Genero el dataset.
         data = gps_obj.gps_df.copy()
         data["scores"] = results_obj["scores_pav"]
         data["boxes"] = results_obj["boxes_pav"]
-        data["classes"] = results_obj["final_pav_clases"]
+        data["classes"] = final_pav_clases
         data["fotograma"] = data.index
         altura, base = img_obj.get_altura_base()
 

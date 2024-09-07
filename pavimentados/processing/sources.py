@@ -1,20 +1,33 @@
+import logging
 import os
 import secrets
 from pathlib import Path
+from time import sleep
 
 import cv2
 import numpy as np
+from torchvision.models.detection import retinanet_resnet50_fpn
 
 from pavimentados.configs.utils import Config_Basic
 
+logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
 
 def load_video(video_path):
     """Loads a video from the specified path."""
+    logger.debug("Opening video: %s", video_path)
     vidcap = cv2.VideoCapture(video_path)
+    retries = 10
+    while not vidcap.isOpened():
+        logger.debug("Waiting for video to open...")
+        sleep(0.1)
+        if retries == 0: raise ValueError(f"Could not open video: {video_path}");
+        retries -= 1
+
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+    logger.debug("fps: %s, number_of_frames: %s", fps, number_of_frames)
     return vidcap, fps, number_of_frames
 
 
@@ -49,7 +62,8 @@ class ListRoutesImages:
         return self.routes[idx_inicial:idx_final]
 
     def get_batch(self, idx_inicial, batch_size=8):
-        return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
+        return np.array(
+            [cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
 class FolderRoutesImages(ListRoutesImages, Config_Basic):
@@ -57,7 +71,8 @@ class FolderRoutesImages(ListRoutesImages, Config_Basic):
         self.load_config(config_file)
         folder = Path(route)
         self.routes = list(
-            filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
+            filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"],
+                   map(lambda x: folder / x, os.listdir(folder)))
         )
         self.routes = sorted(self.routes)
 
@@ -72,8 +87,8 @@ class VideoCaptureImages:
             for item in filter(
                 lambda x: x < self.number_of_frames,
                 (
-                    np.arange(0, self.number_of_frames, self.fps).reshape(-1, 1)
-                    + np.arange(0, self.fps, self.fps // self.images_per_second)[: self.images_per_second]
+                        np.arange(0, self.number_of_frames, self.fps).reshape(-1, 1)
+                        + np.arange(0, self.fps, self.fps // self.images_per_second)[: self.images_per_second]
                 ).reshape(-1),
             )
         }
