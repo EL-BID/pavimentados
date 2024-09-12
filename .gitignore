@@ -137,3 +137,4 @@ models/artifacts
 
 # Results files
 */outputs/
+*.mp4
