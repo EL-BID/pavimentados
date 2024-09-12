@@ -19,7 +19,7 @@ class Workflow_Processor(Config_Basic):
         super().__init__()
         logger.debug("Loading workflow config...")
         config_file_default = pavimentados_path / "configs" / "workflows_general.json"
-        self.load_config(config_file_default, None )
+        self.load_config(config_file_default, None)
 
         image_source_type = kwargs.get("image_source_type", "image_folder")
         gps_source_type = kwargs.get("gps_source_type", "image_folder")
@@ -27,7 +27,7 @@ class Workflow_Processor(Config_Basic):
         adjust_gps = kwargs.get("adjust_gps", False)
         gps_sections_distance = kwargs.get("gps_sections_distance", 100)
 
-        self.img_obj = Image_Source_Loader(image_source_type, self.config,images_input)
+        self.img_obj = Image_Source_Loader(image_source_type, self.config, images_input)
         self.gps_data = GPS_Data_Loader(gps_source_type, gps_in, self.config, **kwargs)
         if adjust_gps:
             self.gps_data.adjust_gps_data(self.img_obj.get_len())
@@ -71,10 +71,7 @@ class Workflow_Processor(Config_Basic):
             min_fotogram_distance=min_fotogram_distance,
         )
         self.signals_summary = calculator.generate_final_results_signal(
-            self.config,
-            self.results,
-            self.gps_data,
-            classes_names_yolo_signal=self.classes_names_yolo_signal
+            self.config, self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal
         )
 
     def get_results(self) -> dict[str, any]:

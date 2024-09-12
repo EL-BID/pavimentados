@@ -312,6 +312,7 @@
 		"regulatory--buses-only--g1": "other",
 		"regulatory--end-of-priority-road--g1": "other",
 		"regulatory--end-of-prohibition--g1": "other",
+		"regulatory--end-of-maximum-speed-limit-70--g1": "other",
 		"other-sign": "other"
 	}
 }

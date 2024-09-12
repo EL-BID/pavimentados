@@ -7,8 +7,6 @@ from time import sleep
 import cv2
 import numpy as np
 
-from pavimentados.configs.utils import Config_Basic
-
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
