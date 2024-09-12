@@ -136,6 +136,4 @@ dmypy.json
 models/artifacts
 
 # Results files
-*.csv
-*.mp4
-*.jpg
+*/outputs/

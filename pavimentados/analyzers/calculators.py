@@ -49,6 +49,7 @@ def dist(lat1, lon1, lat2, lon2):
 class Results_Calculator:
     @staticmethod
     def generate_paviment_results(
+        config,
         results_obj,
         img_obj,
         gps_obj,
@@ -67,13 +68,10 @@ class Results_Calculator:
         Returns:
             Table of paviment results.
         """
-        # Reemplazo las clases D01 y D11 por D00 y D10.
-        replace_classes_dict = {
-            "D01": "D00",
-            "D11": "D10",
-        }
+        # Reemplazo de clases
+        paviment_class_mapping = config["paviment_class_mapping"]
         final_pav_clases = [
-            [replace_classes_dict[item] if item in replace_classes_dict.keys() else item for item in sublist]
+            [paviment_class_mapping[item] if item in paviment_class_mapping.keys() else item for item in sublist]
             for sublist in results_obj["final_pav_clases"]
         ]
 
@@ -173,15 +171,32 @@ class Results_Calculator:
 
     @staticmethod
     def generate_final_results_signal(
+        config,
         results_obj,
         gps_obj,
         classes_names_yolo_signal=None,
     ):
+        # Reemplazo de clases
+        signals_class_mapping = config["signals_class_mapping"]
+
+        signal_base_predictions = [
+            [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+            for sublist in results_obj["signal_base_predictions"]
+        ]
+        final_signal_classes = [
+            [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+            for sublist in results_obj["final_signal_classes"]
+        ]
+        state_predictions = [
+            [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+            for sublist in results_obj["state_predictions"]
+        ]
+
         BOXES_SIGNAL = results_obj["boxes_signal"]
         CLASSES_SIGNAL = results_obj["classes_signal"]
-        SIGNAL_CLASSES_siames = results_obj["final_signal_classes"]
-        SIGNAL_CLASSES_BASE = results_obj["signal_base_predictions"]
-        SIGNAL_STATE = results_obj["state_predictions"]
+        SIGNAL_CLASSES_siames = final_signal_classes
+        SIGNAL_CLASSES_BASE = signal_base_predictions
+        SIGNAL_STATE = state_predictions
         SCORES_SIGNAL = results_obj["scores_signal"]
         final_latitude = gps_obj.gps_df.latitude.values
         final_longitude = gps_obj.gps_df.longitude.values

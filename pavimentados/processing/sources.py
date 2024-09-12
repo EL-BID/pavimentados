@@ -32,7 +32,8 @@ def load_video(video_path):
 
 
 class ListImages:
-    def __init__(self, images):
+    def __init__(self, config, images):
+        self.config = config
         self.images = images
 
     def get_altura_base(self):
@@ -49,7 +50,8 @@ class ListImages:
 
 
 class ListRoutesImages:
-    def __init__(self, routes):
+    def __init__(self, config, routes):
+        self.config = config
         self.routes = routes
 
     def get_altura_base(self):
@@ -65,9 +67,9 @@ class ListRoutesImages:
         return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
-class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file=pavimentados_path / "configs" / "models_general.json"):
-        self.load_config(config_file)
+class FolderRoutesImages(ListRoutesImages):
+    def __init__(self, config, route):
+        self.config = config
         folder = Path(route)
         self.routes = list(
             filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
@@ -76,9 +78,11 @@ class FolderRoutesImages(ListRoutesImages, Config_Basic):
 
 
 class VideoCaptureImages:
-    def __init__(self, route, images_per_second=2):
-        self.images_per_second = images_per_second
+    def __init__(self, config, route, images_per_second=2):
+        self.config = config
         self.route = str(route)
+        self.images_per_second = images_per_second
+
         vidcap, self.fps, self.number_of_frames = load_video(self.route)
         self.images_dict = {
             item: True

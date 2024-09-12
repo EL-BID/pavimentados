@@ -61,7 +61,8 @@ class GPS_Processer:
 
 
 class GPS_Standard_Loader(GPS_Processer):
-    def __init__(self, route, **kwargs):
+    def __init__(self, config, route, **kwargs):
+        self.config = config
         self.route = Path(route)
         self.gps_df = None
         self.load_gps_data()
@@ -94,7 +95,9 @@ class GPS_Standard_Loader(GPS_Processer):
 
 
 class GPS_CSV_Loader(GPS_Processer):
-    def __init__(self, route, **kwargs):
+    def __init__(self, config, route, **kwargs):
+        self.config = config
+
         latitud_column = kwargs.get("latitud_column", None)
         longitud_column = kwargs.get("longitud_column", None)
         time_column = kwargs.get("time_column", None)
@@ -137,13 +140,15 @@ class GPS_CSV_Loader(GPS_Processer):
 
 
 class GPS_Image_Route_Loader(GPS_Processer):
-    def __init__(self, images_routes, **kwargs):
+    def __init__(self, config, images_routes, **kwargs):
+        self.config = config
         self.routes = images_routes
         self.load_gps_data()
         super().__init__()
 
     def load_gps_data(self):
-        self.gps_df = pd.DataFrame(list(tqdm(map(lambda img_path: self.load_single_value(img_path), self.routes))))
+        routes = [route for route in self.routes if route.suffix[1:].lower() in self.config["images_allowed"]]
+        self.gps_df = pd.DataFrame(list(tqdm(map(lambda img_path: self.load_single_value(img_path), routes))))
         self.gps_df["seconds"] = list(map(lambda x: (x.hour * 3600) + (x.minute * 60) + (x.second), self.gps_df.timestamp))
 
     def load_single_value(self, img_path):
@@ -176,7 +181,8 @@ class GPS_Image_Route_Loader(GPS_Processer):
 
 
 class GPS_Image_Folder_Loader(GPS_Image_Route_Loader):
-    def __init__(self, route, **kwargs):
+    def __init__(self, config, route, **kwargs):
+        self.config = config
         self.routes = [Path(route) / item for item in os.listdir(Path(route)) if not item.startswith(".")]
         self.load_gps_data()
         super(GPS_Image_Route_Loader, self).__init__()
@@ -190,7 +196,7 @@ gps_source_options_dict = {
 }
 
 
-def GPS_Data_Loader(source_type, gps_in, **kwargs):
+def GPS_Data_Loader(source_type, gps_in, config, **kwargs):
     if source_type not in gps_source_options_dict:
         raise NameError(f"{source_type} not implemented on the method")
-    return gps_source_options_dict[source_type](gps_in, **kwargs)
+    return gps_source_options_dict[source_type](config, gps_in, **kwargs)

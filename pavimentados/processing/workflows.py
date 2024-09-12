@@ -1,26 +1,34 @@
 import logging
+from pathlib import Path
 from typing import Union
 
 from pavimentados.analyzers.calculators import Results_Calculator as calculator
 from pavimentados.analyzers.gps_sources import GPS_Data_Loader
+from pavimentados.configs.utils import Config_Basic
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.sources import Image_Source_Loader
 
 logger = logging.getLogger(__name__)
+pavimentados_path = Path(__file__).parent.parent
 
 
-class Workflow_Processor:
+class Workflow_Processor(Config_Basic):
     """Workflow processor for processing images or videos with GPS data."""
 
     def __init__(self, images_input, **kwargs):
+        super().__init__()
+        logger.debug("Loading workflow config...")
+        config_file_default = pavimentados_path / "configs" / "workflows_general.json"
+        self.load_config(config_file_default, None )
+
         image_source_type = kwargs.get("image_source_type", "image_folder")
         gps_source_type = kwargs.get("gps_source_type", "image_folder")
         gps_in = kwargs.get("gps_input", images_input if gps_source_type == image_source_type else None)
         adjust_gps = kwargs.get("adjust_gps", False)
         gps_sections_distance = kwargs.get("gps_sections_distance", 100)
 
-        self.img_obj = Image_Source_Loader(image_source_type, images_input)
-        self.gps_data = GPS_Data_Loader(gps_source_type, gps_in, **kwargs)
+        self.img_obj = Image_Source_Loader(image_source_type, self.config,images_input)
+        self.gps_data = GPS_Data_Loader(gps_source_type, gps_in, self.config, **kwargs)
         if adjust_gps:
             self.gps_data.adjust_gps_data(self.img_obj.get_len())
         self.gps_data.generate_gps_metrics(gps_sections_distance)
@@ -52,8 +60,10 @@ class Workflow_Processor:
         Returns:
             None
         """
-        logger.info("Processing results...")
+        logger.debug("Processing results...")
+        self.config
         self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
+            self.config,
             self.results,
             self.img_obj,
             self.gps_data,
@@ -61,7 +71,10 @@ class Workflow_Processor:
             min_fotogram_distance=min_fotogram_distance,
         )
         self.signals_summary = calculator.generate_final_results_signal(
-            self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal
+            self.config,
+            self.results,
+            self.gps_data,
+            classes_names_yolo_signal=self.classes_names_yolo_signal
         )
 
     def get_results(self) -> dict[str, any]:
@@ -102,7 +115,7 @@ class Workflow_Processor:
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
         """
-        logger.info("Executing workflow")
+        logger.debug("Executing workflow")
 
         self.classes_names_yolo_paviment = processor.processor.yolov8_paviment_model.classes_names
         self.classes_names_yolo_signal = processor.processor.yolov8_signal_model.classes_names
