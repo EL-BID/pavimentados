@@ -20,7 +20,7 @@ if __name__ == "__main__":
     input_gps_file = input_path / f"{input_video_name}.log"
 
     # Setup logging
-    setup_logging(level=logging.INFO)
+    setup_logging(level=logging.DEBUG)
 
     # Create processor
     ml_processor = MultiImage_Processor(artifacts_path=str(models_path), config_file="./models_config.json")
