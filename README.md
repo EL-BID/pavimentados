@@ -91,6 +91,31 @@ models_path = Path("./artifacts")  # Path to downloaded model
 ml_processor = MultiImage_Processor(artifacts_path=str(models_path))
 ```
 
+Alternatively, you can specify an additional JSON file for the setting or overwrite some of certain configuration 
+parameters on the models.
+
+```
+ml_processor = MultiImage_Processor(artifacts_path=str(models_path), config_file="./models_config.json")
+```
+These parameters allow to specify for example the confidence, iou or maximum amount of detections per frame.
+
+Example of configuration file:
+```json
+{
+	"signal_model": {
+		"yolo_threshold": 0.20,
+		"yolo_iou": 0.45,
+		"yolo_max_detections": 100
+	},
+
+	"paviment_model": {
+		"yolo_threshold": 0.20,
+		"yolo_iou": 0.45,
+		"yolo_max_detections": 100
+	}
+}
+```
+
 The workflow object is able to receive the instantiated processor, without it is not able to execute the workflow.
 
 ```
