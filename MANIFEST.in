@@ -1,1 +1,2 @@
 include pavimentados/configs/models_general.json
+include pavimentados/configs/workflows_general.json

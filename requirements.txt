@@ -7,4 +7,4 @@ opencv-python>=4.3.0.34
 scipy>=1.4.1
 onnxruntime>=1.18.0
 onnxruntime-gpu>=1.18.0
-ultralytics>=8.2.0
+ultralytics~=8.2.0

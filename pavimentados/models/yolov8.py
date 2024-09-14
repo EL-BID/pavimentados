@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -5,6 +6,7 @@ from ultralytics import YOLO
 
 from pavimentados.models.base import BaseModel
 
+logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
 
@@ -37,7 +39,7 @@ class YoloV8Model(BaseModel):
         else:
             self.general_path = Path(self.config["general_path"])
 
-        self.yolo_signal_path = self.general_path / self.config[model_config_key]["path"]
+        self.yolo_model_path = self.general_path / self.config[model_config_key]["path"]
         self.model_filename = self.config[model_config_key]["model_filename"]
         self.classes_filename = self.config[model_config_key]["classes_filename"]
 
@@ -71,13 +73,14 @@ class YoloV8Model(BaseModel):
             None
         """
         self.classes_names_idx = {
-            name: idx for idx, name in enumerate(open(self.yolo_signal_path / self.classes_filename).read().splitlines())
+            name: idx for idx, name in enumerate(open(self.yolo_model_path / self.classes_filename).read().splitlines())
         }
         self.classes_idx_names = {idx: name for name, idx in self.classes_names_idx.items()}
         self.classes_names = list(self.classes_names_idx.keys())
         self.classes_count = len(self.classes_names)
 
-        model_path = Path(self.yolo_signal_path) / self.model_filename
+        model_path = Path(self.yolo_model_path) / self.model_filename
+        logger.debug(f"Loading YOLO model: {model_path}...")
         self.model = YOLO(model_path, task="detect")
 
     def predict(self, data: np.ndarray) -> tuple[list, list, list]:

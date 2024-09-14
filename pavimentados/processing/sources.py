@@ -1,25 +1,37 @@
+import logging
 import os
 import secrets
 from pathlib import Path
+from time import sleep
 
 import cv2
 import numpy as np
 
-from pavimentados.configs.utils import Config_Basic
-
+logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
 
 def load_video(video_path):
     """Loads a video from the specified path."""
+    logger.debug("Opening video: %s", video_path)
     vidcap = cv2.VideoCapture(video_path)
+    retries = 10
+    while not vidcap.isOpened():
+        logger.debug("Waiting for video to open...")
+        sleep(0.1)
+        if retries == 0:
+            raise ValueError(f"Could not open video: {video_path}")
+        retries -= 1
+
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+    logger.debug("fps: %s, number_of_frames: %s", fps, number_of_frames)
     return vidcap, fps, number_of_frames
 
 
 class ListImages:
-    def __init__(self, images):
+    def __init__(self, config, images):
+        self.config = config
         self.images = images
 
     def get_altura_base(self):
@@ -36,7 +48,8 @@ class ListImages:
 
 
 class ListRoutesImages:
-    def __init__(self, routes):
+    def __init__(self, config, routes):
+        self.config = config
         self.routes = routes
 
     def get_altura_base(self):
@@ -52,9 +65,9 @@ class ListRoutesImages:
         return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
-class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file=pavimentados_path / "configs" / "models_general.json"):
-        self.load_config(config_file)
+class FolderRoutesImages(ListRoutesImages):
+    def __init__(self, config, route):
+        self.config = config
         folder = Path(route)
         self.routes = list(
             filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
@@ -63,9 +76,11 @@ class FolderRoutesImages(ListRoutesImages, Config_Basic):
 
 
 class VideoCaptureImages:
-    def __init__(self, route, images_per_second=2):
-        self.images_per_second = images_per_second
+    def __init__(self, config, route, images_per_second=2):
+        self.config = config
         self.route = str(route)
+        self.images_per_second = images_per_second
+
         vidcap, self.fps, self.number_of_frames = load_video(self.route)
         self.images_dict = {
             item: True
