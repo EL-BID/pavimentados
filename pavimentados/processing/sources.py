@@ -80,7 +80,9 @@ class VideoCaptureImages:
         self.config = config
         self.route = str(route)
         self.images_per_second = images_per_second
+        self.load_video_capture()
 
+    def load_video_capture(self):
         vidcap, self.fps, self.number_of_frames = load_video(self.route)
         self.images_dict = {
             item: True
@@ -93,6 +95,7 @@ class VideoCaptureImages:
             )
         }
         self.lenght = len(self.images_dict.keys())
+        self.selected_frames = list(map(int, list(self.images_dict.keys())))
         vidcap.set(cv2.CAP_PROP_POS_FRAMES, secrets.randbelow(self.number_of_frames))
         state, img = vidcap.read()
         self.img_shape = img.shape[:2]
