@@ -64,7 +64,6 @@ class Workflow_Processor(Config_Basic):
             None
         """
         logger.info("Processing results...")
-        self.config
         self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
             self.config,
             self.results,
