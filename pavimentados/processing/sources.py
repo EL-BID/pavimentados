@@ -13,7 +13,7 @@ pavimentados_path = Path(__file__).parent.parent
 
 def load_video(video_path):
     """Loads a video from the specified path."""
-    logger.debug("Opening video: %s", video_path)
+    logger.info("Opening video: %s", video_path)
     vidcap = cv2.VideoCapture(video_path)
     retries = 10
     while not vidcap.isOpened():
@@ -25,7 +25,7 @@ def load_video(video_path):
 
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
-    logger.debug("fps: %s, number_of_frames: %s", fps, number_of_frames)
+    logger.info("fps: %s, number_of_frames: %s", fps, number_of_frames)
     return vidcap, fps, number_of_frames
 
 

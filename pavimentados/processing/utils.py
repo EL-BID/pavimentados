@@ -95,9 +95,11 @@ def put_text(frame, text, position, color=(255, 255, 255)):
         cv2.putText(frame, line, (x, y), font, font_scale, color, thickness, line_type)
 
 
-def create_video_from_results(processor: VideoCaptureImages, results: dict, video_output_results_file: str):
+def create_video_from_results(
+    processor: VideoCaptureImages, signals_detections: pd.DataFrame, fails_detections: pd.DataFrame, video_output_results_file: str
+):
     # Signals detections
-    df_signals = pd.DataFrame(results["signals_summary"])
+    df_signals = signals_detections.copy()
     df_signals["type"] = "S"  # Type S=Signal
     df_signals = df_signals[df_signals.position_boxes != 0]  # Remove position_boxes = 0 (left signals)
     df_signals.rename(
@@ -110,7 +112,7 @@ def create_video_from_results(processor: VideoCaptureImages, results: dict, vide
     )  # Rename columns
 
     # Fails dataset
-    df_fails = pd.DataFrame(results["data_resulting"])
+    df_fails = fails_detections.copy()
     df_fails["type"] = "F"  # Type F=Fail
     df_fails.rename(
         columns={

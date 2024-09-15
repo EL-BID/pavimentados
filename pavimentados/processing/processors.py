@@ -40,7 +40,7 @@ class Image_Processor:
         Returns:
             None
         """
-        logger.debug("Loading models...")
+        logger.info("Loading models...")
         self.yolov8_signal_model = YoloV8Model(
             device=self.yolo_device, model_config_key="signal_model", artifacts_path=self.artifacts_path, config=self.config
         )
@@ -105,7 +105,7 @@ class MultiImage_Processor(Config_Basic):
         self.yolo_device = yolo_device
         self.siamese_device = siamese_device
 
-        logger.debug("Loading model config...")
+        logger.info("Loading model config...")
         config_file_default = pavimentados_path / "configs" / "models_general.json"
         self.load_config(config_file_default, config_file)
 

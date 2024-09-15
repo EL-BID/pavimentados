@@ -2,6 +2,8 @@ import logging
 from pathlib import Path
 from typing import Union
 
+import pandas as pd
+
 from pavimentados.analyzers.calculators import Results_Calculator as calculator
 from pavimentados.analyzers.gps_sources import GPS_Data_Loader
 from pavimentados.configs.utils import Config_Basic
@@ -18,7 +20,7 @@ class Workflow_Processor(Config_Basic):
 
     def __init__(self, images_input, **kwargs):
         super().__init__()
-        logger.debug("Loading workflow config...")
+        logger.info("Loading workflow config...")
         config_file_default = pavimentados_path / "configs" / "workflows_general.json"
         self.load_config(config_file_default, None)
 
@@ -61,7 +63,7 @@ class Workflow_Processor(Config_Basic):
         Returns:
             None
         """
-        logger.debug("Processing results...")
+        logger.info("Processing results...")
         self.config
         self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
             self.config,
@@ -133,9 +135,15 @@ class Workflow_Processor(Config_Basic):
 
         if video_from_results and video_output_results_file and results:
             logger.info("Creating video from results...")
-            create_video_from_results(processor=self.img_obj, results=results, video_output_results_file=video_output_results_file)
+            create_video_from_results(
+                processor=self.img_obj,
+                signals_detections=pd.DataFrame(results["signals_summary"]),
+                fails_detections=pd.DataFrame(results["data_resulting"]),
+                results=results,
+                video_output_results_file=video_output_results_file,
+            )
+
+        logger.info("Workflow executed successfully")
 
         if return_results:
             return results
-
-        logger.info("Workflow executed successfully")
