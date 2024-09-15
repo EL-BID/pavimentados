@@ -4,9 +4,10 @@
 [![Downloads](https://pepy.tech/badge/pavimentados)](https://pepy.tech/project/pavimentados)
 # Pavimentados
 
-## Project description
----
+![video_results.gif](docs/assets/video_results.gif)
 
+## Description
+---
 Pavimentados is a tool that allows the identification of pavement faults located on highways or roads, as well as vertical and horizontal signage. 
 This library is an environment around the computer vision models developed to allow the detection of the different elements. 
 The faults and detected elements are then used to generate metrics that help in road maintenance planning.
@@ -131,11 +132,14 @@ workflow = Workflow_Processor(
 The last step is to execute the workflow:
 
 ```
-results = workflow.execute(ml_processor, video_output_file="processed_video.mp4", batch_size=16)
+results = workflow.execute(ml_processor, video_output_file="processed_video.mp4", video_from_results=True, batch_size=16)
 ```
 
-The parameters `video_output_file` and `image_folder_output` are optional and are only to save output video or image 
+>  * `video_output_file` and `image_folder_output` are optional and are only to save output video or image 
 files along detections.
+>  * `video_from_results=True` is only to create a video from the results of the workflow. If it is `false`, the video will be created with unprocessed detections which is useful to test the models.
+
+The next step is to save the results in csv format or use it for further processing.
 
 ```
 # Save results to outputs directory

@@ -9,51 +9,10 @@ from tqdm.autonotebook import tqdm
 from pavimentados.configs.utils import Config_Basic
 from pavimentados.models.siamese import Siamese_Model
 from pavimentados.models.yolov8 import YoloV8Model
+from pavimentados.processing.utils import draw_outputs
 
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
-
-
-def draw_outputs(img, outputs, classes_labels, final_classes=None):
-    """Draws bounding boxes and labels on an image based on the outputs from a
-    model.
-
-    Args:
-        img (np.ndarray): The input image.
-        outputs (Tuple[np.ndarray, np.ndarray, np.ndarray]): The outputs from the model.
-        classes_labels (List[str]): The list of class labels.
-        final_classes (Optional[List[str]]): The final class labels.
-
-    Returns:
-        np.ndarray: The image with bounding boxes and labels drawn on it.
-    """
-
-    color = (255, 0, 0)
-    boxes, objectness, classes = outputs
-    boxes, objectness, classes = boxes[0], objectness[0], classes[0]
-    wh = np.flip(img.shape[0:2])
-    for i in range(len(boxes)):
-        x1y1 = tuple((np.array(boxes[i][0:2]) * wh).astype(np.int32))
-        x2y2 = tuple((np.array(boxes[i][2:4]) * wh).astype(np.int32))
-        img = cv2.rectangle(img, x1y1, x2y2, color, 2)
-
-        # Create the label text with class name and score
-        label = f"{classes_labels[int(classes[i])]}"
-        label = f"{final_classes[i]}" if final_classes is not None else label
-        (label_width, label_height), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-
-        # Calculate the position of the label text
-        x1, y1 = x1y1
-        label_x = x1
-        label_y = y1 - 10 if y1 - 10 > label_height else y1 + 10
-
-        # Draw a filled rectangle as the background for the label text
-        cv2.rectangle(img, (label_x, label_y - label_height), (label_x + label_width, label_y + 10), color, cv2.FILLED)
-
-        # Draw the label text on the image
-        cv2.putText(img, label, (label_x, label_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-
-    return img
 
 
 class Image_Processor:
@@ -81,7 +40,7 @@ class Image_Processor:
         Returns:
             None
         """
-        logger.debug("Loading models...")
+        logger.info("Loading models...")
         self.yolov8_signal_model = YoloV8Model(
             device=self.yolo_device, model_config_key="signal_model", artifacts_path=self.artifacts_path, config=self.config
         )
@@ -146,7 +105,7 @@ class MultiImage_Processor(Config_Basic):
         self.yolo_device = yolo_device
         self.siamese_device = siamese_device
 
-        logger.debug("Loading model config...")
+        logger.info("Loading model config...")
         config_file_default = pavimentados_path / "configs" / "models_general.json"
         self.load_config(config_file_default, config_file)
 

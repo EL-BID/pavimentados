@@ -2,11 +2,14 @@ import logging
 from pathlib import Path
 from typing import Union
 
+import pandas as pd
+
 from pavimentados.analyzers.calculators import Results_Calculator as calculator
 from pavimentados.analyzers.gps_sources import GPS_Data_Loader
 from pavimentados.configs.utils import Config_Basic
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.sources import Image_Source_Loader
+from pavimentados.processing.utils import create_video_from_results
 
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
@@ -17,7 +20,7 @@ class Workflow_Processor(Config_Basic):
 
     def __init__(self, images_input, **kwargs):
         super().__init__()
-        logger.debug("Loading workflow config...")
+        logger.info("Loading workflow config...")
         config_file_default = pavimentados_path / "configs" / "workflows_general.json"
         self.load_config(config_file_default, None)
 
@@ -60,7 +63,7 @@ class Workflow_Processor(Config_Basic):
         Returns:
             None
         """
-        logger.debug("Processing results...")
+        logger.info("Processing results...")
         self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
             self.config,
             self.results,
@@ -97,6 +100,7 @@ class Workflow_Processor(Config_Basic):
         return_results: bool = True,
         video_output_file: str = None,
         image_folder_output: str = None,
+        video_from_results: bool = True,
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -107,15 +111,39 @@ class Workflow_Processor(Config_Basic):
             return_results: Whether to return the results of the workflow.
             video_output_file: Output file for the processed video.
             image_folder_output: Output folder for the processed images.
+            video_from_results: Whether to create a video from the results of the workflow. If it is `false`,
+            the video will be created with unprocessed detections which is useful to test the models.
 
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
         """
-        logger.debug("Executing workflow")
+        logger.info("Executing workflow...")
+
+        if video_output_file and image_folder_output:
+            raise ValueError("Cannot use video_output_file and image_folder_output at the same time")
+
+        if video_from_results and video_output_file:
+            video_output_results_file = video_output_file
+            video_output_file = None
+            image_folder_output = None
 
         self.classes_names_yolo_paviment = processor.processor.yolov8_paviment_model.classes_names
         self.classes_names_yolo_signal = processor.processor.yolov8_signal_model.classes_names
         self._execute_model(processor, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output)
         self.process_result(min_fotogram_distance=min_fotogram_distance)
+        results = self.get_results()
+
+        if video_from_results and video_output_results_file and results:
+            logger.info("Creating video from results...")
+            create_video_from_results(
+                processor=self.img_obj,
+                signals_detections=pd.DataFrame(results["signals_summary"]),
+                fails_detections=pd.DataFrame(results["data_resulting"]),
+                results=results,
+                video_output_results_file=video_output_results_file,
+            )
+
+        logger.info("Workflow executed successfully")
+
         if return_results:
-            return self.get_results()
+            return results

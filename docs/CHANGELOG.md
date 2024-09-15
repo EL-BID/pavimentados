@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Added
 
-## [1.0.0] - 2024-08-18
+## [1.0.0] - 2024-09-09
 ### Removed
-- Modules: Downloader, image/utils.
+- Downloader and image/utils modules.
 - YoloV3 models classes.
 - Unnecessary JSON config files.
 - Remove TensorFlow and Joblib from dependencies.

@@ -42,4 +42,4 @@ repos:
       - id: docformatter
         additional_dependencies: [tomli]
         args: [--in-place, --config]
-        exclude: ^(tests|notebooks)/
+        exclude: ^(tests|notebooks|docs|models)/
