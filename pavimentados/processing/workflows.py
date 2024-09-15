@@ -101,7 +101,7 @@ class Workflow_Processor(Config_Basic):
         return_results: bool = True,
         video_output_file: str = None,
         image_folder_output: str = None,
-        video_from_results: bool = False,
+        video_from_results: bool = True,
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -112,7 +112,8 @@ class Workflow_Processor(Config_Basic):
             return_results: Whether to return the results of the workflow.
             video_output_file: Output file for the processed video.
             image_folder_output: Output folder for the processed images.
-            video_from_results: Whether to create a video from the results of the workflow.
+            video_from_results: Whether to create a video from the results of the workflow. If it is `false`,
+            the video will be created with unprocessed detections which is useful to test the models.
 
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
