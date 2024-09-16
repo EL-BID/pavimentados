@@ -139,7 +139,6 @@ class Workflow_Processor(Config_Basic):
                 processor=self.img_obj,
                 signals_detections=pd.DataFrame(results["signals_summary"]),
                 fails_detections=pd.DataFrame(results["data_resulting"]),
-                results=results,
                 video_output_results_file=video_output_results_file,
             )
 
