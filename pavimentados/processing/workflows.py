@@ -114,7 +114,7 @@ class Workflow_Processor(Config_Basic):
             image_folder_output: Output folder for the processed images.
             video_from_results: Whether to create a video from the results of the workflow. If it is `false`,
                 the video will be created with unprocessed detections which is useful to test the models.
-            video_detections: Whether to draw detections on the images. Can be 'all', 'paviment', 'signal' or 'none'.
+            video_detections: Whether to draw detections on the frames. Can be 'all', 'only_signals' or 'only_fails'.
 
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.

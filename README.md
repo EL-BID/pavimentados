@@ -132,12 +132,17 @@ workflow = Workflow_Processor(
 The last step is to execute the workflow:
 
 ```
-results = workflow.execute(ml_processor, video_output_file="processed_video.mp4", video_from_results=True, batch_size=16)
+results = workflow.execute(ml_processor, batch_size=16, 
+                           video_output_file="processed_video.mp4", 
+                           video_from_results=True,
+                           video_detections="all"
+                           )
 ```
 
 >  * `video_output_file` and `image_folder_output` are optional and are only to save output video or image 
 files along detections.
 >  * `video_from_results=True` is only to create a video from the results of the workflow. If it is `false`, the video will be created with unprocessed detections which is useful to test the models.
+>  * `video_detections="all"` draws detections on the images. Can be 'all', 'only_fails' or 'only_signals'.
 
 The next step is to save the results in csv format or use it for further processing.
 
