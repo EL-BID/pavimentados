@@ -12,11 +12,11 @@ pavimentados_path = Path(__file__).parent.parent
 
 class YoloV8Model(BaseModel):
     def __init__(
-            self,
-            config: dict,
-            device: str = "0",
-            model_config_key: str = "",
-            artifacts_path: str = None,
+        self,
+        config: dict,
+        device: str = "0",
+        model_config_key: str = "",
+        artifacts_path: str = None,
     ):
         """Initializes the YoloV8Model with the specified device, configuration
         file, model configuration key, and artifacts path.
@@ -46,7 +46,7 @@ class YoloV8Model(BaseModel):
         self.yolo_threshold = self.config[model_config_key]["yolo_threshold"]
         self.yolo_iou = self.config[model_config_key]["yolo_iou"]
         self.yolo_max_detections = self.config[model_config_key]["yolo_max_detections"]
-        self.classes_codes_to_exclude = self.config[model_config_key].get('classes_codes_to_exclude', [])
+        self.classes_codes_to_exclude = self.config[model_config_key].get("classes_codes_to_exclude", [])
 
         self.classes_count = None
         self.classes_names = None
@@ -95,12 +95,14 @@ class YoloV8Model(BaseModel):
         Returns:
             tuple: A tuple containing the predicted boxes, scores, and classes.
         """
-        results = self.model(list(data),
-                             conf=self.yolo_threshold,
-                             iou=self.yolo_iou,
-                             max_det=self.yolo_max_detections,
-                             classes=self.classes_idx_to_detect,
-                             verbose=False)
+        results = self.model(
+            list(data),
+            conf=self.yolo_threshold,
+            iou=self.yolo_iou,
+            max_det=self.yolo_max_detections,
+            classes=self.classes_idx_to_detect,
+            verbose=False,
+        )
         boxes = [r.boxes.xyxyn.cpu().numpy().tolist() for r in results]
         classes = [r.boxes.cls.cpu().int().tolist() for r in results]
         scores = [r.boxes.conf.cpu().numpy().tolist() for r in results]

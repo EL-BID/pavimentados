@@ -96,11 +96,11 @@ def put_text(frame, text, position, color=(255, 255, 255)):
 
 
 def create_video_from_results(
-        processor: VideoCaptureImages,
-        signals_detections: pd.DataFrame,
-        fails_detections: pd.DataFrame,
-        video_output_results_file: str,
-        video_detections: str = "all"
+    processor: VideoCaptureImages,
+    signals_detections: pd.DataFrame,
+    fails_detections: pd.DataFrame,
+    video_output_results_file: str,
+    video_detections: str = "all",
 ):
     # Signals detections
     df_signals = signals_detections.copy()

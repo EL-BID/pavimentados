@@ -101,7 +101,7 @@ class Workflow_Processor(Config_Basic):
         image_folder_output: str = None,
         video_output_file: str = None,
         video_from_results: bool = True,
-        video_detections: str = "all"
+        video_detections: str = "all",
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -124,7 +124,7 @@ class Workflow_Processor(Config_Basic):
         if video_output_file and image_folder_output:
             raise ValueError("Cannot use video_output_file and image_folder_output at the same time")
 
-        video_output_results_file = ''
+        video_output_results_file = ""
         if video_from_results and video_output_file:
             video_output_results_file = video_output_file
             video_output_file = None
@@ -143,7 +143,7 @@ class Workflow_Processor(Config_Basic):
                 signals_detections=pd.DataFrame(results["signals_summary"]),
                 fails_detections=pd.DataFrame(results["data_resulting"]),
                 video_output_results_file=video_output_results_file,
-                video_detections=video_detections
+                video_detections=video_detections,
             )
 
         logger.info("Workflow executed successfully")

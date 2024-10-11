@@ -24,13 +24,17 @@ class GPS_Processer:
 
     def adjust_gps_data(self, number_images):
         # Interpolación lineal por cada segundo (corrección de outliers)
-        seconds = sorted(set(self.gps_df['seconds_from_start']))
+        seconds = sorted(set(self.gps_df["seconds_from_start"]))
         for second in seconds:
-            lons = self.gps_df.loc[self.gps_df['seconds_from_start'] == second, 'longitude'].values
-            lats = self.gps_df.loc[self.gps_df['seconds_from_start'] == second, 'latitude'].values
+            lons = self.gps_df.loc[self.gps_df["seconds_from_start"] == second, "longitude"].values
+            lats = self.gps_df.loc[self.gps_df["seconds_from_start"] == second, "latitude"].values
             if len(lons) > 2:
-                self.gps_df.loc[self.gps_df['seconds_from_start'] == second, 'longitude'] = sum(lons)/len(lons) # np.linspace(lons[0], lons[-1], len(lons))
-                self.gps_df.loc[self.gps_df['seconds_from_start'] == second, 'latitude'] = sum(lats)/len(lats)  # np.linspace(lats[0], lats[-1], len(lats))
+                self.gps_df.loc[self.gps_df["seconds_from_start"] == second, "longitude"] = sum(lons) / len(
+                    lons
+                )  # np.linspace(lons[0], lons[-1], len(lons))
+                self.gps_df.loc[self.gps_df["seconds_from_start"] == second, "latitude"] = sum(lats) / len(
+                    lats
+                )  # np.linspace(lats[0], lats[-1], len(lats))
 
         list_values = np.linspace(0, self.gps_df.seconds_from_start.max(), number_images).astype("float64")
         f2 = interp1d(self.gps_df["seconds_from_start"].values, self.gps_df["longitude"].values, kind="linear")
