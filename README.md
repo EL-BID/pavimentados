@@ -154,7 +154,6 @@ In the `results` object you will find the following:
  2. data_resulting: DataFrame with results per frame.
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
  4. signals_summary: DataFrame with all the information about the signals.
- 5. raw_results: Raw results totals
 
 To see more detail about results please refer to [this page.](docs%2Fresults.md)
 
@@ -183,3 +182,5 @@ This package has been developed by:
 <a href="https://github.com/J0s3M4rqu3z" target="blank">Jose Maria Marquez Blanco</a>
 <br/>
 <a href="https://www.linkedin.com/in/joancerretani/" target="blank">Joan Alberto Cerretani</a>
+<br/>
+<a href="https://www.linkedin.com/in/ingvictordurand/" target="blank">Victor Durand</a>

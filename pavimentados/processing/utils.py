@@ -96,7 +96,11 @@ def put_text(frame, text, position, color=(255, 255, 255)):
 
 
 def create_video_from_results(
-    processor: VideoCaptureImages, signals_detections: pd.DataFrame, fails_detections: pd.DataFrame, video_output_results_file: str
+        processor: VideoCaptureImages,
+        signals_detections: pd.DataFrame,
+        fails_detections: pd.DataFrame,
+        video_output_results_file: str,
+        video_detections: str = "all"
 ):
     # Signals detections
     df_signals = signals_detections.copy()
@@ -122,15 +126,15 @@ def create_video_from_results(
         },
         inplace=True,
     )  # Rename columns
-    df_fails = df_fails[df_fails.final_classes != "OT0"]  # Remove OT0 detections
 
     # Concatenate results
-    df = pd.concat(
-        [
-            df_signals[["fotogram", "score", "final_classes", "boxes", "type"]],
-            df_fails[["fotogram", "score", "final_classes", "boxes", "type"]],
-        ]
-    )
+    df_list = []
+    if video_detections in ["only_signals", "all"]:
+        df_list.append(df_signals)
+    if video_detections in ["only_fails", "all"]:
+        df_list.append(df_fails)
+
+    df = pd.concat(df_list)
     df = df.sort_values(["fotogram"])
 
     # Create video

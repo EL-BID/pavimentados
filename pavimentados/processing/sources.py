@@ -63,7 +63,7 @@ class ListRoutesImages:
         return self.routes[idx_inicial:idx_final]
 
     def get_batch(self, idx_inicial, batch_size=8):
-        return np.array([cv2.cvtColor(cv2.imread(str(img_path)), cv2.COLOR_BGR2RGB) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
+        return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
 class FolderRoutesImages(ListRoutesImages):

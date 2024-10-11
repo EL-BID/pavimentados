@@ -89,7 +89,7 @@ class Workflow_Processor(Config_Basic):
             "data_resulting": self.data_resulting,
             "data_resulting_fails": self.data_resulting_fails,
             "signals_summary": self.signals_summary,
-            "raw_results": self.results,
+            # "raw_results": self.results,
         }
 
     def execute(
@@ -98,9 +98,10 @@ class Workflow_Processor(Config_Basic):
         min_fotogram_distance: int = 5,
         batch_size: int = 8,
         return_results: bool = True,
-        video_output_file: str = None,
         image_folder_output: str = None,
+        video_output_file: str = None,
         video_from_results: bool = True,
+        video_detections: str = "all"
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -112,7 +113,8 @@ class Workflow_Processor(Config_Basic):
             video_output_file: Output file for the processed video.
             image_folder_output: Output folder for the processed images.
             video_from_results: Whether to create a video from the results of the workflow. If it is `false`,
-            the video will be created with unprocessed detections which is useful to test the models.
+                the video will be created with unprocessed detections which is useful to test the models.
+            video_detections: Whether to draw detections on the images. Can be 'all', 'paviment', 'signal' or 'none'.
 
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
@@ -122,6 +124,7 @@ class Workflow_Processor(Config_Basic):
         if video_output_file and image_folder_output:
             raise ValueError("Cannot use video_output_file and image_folder_output at the same time")
 
+        video_output_results_file = ''
         if video_from_results and video_output_file:
             video_output_results_file = video_output_file
             video_output_file = None
@@ -140,6 +143,7 @@ class Workflow_Processor(Config_Basic):
                 signals_detections=pd.DataFrame(results["signals_summary"]),
                 fails_detections=pd.DataFrame(results["data_resulting"]),
                 video_output_results_file=video_output_results_file,
+                video_detections=video_detections
             )
 
         logger.info("Workflow executed successfully")

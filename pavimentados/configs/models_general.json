@@ -29,7 +29,8 @@
 			"6": "Desenfoque Paso Peatonal",
 			"7": "Desenfoque Linea Blanca",
 			"8": "Otras Fallas"
-		}
+		},
+		"classes_codes_to_exclude": ["OT0"]
 	},
 
 	"siamese_model": {

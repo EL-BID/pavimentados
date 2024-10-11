@@ -92,7 +92,3 @@ Information about the detected signals.
 | final_classes             | string        | Final classification output for the detection.                                                   | "warning--curve-left--g1"          |
 | ID                        | int           | Unique identifier for the detection record.                                                      | 19                                 |
 
-
-## raw_results
-Raw results of detections.
-

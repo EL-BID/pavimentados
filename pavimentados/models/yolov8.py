@@ -12,11 +12,11 @@ pavimentados_path = Path(__file__).parent.parent
 
 class YoloV8Model(BaseModel):
     def __init__(
-        self,
-        config: dict,
-        device: str = "0",
-        model_config_key: str = "",
-        artifacts_path: str = None,
+            self,
+            config: dict,
+            device: str = "0",
+            model_config_key: str = "",
+            artifacts_path: str = None,
     ):
         """Initializes the YoloV8Model with the specified device, configuration
         file, model configuration key, and artifacts path.
@@ -46,11 +46,13 @@ class YoloV8Model(BaseModel):
         self.yolo_threshold = self.config[model_config_key]["yolo_threshold"]
         self.yolo_iou = self.config[model_config_key]["yolo_iou"]
         self.yolo_max_detections = self.config[model_config_key]["yolo_max_detections"]
+        self.classes_codes_to_exclude = self.config[model_config_key].get('classes_codes_to_exclude', [])
 
         self.classes_count = None
         self.classes_names = None
         self.classes_idx_names = None
         self.classes_names_idx = None
+        self.classes_idx_to_detect = None
 
         self.load_model()
 
@@ -82,6 +84,8 @@ class YoloV8Model(BaseModel):
         logger.debug(f"Loading YOLO model: {model_path}...")
         self.model = YOLO(model_path, task="detect")
 
+        self.classes_idx_to_detect = [k for k, v in self.model.names.items() if v not in self.classes_codes_to_exclude]
+
     def predict(self, data: np.ndarray) -> tuple[list, list, list]:
         """Predict boxes, scores, and classes for the given data.
 
@@ -91,7 +95,12 @@ class YoloV8Model(BaseModel):
         Returns:
             tuple: A tuple containing the predicted boxes, scores, and classes.
         """
-        results = self.model(list(data), conf=self.yolo_threshold, iou=self.yolo_iou, max_det=self.yolo_max_detections, verbose=False)
+        results = self.model(list(data),
+                             conf=self.yolo_threshold,
+                             iou=self.yolo_iou,
+                             max_det=self.yolo_max_detections,
+                             classes=self.classes_idx_to_detect,
+                             verbose=False)
         boxes = [r.boxes.xyxyn.cpu().numpy().tolist() for r in results]
         classes = [r.boxes.cls.cpu().int().tolist() for r in results]
         scores = [r.boxes.conf.cpu().numpy().tolist() for r in results]
