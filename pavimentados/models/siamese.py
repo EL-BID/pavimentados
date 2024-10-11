@@ -11,11 +11,11 @@ pavimentados_path = Path(__file__).parent.parent
 
 class Siamese_Model(BaseModel):
     def __init__(
-        self,
-        config: dict = None,
-        device="0",
-        model_config_key: str = "",
-        artifacts_path: str = None,
+            self,
+            config: dict = None,
+            device="0",
+            model_config_key: str = "",
+            artifacts_path: str = None,
     ):
         """Initializes a new instance of the Siamese_Model class.
 
@@ -87,14 +87,12 @@ class Siamese_Model(BaseModel):
         6. Returns the maximum score, predicted class labels, and the predicted class labels.
         """
         img = np.float32(data)
-
         input_name = self.model.get_inputs()[0].name
         output_name = self.model.get_outputs()[0].name
         pred = self.model.run([output_name], {input_name: img})[0]
-
         score = np.max(pred, axis=1).tolist()
         prediction = [
-            sorted([(np.dot(p, self.embeddings_references[k].T).mean(), k) for k in self.embeddings_references.keys()])[-1][1] for p in pred
+            sorted([(np.dot(p, self.embeddings_references[k].T).max(), k) for k in self.embeddings_references.keys()])[
+                -1][1] for p in pred
         ]
-
-        return score, prediction, prediction
+        return score, prediction, prediction, pred

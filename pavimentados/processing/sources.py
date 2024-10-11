@@ -6,6 +6,7 @@ from time import sleep
 
 import cv2
 import numpy as np
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
@@ -62,7 +63,7 @@ class ListRoutesImages:
         return self.routes[idx_inicial:idx_final]
 
     def get_batch(self, idx_inicial, batch_size=8):
-        return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
+        return np.array([cv2.cvtColor(cv2.imread(str(img_path)), cv2.COLOR_BGR2RGB) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
 class FolderRoutesImages(ListRoutesImages):
@@ -119,6 +120,7 @@ class VideoCaptureImages:
                 if self.images_dict.get(self.actual_vidcap_count, False):
                     img = img if not (img is None) else past_img
                     if not (img is None):
+                        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                         images.append(img)
                     past_img = np.full((*self.img_shape, 3), 255)
                     i += 1
