@@ -49,7 +49,7 @@ pip install pavimentados
 The next step is to download the model artifact and decompress it.
 
 ```
-wget -O models.tar.gz https://github.com/EL-BID/pavimentados/raw/feature/v0.32.0/models/model_20240807.tar.gz?download=
+wget -O models.tar.gz https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=
 tar -xzvf models.tar.gz
 ```
 
@@ -86,7 +86,7 @@ Among the allowed GPS data sources we have:
 
 Once these elements are imported, the processor is instantiated as follows:
 
-```
+```python
 from pathlib import Path
 models_path = Path("./artifacts")  # Path to downloaded model
 ml_processor = MultiImage_Processor(artifacts_path=str(models_path))

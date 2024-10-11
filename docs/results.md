@@ -24,7 +24,7 @@ Information about the individual detections made on each image / photogram.
 | center          | tuple[float] | Coordinates of the center of the box, format (x, y).                                | (1765.5051612854004, 585.1480793952942)                                        |
 | height          | float        | Height of the box in pixels.                                                        | 237.03959941864                                                                |
 | width           | float        | Width of the box in pixels.                                                         | 306.589851379395                                                               |
-| total_area      | float        | Total area of the analyzed image or section.                                        | 2073600                                                                        |
+| total_area      | int          | Total area of the analyzed image.                                                   | 2073600                                                                        |
 | perc_area       | float        | Percentage of area occupied by the object relative to total.                        | 0.0350472297245332                                                             |
 | fail_id_section | int          | Identifier of the failure.                                                          | 0                                                                              |
 
@@ -45,8 +45,8 @@ the same problem (failures have a single type and can have many detections).
 | end_coordenate   | string | Ending coordinate of the detection, formatted as (latitude, longitude).   | "(-11.7830935, -77.15626066666667)"         |
 | end_latitude     | float  | Latitude of the ending point of the detection.                            | -11.7830935                                 |
 | end_longitude    | float  | Longitude of the ending point of the detection.                           | -77.15626066666667                          |
-| width            | float  | Width of the detection area in meters.                                    | 789.3660466811236                           |
-| area             | float  | Area covered by the detection in square meters.                           | 50000.46419064892                           |
+| width            | float  | Average width of faults measured in pixels.                               | 789.3660466811236                           |
+| area             | float  | Total area of fault detections measured in pixels.                        | 50000.46419064892                           |
 | boxes            | int    | Number of bounding boxes representing the detection.                      | 19                                          |
 
 
@@ -64,7 +64,6 @@ Information about what is detected every 100 meters.
 | D40              | float | Linear distance in meters of this type of failure. | 0.0                 |
 | D43              | float | Linear distance in meters of this type of failure. | 0.0                 |
 | D44              | float | Linear distance in meters of this type of failure. | 0.0                 |
-| OT0              | float | Linear distance in meters of this type of failure. | 20.0                |
 | latitude         | float | Starting latitude of the section.                  | -11.783696666666666 |
 | longitude        | float | Starting longitude of the section.                 | -77.15555183333333  |
 | end_longitude    | float | Ending longitude of the section.                   | -77.15626066666667  |
