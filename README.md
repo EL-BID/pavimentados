@@ -8,23 +8,14 @@
 
 ## Description
 ---
-Pavimentados is a tool that allows the identification of pavement faults located on highways or roads, as well as vertical and horizontal signage. 
+Pavimentados is a tool that allows the identification of pavement faults located on highways or roads. 
 This library provides an environment to use computer vision models developed to detect different elements. 
 The detected elements are then used to generate metrics that aid the process of planning road maintenance.
 
 The models files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
 
-These models require as input images or videos that are taken with certain specifications that will be explained in later sections. 
-
-So far, the system uses 3 models that are used in different phases of detection and categorization.
-
-| Model Name             | Description                                         | Classes |
-|------------------------|---------------------------------------------------- |---------|
-| Paviment failures      | Detection and classification of road failures       | 8       |
-| Signage detection      | Detection of road signage                           | 1       |
-| Signage classification | Classification of the detected road signage         | 314     |
-
-To understand each model in detail see the [models](docs/MODELS.md) section.
+> **Version changes**: Unlike the previous version, this new version does not include traffic sign detection. We hope to be able to 
+> include it again in future versions. 
 
 ## Main Features
 ---
@@ -101,12 +92,6 @@ These parameters allow the specification of parameter such as the confidence, io
 Example of the configuration file:
 ```json
 {
-	"signal_model": {
-		"yolo_threshold": 0.20,
-		"yolo_iou": 0.45,
-		"yolo_max_detections": 100
-	},
-
 	"paviment_model": {
 		"yolo_threshold": 0.20,
 		"yolo_iou": 0.45,
@@ -130,16 +115,13 @@ workflow = Workflow_Processor(
 The last step is to execute the workflow:
 
 ```
-results = workflow.execute(ml_processor, batch_size=16, 
-                           video_output_file="processed_video.mp4", 
-                           video_from_results=True,
-                           video_detections="all"
+results = workflow.execute(ml_processor, 
+                           batch_size=16, 
+                           video_output_file="processed_video.mp4" 
                            )
 ```
 
 >  * `video_output_file` and `image_folder_output` are optional and are only to save output video or image files along detections.
->  * `video_from_results=True` is only to create a video from the results of the workflow. If it is `false`, the video will be created with unprocessed detections which is useful to test the models.
->  * `video_detections="all"` draws detections on the images. Can be 'all', 'only_fails' or 'only_signals'.
 
 The results can be saved in csv format or used for further processing.
 
@@ -155,7 +137,6 @@ In the `results` object you will find the following:
  1. table_summary_sections: DataFrame with summary table by sections.
  2. data_resulting: DataFrame with results per frame.
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
- 4. signals_summary: DataFrame with all the information about the signals.
 
 To see more details about the results please refer to [this page.](docs%2Fresults.md)
 

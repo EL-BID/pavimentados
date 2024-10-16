@@ -4,7 +4,7 @@
 As a result of processing a video or images, the library returns the following datasets:
 
 
-## data_resulting / detections_over_photogram
+## data_resulting
 Information about the individual detections made on each image / photogram.
 
 | Field           | Type         | Description                                                                         | Example                                                                        |
@@ -25,11 +25,10 @@ Information about the individual detections made on each image / photogram.
 | height          | float        | Height of the box in pixels.                                                        | 237.03959941864                                                                |
 | width           | float        | Width of the box in pixels.                                                         | 306.589851379395                                                               |
 | total_area      | int          | Total area of the analyzed image.                                                   | 2073600                                                                        |
-| perc_area       | float        | Percentage of area occupied by the object relative to total.                        | 0.0350472297245332                                                             |
 | fail_id_section | int          | Identifier of the failure.                                                          | 0                                                                              |
 
 
-## data_resulting_fails / failures_detected
+## data_resulting_fails
 Information about each of the failures. A failure is the aggregation of several detections that are considered part of 
 the same problem (failures have a single type and can have many detections).
 
@@ -46,20 +45,17 @@ the same problem (failures have a single type and can have many detections).
 | end_latitude     | float  | Latitude of the ending point of the detection.                            | -11.7830935                                 |
 | end_longitude    | float  | Longitude of the ending point of the detection.                           | -77.15626066666667                          |
 | width            | float  | Average width of faults measured in pixels.                               | 789.3660466811236                           |
-| area             | float  | Total area of fault detections measured in pixels.                        | 50000.46419064892                           |
 | boxes            | int    | Number of bounding boxes representing the detection.                      | 19                                          |
 
 
-## table_summary_sections / pavimenta2_sections
+## table_summary_sections
 Information about what is detected every 100 meters.
 
 | Field            | Type  | Description                                        | Example Value       |
 |------------------|-------|----------------------------------------------------|---------------------|
 | section          | float | Identifier of the section.                         | 0.0                 |
 | D00              | float | Linear distance in meters of this type of failure. | 65.0                |
-| D01              | float | Linear distance in meters of this type of failure. | 0.0                 |
 | D10              | float | Linear distance in meters of this type of failure. | 0.0                 |
-| D11              | float | Linear distance in meters of this type of failure. | 8.0                 |
 | D20              | float | Linear distance in meters of this type of failure. | 33.0                |
 | D40              | float | Linear distance in meters of this type of failure. | 0.0                 |
 | D43              | float | Linear distance in meters of this type of failure. | 0.0                 |
@@ -69,25 +65,3 @@ Information about what is detected every 100 meters.
 | end_longitude    | float | Ending longitude of the section.                   | -77.15626066666667  |
 | end_latitude     | float | Ending latitude of the section.                    | -11.7830935         |
 | section_distance | float | Distance of the section in meters.                 | 106.6830640804603   |
-
-
-## signals_summary / signals_detected
-Information about the detected signals.
-
-| Field                     | Type          | Description                                                                                      | Example Value                      |
-|---------------------------|---------------|--------------------------------------------------------------------------------------------------|------------------------------------|
-| fotogram                  | int           | Frame number in which the detection occurred.                                                    | 22                                 |
-| position_boxes            | int           | Identifier for the position of the bounding boxes.                                               | 1                                  |
-| score                     | float         | Confidence score for the detection.                                                              | 0.2038                             |
-| signal_state              | string        | State of the detected signal.                                                                    | "warning--curve-left--g1"          |
-| signal_class_siames       | string        | Class of the signal in the Siamese network.                                                      | "warning--curve-left--g1"          |
-| signal_class_base         | string        | Base class of the detected signal.                                                               | "warning--curve-left--g1"          |
-| signal_class              | string        | Final classification of the detected signal.                                                     | "warning--curve-left--g1"          |
-| latitude                  | float         | Latitude of the detection location.                                                              | -11.7837                           |
-| longitude                 | float         | Longitude of the detection location.                                                             | -77.1556                           |
-| boxes                     | list of float | Coordinates of the bounding box around the detected signal, format [x_min, y_min, x_max, y_max]. | "[0.3291, 0.4406, 0.3411, 0.4628]" |
-| signal_class_siames_names | string        | Human-readable name for the Siamese class of the signal.                                         | "warning--curve-left--g1"          |
-| signal_class_names        | string        | Human-readable name for the class of the signal.                                                 | "OTRO"                             |
-| final_classes             | string        | Final classification output for the detection.                                                   | "warning--curve-left--g1"          |
-| ID                        | int           | Unique identifier for the detection record.                                                      | 19                                 |
-
