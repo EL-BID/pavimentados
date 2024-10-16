@@ -46,11 +46,13 @@ class YoloV8Model(BaseModel):
         self.yolo_threshold = self.config[model_config_key]["yolo_threshold"]
         self.yolo_iou = self.config[model_config_key]["yolo_iou"]
         self.yolo_max_detections = self.config[model_config_key]["yolo_max_detections"]
+        self.classes_codes_to_exclude = self.config[model_config_key].get("classes_codes_to_exclude", [])
 
         self.classes_count = None
         self.classes_names = None
         self.classes_idx_names = None
         self.classes_names_idx = None
+        self.classes_idx_to_detect = None
 
         self.load_model()
 
@@ -73,14 +75,17 @@ class YoloV8Model(BaseModel):
         """
         self.classes_names_idx = {
             name: idx for idx, name in enumerate(open(self.yolo_model_path / self.classes_filename).read().splitlines())
+            if name not in self.classes_codes_to_exclude
         }
         self.classes_idx_names = {idx: name for name, idx in self.classes_names_idx.items()}
         self.classes_names = list(self.classes_names_idx.keys())
         self.classes_count = len(self.classes_names)
+        self.classes_idx_to_detect = list(self.classes_idx_names.keys())
 
         model_path = Path(self.yolo_model_path) / self.model_filename
         logger.debug(f"Loading YOLO model: {model_path}...")
         self.model = YOLO(model_path, task="detect")
+
 
     def predict(self, data: np.ndarray) -> tuple[list, list, list]:
         """Predict boxes, scores, and classes for the given data.
@@ -91,7 +96,14 @@ class YoloV8Model(BaseModel):
         Returns:
             tuple: A tuple containing the predicted boxes, scores, and classes.
         """
-        results = self.model(list(data), conf=self.yolo_threshold, iou=self.yolo_iou, max_det=self.yolo_max_detections, verbose=False)
+        results = self.model(
+            list(data),
+            conf=self.yolo_threshold,
+            iou=self.yolo_iou,
+            max_det=self.yolo_max_detections,
+            classes=self.classes_idx_to_detect,
+            verbose=False,
+        )
         boxes = [r.boxes.xyxyn.cpu().numpy().tolist() for r in results]
         classes = [r.boxes.cls.cpu().int().tolist() for r in results]
         scores = [r.boxes.conf.cpu().numpy().tolist() for r in results]

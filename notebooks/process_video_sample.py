@@ -31,7 +31,9 @@ if __name__ == "__main__":
     )
 
     # Process inputs
-    results = workflow.execute(ml_processor, video_output_file=f"{output_path}/processed_video.mp4", batch_size=16, video_from_results=True)
+    results = workflow.execute(
+        ml_processor, video_output_file=f"{output_path}/processed_video.mp4", video_from_results=True, video_detections="all"
+    )
 
     # Save results to outputs directory
     for result_name in results.keys():

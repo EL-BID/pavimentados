@@ -1,5 +1,7 @@
 import logging
 import os
+import pickle
+from datetime import datetime
 from pathlib import Path
 
 import cv2
@@ -78,10 +80,27 @@ class Image_Processor:
         """
         if len(box) > 0:
             crop_images = list(map(lambda x: self.crop_img(x, image), box))
-            signal_pred_scores, pred_signal_base, pred_signal = self.siamese_model.predict(np.array(crop_images))
+            signal_pred_scores, pred_signal_base, pred_signal, embeddings = self.siamese_model.predict(np.array(crop_images))
+
+            # self.save_images_and_scores(image, crop_images, signal_pred_scores, embeddings, pred_signal, box)
             return pred_signal, pred_signal_base, pred_signal
         else:
             return [], [], []
+
+    def save_images_and_scores(self, image, crop_images, scores, embeddings, predictions, boxes):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        pickle_filename = f"prediction_{timestamp}.pkl"
+
+        data = {
+            "image": image,
+            "crop_images": crop_images,
+            "scores": scores,
+            "embeddings": embeddings,
+            "predictions": predictions,
+            "boxes": boxes,
+        }
+        with open(pickle_filename, "wb") as file:
+            pickle.dump(data, file)
 
     def predict_signal_state(self, images: np.ndarray, boxes: list[list[float]]) -> tuple[list, list, list]:
         """

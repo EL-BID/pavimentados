@@ -177,20 +177,24 @@ class Results_Calculator:
         classes_names_yolo_signal=None,
     ):
         # Reemplazo de clases
-        signals_class_mapping = config["signals_class_mapping"]
+        # signals_class_mapping = config["signals_class_mapping"]
 
-        signal_base_predictions = [
-            [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
-            for sublist in results_obj["signal_base_predictions"]
-        ]
-        final_signal_classes = [
-            [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
-            for sublist in results_obj["final_signal_classes"]
-        ]
-        state_predictions = [
-            [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
-            for sublist in results_obj["state_predictions"]
-        ]
+        signal_base_predictions = results_obj["signal_base_predictions"]
+        final_signal_classes = results_obj["final_signal_classes"]
+        state_predictions = results_obj["state_predictions"]
+
+        # signal_base_predictions = [
+        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+        #     for sublist in results_obj["signal_base_predictions"]
+        # ]
+        # final_signal_classes = [
+        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+        #     for sublist in results_obj["final_signal_classes"]
+        # ]
+        # state_predictions = [
+        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+        #     for sublist in results_obj["state_predictions"]
+        # ]
 
         BOXES_SIGNAL = results_obj["boxes_signal"]
         CLASSES_SIGNAL = results_obj["classes_signal"]

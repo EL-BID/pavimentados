@@ -49,7 +49,7 @@ pip install pavimentados
 Next, download the model artifact and decompress it.
 
 ```
-wget -O models.tar.gz https://github.com/EL-BID/pavimentados/raw/feature/v0.32.0/models/model_20240807.tar.gz?download=
+wget -O models.tar.gz https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=
 tar -xzvf models.tar.gz
 ```
 
@@ -85,7 +85,7 @@ Among the allowed GPS data sources are:
 
 Once these elements are imported, the processor is instantiated as follows:
 
-```
+```python
 from pathlib import Path
 models_path = Path("./artifacts")  # Path to downloaded model
 ml_processor = MultiImage_Processor(artifacts_path=str(models_path))
@@ -130,11 +130,16 @@ workflow = Workflow_Processor(
 The last step is to execute the workflow:
 
 ```
-results = workflow.execute(ml_processor, video_output_file="processed_video.mp4", video_from_results=True, batch_size=16)
+results = workflow.execute(ml_processor, batch_size=16, 
+                           video_output_file="processed_video.mp4", 
+                           video_from_results=True,
+                           video_detections="all"
+                           )
 ```
 
 >  * `video_output_file` and `image_folder_output` are optional and are only to save output video or image files along detections.
 >  * `video_from_results=True` is only to create a video from the results of the workflow. If it is `false`, the video will be created with unprocessed detections which is useful to test the models.
+>  * `video_detections="all"` draws detections on the images. Can be 'all', 'only_fails' or 'only_signals'.
 
 The results can be saved in csv format or used for further processing.
 
@@ -151,7 +156,6 @@ In the `results` object you will find the following:
  2. data_resulting: DataFrame with results per frame.
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
  4. signals_summary: DataFrame with all the information about the signals.
- 5. raw_results: Raw results totals.
 
 To see more details about the results please refer to [this page.](docs%2Fresults.md)
 
@@ -180,3 +184,5 @@ This package has been developed by:
 <a href="https://github.com/J0s3M4rqu3z" target="blank">Jose Maria Marquez Blanco</a>
 <br/>
 <a href="https://www.linkedin.com/in/joancerretani/" target="blank">Joan Alberto Cerretani</a>
+<br/>
+<a href="https://www.linkedin.com/in/ingvictordurand/" target="blank">Victor Durand</a>
