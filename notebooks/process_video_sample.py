@@ -12,6 +12,7 @@ if __name__ == "__main__":
     input_path = Path("./road_videos")
     models_path = Path("../models/artifacts")
     input_video_name = "sample"
+    # input_video_name = "20230404M-F-P10"
 
     output_path = Path("./outputs") / input_video_name
     output_path.mkdir(parents=True, exist_ok=True)
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     # Process inputs
     results = workflow.execute(
-        ml_processor, video_output_file=f"{output_path}/processed_video.mp4", video_from_results=True, video_detections="all"
+        ml_processor, video_output_file=f"{output_path}/processed_video.mp4"
     )
 
     # Save results to outputs directory

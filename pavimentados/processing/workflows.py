@@ -84,13 +84,22 @@ class Workflow_Processor(Config_Basic):
         """
         if not self.executed:
             raise ValueError("Workflow not yet executed, use execute method to store the results after executing models")
-        return {
-            "table_summary_sections": self.table_summary_sections,
-            "data_resulting": self.data_resulting,
-            "data_resulting_fails": self.data_resulting_fails,
-            "signals_summary": self.signals_summary,
-            # "raw_results": self.results,
-        }
+
+        results = {}
+        if self.config.get("signal_model_enabled", True):
+            results |= {"signals_summary": self.signals_summary}
+
+        if self.config.get("paviment_model_enabled", True):
+            results |= {
+                "table_summary_sections": self.table_summary_sections,
+                "data_resulting": self.data_resulting,
+                "data_resulting_fails": self.data_resulting_fails,
+            }
+
+        if self.config.get("raw_results_enabled", True):
+            results = results | {"raw_results": self.results}
+
+        return results
 
     def execute(
         self,
@@ -100,8 +109,7 @@ class Workflow_Processor(Config_Basic):
         return_results: bool = True,
         image_folder_output: str = None,
         video_output_file: str = None,
-        video_from_results: bool = True,
-        video_detections: str = "all",
+        video_from_results: bool = True
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -114,7 +122,6 @@ class Workflow_Processor(Config_Basic):
             image_folder_output: Output folder for the processed images.
             video_from_results: Whether to create a video from the results of the workflow. If it is `false`,
                 the video will be created with unprocessed detections which is useful to test the models.
-            video_detections: Whether to draw detections on the frames. Can be 'all', 'only_signals' or 'only_fails'.
 
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
@@ -140,10 +147,9 @@ class Workflow_Processor(Config_Basic):
             logger.info("Creating video from results...")
             create_video_from_results(
                 processor=self.img_obj,
-                signals_detections=pd.DataFrame(results["signals_summary"]),
-                fails_detections=pd.DataFrame(results["data_resulting"]),
+                signals_detections=results.get("signals_summary", None),
+                fails_detections=results.get("data_resulting", None),
                 video_output_results_file=video_output_results_file,
-                video_detections=video_detections,
             )
 
         logger.info("Workflow executed successfully")

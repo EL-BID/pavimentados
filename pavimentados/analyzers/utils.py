@@ -95,7 +95,7 @@ def stack_columns_dataset(df, variables, static_variables):
 
 
 def assign_group_calculations(df):
-    df["area"] = df.width.values * df.distances.values
+    # df["area"] = df.width.values * df.distances.values
     df["start_coordinate"] = list(map(lambda x, y: (x, y), df.latitude.values, df.longitude.values))
     df["end_coordenate"] = list(map(lambda x, y: (x, y), df.latitude.values, df.longitude.values))
     df["start_latitude"] = df.latitude

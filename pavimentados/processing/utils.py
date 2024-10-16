@@ -97,42 +97,47 @@ def put_text(frame, text, position, color=(255, 255, 255)):
 
 def create_video_from_results(
     processor: VideoCaptureImages,
-    signals_detections: pd.DataFrame,
-    fails_detections: pd.DataFrame,
-    video_output_results_file: str,
-    video_detections: str = "all",
+    signals_detections: list[dict] | None,
+    fails_detections: list[dict] | None,
+    video_output_results_file: str
 ):
     # Signals detections
-    df_signals = signals_detections.copy()
-    df_signals["type"] = "S"  # Type S=Signal
-    df_signals = df_signals[df_signals.position_boxes != 0]  # Remove position_boxes = 0 (left signals)
-    df_signals.rename(
-        columns={
-            "signal_class_siames": "signal_classes_siames",
-            "signal_class_base": "signal_classes_base",
-            "signal_class_names": "classes_signal_names",
-        },
-        inplace=True,
-    )  # Rename columns
+    df_signals = pd.DataFrame(signals_detections if signals_detections is not None else [])
+    if len(df_signals) > 0:
+        df_signals["type"] = "S"  # Type S=Signal
+        df_signals = df_signals[df_signals.position_boxes != 0]  # Remove position_boxes = 0 (left signals)
+        df_signals.rename(
+            columns={
+                "signal_class_siames": "signal_classes_siames",
+                "signal_class_base": "signal_classes_base",
+                "signal_class_names": "classes_signal_names",
+            },
+            inplace=True,
+        )  # Rename columns
 
     # Fails dataset
-    df_fails = fails_detections.copy()
-    df_fails["type"] = "F"  # Type F=Fail
-    df_fails.rename(
-        columns={
-            "scores": "score",
-            "classes": "final_classes",
-            "fotograma": "fotogram",
-        },
-        inplace=True,
-    )  # Rename columns
+    df_fails = pd.DataFrame(fails_detections if fails_detections is not None else [])
+    if len(df_fails) > 0:
+        df_fails["type"] = "F"  # Type F=Fail
+        df_fails.rename(
+            columns={
+                "scores": "score",
+                "classes": "final_classes",
+                "fotograma": "fotogram",
+            },
+            inplace=True,
+        )  # Rename columns
 
     # Concatenate results
     df_list = []
-    if video_detections in ["only_signals", "all"]:
+    if len(df_signals) > 0:
         df_list.append(df_signals)
-    if video_detections in ["only_fails", "all"]:
+    if len(df_fails) > 0:
         df_list.append(df_fails)
+
+    if len(df_list) == 0:
+        logger.info("No detections to process")
+        return
 
     df = pd.concat(df_list)
     df = df.sort_values(["fotogram"])

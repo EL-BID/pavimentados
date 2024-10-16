@@ -13,7 +13,7 @@ from pavimentados.analyzers.utils import (  # total_distance,
     stack_columns_dataset,
 )
 
-first_aggregation_dict = {"ind": "count", "perc_area": "sum"}
+first_aggregation_dict = {"ind": "count"}  # , "perc_area": "sum"
 
 second_aggregation_dict = {
     "distances": "sum",
@@ -24,7 +24,7 @@ second_aggregation_dict = {
     "end_latitude": "last",
     "end_longitude": "last",
     "width": "mean",
-    "area": "sum",
+    # "area": "sum",
     "boxes": "sum",
 }
 
@@ -99,27 +99,9 @@ class Results_Calculator:
         data_resulting["height"] = list(map(lambda x: box_height(x, altura), data_resulting.boxes.values))
         data_resulting["width"] = list(map(lambda x: box_width(x, base), data_resulting.boxes.values))
         data_resulting["total_area"] = base * altura
-        data_resulting["perc_area"] = data_resulting.area.values / data_resulting.total_area.values
-
-        # Agrupamos data.
-        # data_resulting_g = (
-        #     data_resulting.groupby(["latitude", "longitude", "fotograma", "distances", "classes", "section"])
-        #     .aggregate(first_aggregation_dict)
-        #     .reset_index()
-        #     .rename({"ind": "cantidad"}, axis=1)
-        #     .sort_values(["fotograma"])
-        #     .reset_index(drop=True)
-        # )
-        # data_resulting_g_total = (
-        #     data_resulting.groupby(["classes"])
-        #     .aggregate(first_aggregation_dict)
-        #     .reset_index()
-        #     .rename({"ind": "quantity"}, axis=1)
-        #     .reset_index(drop=True)
-        # )
+        # data_resulting["perc_area"] = data_resulting.area.values / data_resulting.total_area.values
 
         # Generamos la ID de fail.
-        # variables = list(data_resulting.classes.unique())
         data_resulting = fail_id_generator(data_resulting, min_fotogram_distance)
 
         # Agrupamos data por sections.
