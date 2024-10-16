@@ -84,7 +84,7 @@ ml_processor = MultiImage_Processor(artifacts_path=str(models_path))
 
 Alternatively, an additional JSON file can be specified to set or overwrite certain configuration parameters of the models.
 
-```
+```python
 ml_processor = MultiImage_Processor(artifacts_path=str(models_path), config_file="./models_config.json")
 ```
 These parameters allow the specification of parameter such as the confidence, iou, or maximum amount of detections per frame.
@@ -102,7 +102,7 @@ Example of the configuration file:
 
 The workflow object receives the instantiated processor. Without it is not able to execute the workflow.
 
-```
+```python
 input_video_file = "sample.mp4"
 input_gps_file = "sample.log"
 
@@ -114,7 +114,7 @@ workflow = Workflow_Processor(
 
 The last step is to execute the workflow:
 
-```
+```python
 results = workflow.execute(ml_processor, 
                            batch_size=16, 
                            video_output_file="processed_video.mp4" 
@@ -125,7 +125,7 @@ results = workflow.execute(ml_processor,
 
 The results can be saved in csv format or used for further processing.
 
-```
+```python
 # Save results to outputs directory
 import pandas as pd
 for result_name in results.keys():
