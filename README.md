@@ -9,20 +9,20 @@
 ## Description
 ---
 Pavimentados is a tool that allows the identification of pavement faults located on highways or roads, as well as vertical and horizontal signage. 
-This library is an environment around the computer vision models developed to allow the detection of the different elements. 
-The faults and detected elements are then used to generate metrics that help in road maintenance planning.
+This library provides an environment to use computer vision models developed to detect different elements. 
+The detected elements are then used to generate metrics that aid the process of planning road maintenance.
 
-You can download models files from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
+The models files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
 
-These models require images or videos taken with the specifications that will be explained in later sections. 
+These models require as input images or videos that are taken with certain specifications that will be explained in later sections. 
 
-So far the system uses 3 models involved in different phases of detection and categorization.
+So far, the system uses 3 models that are used in different phases of detection and categorization.
 
 | Model Name             | Description                                         | Classes |
 |------------------------|---------------------------------------------------- |---------|
-| Paviment failures      | Detection of failures on the road and classifies it | 8       |
-| Signage detection      | Detection of signage on the road                    | 1       |
-| Signage classification | Classifies the signage detected                     | 314     |
+| Paviment failures      | Detection and classification of road failures       | 8       |
+| Signage detection      | Detection of road signage                           | 1       |
+| Signage classification | Classification of the detected road signage         | 314     |
 
 To understand each model in detail see the [models](docs/MODELS.md) section.
 
@@ -40,13 +40,13 @@ Some of the features available are:
 ## Instalation
 ---
 
-To install you can use the following commands:
+Install the library using the following command:
 
 ```
 pip install pavimentados
 ```
 
-The next step is to download the model artifact and decompress it.
+Next, download the model artifact and decompress it.
 
 ```
 wget -O models.tar.gz https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=
@@ -56,8 +56,8 @@ tar -xzvf models.tar.gz
 ## Quick Start
 ---
 
-In the `notebooks` folder you find a complete example of how to process both images and videos present
-in `notebooks/road_videos` or `notebooks/road_images` and save the results in `notebooks/outputs`.
+In the `notebooks` folder there is a complete example of how to process both images and videos present
+in `notebooks/road_videos` and `notebooks/road_images`. The results are saved to `notebooks/outputs`.
 
 The first step is to import the components that create a workflow with images:
 ```
@@ -65,23 +65,22 @@ from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.workflows import Workflow_Processor
 ```
 
-In this example, we have the image processor object MultiImage_Processor, which is in charge of taking the images and analyzing them individually using the models. In addition, we have the Workflow_Processor object that 
-is in charge of the image processing workflow. 
+In this example, there is the image processor object MultiImage_Processor which is in charge of taking the images and analyzing them individually using the models. In addition, there is the Workflow_Processor object that is in charge of the image processing workflow. 
 
 Internally, the Workflow_Processor has objects that can interpret different image sources or GPS information. 
 
-Among the allowed image sources we have:
+Among the allowed image sources are:
 
- - image_routes: A list of image routes
- - image_folder: A folder with all images
- - images: Images already loaded in numpy format
- - video: The path to a video file
+ - image_routes: A list of image routes.
+ - image_folder: A folder with all images.
+ - images: Images already loaded in numpy format.
+ - video: The path to a video file.
 
-Among the allowed GPS data sources we have:
+Among the allowed GPS data sources are:
 
  - image_routes: A list of the routes of the images that have the gps data embedded in them.
  - image_folder: A folder with all the images that have the gps data embedded in them.
- - loc: A file in GPRRA format
+ - loc: A file in GPRRA format.
  - csv: A gps file with the gps information in columns and rows.
 
 Once these elements are imported, the processor is instantiated as follows:
@@ -92,15 +91,14 @@ models_path = Path("./artifacts")  # Path to downloaded model
 ml_processor = MultiImage_Processor(artifacts_path=str(models_path))
 ```
 
-Alternatively, you can specify an additional JSON file for the setting or overwrite some of certain configuration 
-parameters on the models.
+Alternatively, an additional JSON file can be specified to set or overwrite certain configuration parameters of the models.
 
 ```
 ml_processor = MultiImage_Processor(artifacts_path=str(models_path), config_file="./models_config.json")
 ```
-These parameters allow to specify for example the confidence, iou or maximum amount of detections per frame.
+These parameters allow the specification of parameter such as the confidence, iou, or maximum amount of detections per frame.
 
-Example of configuration file:
+Example of the configuration file:
 ```json
 {
 	"signal_model": {
@@ -117,7 +115,7 @@ Example of configuration file:
 }
 ```
 
-The workflow object is able to receive the instantiated processor, without it is not able to execute the workflow.
+The workflow object receives the instantiated processor. Without it is not able to execute the workflow.
 
 ```
 input_video_file = "sample.mp4"
@@ -139,12 +137,11 @@ results = workflow.execute(ml_processor, batch_size=16,
                            )
 ```
 
->  * `video_output_file` and `image_folder_output` are optional and are only to save output video or image 
-files along detections.
+>  * `video_output_file` and `image_folder_output` are optional and are only to save output video or image files along detections.
 >  * `video_from_results=True` is only to create a video from the results of the workflow. If it is `false`, the video will be created with unprocessed detections which is useful to test the models.
 >  * `video_detections="all"` draws detections on the images. Can be 'all', 'only_fails' or 'only_signals'.
 
-The next step is to save the results in csv format or use it for further processing.
+The results can be saved in csv format or used for further processing.
 
 ```
 # Save results to outputs directory
@@ -160,7 +157,7 @@ In the `results` object you will find the following:
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
  4. signals_summary: DataFrame with all the information about the signals.
 
-To see more detail about results please refer to [this page.](docs%2Fresults.md)
+To see more details about the results please refer to [this page.](docs%2Fresults.md)
 
 
 ## Project structure
@@ -176,7 +173,7 @@ To see more detail about results please refer to [this page.](docs%2Fresults.md)
 
 ## Changelog
 ---
-To know the latest changes in the library please refer to the [changes document](docs/CHANGELOG.md).
+For information regarding the latest changes/updates in the library please refer to the [changes document](docs/CHANGELOG.md).
 
 
 ## Authors
