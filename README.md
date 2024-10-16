@@ -14,7 +14,7 @@ The detected elements are then used to generate metrics that aid the process of 
 
 The models files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
 
-> **Version changes**: Unlike the previous version, this new version does not include traffic sign detection. We hope to be able to 
+> **Important changes**: Unlike the previous version, this new version does not include traffic sign detection. We hope to be able to 
 > include it again in future versions. 
 
 ## Main Features
