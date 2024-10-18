@@ -12,7 +12,6 @@ if __name__ == "__main__":
     input_path = Path("./road_videos")
     models_path = Path("../models/artifacts")
     input_video_name = "sample"
-    # input_video_name = "20230404M-F-P10"
 
     output_path = Path("./outputs") / input_video_name
     output_path.mkdir(parents=True, exist_ok=True)
