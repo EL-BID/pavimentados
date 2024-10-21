@@ -75,6 +75,10 @@ class Results_Calculator:
             for sublist in results_obj["final_pav_clases"]
         ]
 
+        # Eliminamos las columnas del mapping.
+        if columns_to_have is not None:
+            columns_to_have = [col for col in columns_to_have if col not in list(paviment_class_mapping.keys())]
+
         # Genero el dataset.
         data = gps_obj.gps_df.copy()
         data["scores"] = results_obj["scores_pav"]

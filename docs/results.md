@@ -15,11 +15,11 @@ Information about the individual detections made on each image / photogram.
 | ind             | int          | Index of the record or row.                                                         | 0                                                                              |
 | fotograma       | int          | Identifier of the frame or image in which the record was made.                      | 27                                                                             |
 | section         | int          | Section of the analysis.                                                            | 0                                                                              |
-| classes         | string       | Class or label assigned to the object.                                              | OT0                                                                            |
+| classes         | string       | Class or label assigned to the object.                                              | D00                                                                            |
 | ind2            | int          | Secondary index or identifier.                                                      | 0                                                                              |
 | scores          | float        | Confidence score of the model (probability).                                        | 0.22                                                                           |
 | boxes           | list[float]  | Coordinates of the bounding box of the object, format [x_min, y_min, x_max, y_max]. | [0.4320632219314575, 0.8396928310394287, 0.6515443325042725, 0.99937504529953] |
-| class_id        | string       | Identifier of the assigned class.                                                   | OT0                                                                            |
+| class_id        | string       | Identifier of the assigned class.                                                   | D00                                                                            |
 | area            | float        | Calculated area of the object in pixels.                                            | 72654.200                                                                      |
 | center          | tuple[float] | Coordinates of the center of the box, format (x, y).                                | (1765.5051612854004, 585.1480793952942)                                        |
 | height          | float        | Height of the box in pixels.                                                        | 237.03959941864                                                                |
@@ -37,15 +37,15 @@ the same problem (failures have a single type and can have many detections).
 | class_id         | int    | Identifier of the class assigned to the detection.                        | 0                                           |
 | classes          | string | The class label for the detection.                                        | D00                                         |
 | fail_id_section  | int    | Identifier of the failure section associated with the detection.          | 43                                          |
-| distances        | float  | Distance measured in relation to a reference point.                       | 65.8743799240202                            |
+| distances        | float  | distance in meters of the failure.                                        | 65.8743799240202                            |
 | start_coordinate | string | Starting coordinate of the detection, formatted as (latitude, longitude). | "(-11.783669767676768, -77.15560848484849)" |
-| start_latitude   | float  | Latitude of the starting point of the detection.                          | -11.783669767676768                         |
-| start_longitude  | float  | Longitude of the starting point of the detection.                         | -77.15560848484849                          |
+| start_latitude   | float  | Latitude of the starting point of the failure.                            | -11.783669767676768                         |
+| start_longitude  | float  | Longitude of the starting point of the failure.                           | -77.15560848484849                          |
 | end_coordenate   | string | Ending coordinate of the detection, formatted as (latitude, longitude).   | "(-11.7830935, -77.15626066666667)"         |
-| end_latitude     | float  | Latitude of the ending point of the detection.                            | -11.7830935                                 |
-| end_longitude    | float  | Longitude of the ending point of the detection.                           | -77.15626066666667                          |
+| end_latitude     | float  | Latitude of the ending point of the failure.                              | -11.7830935                                 |
+| end_longitude    | float  | Longitude of the ending point of the failure.                             | -77.15626066666667                          |
 | width            | float  | Average width of faults measured in pixels.                               | 789.3660466811236                           |
-| boxes            | int    | Number of bounding boxes representing the detection.                      | 19                                          |
+| boxes            | int    | Number of bounding boxes representing the failure.                        | 19                                          |
 
 
 ## table_summary_sections
