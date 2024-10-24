@@ -3,16 +3,8 @@
 	"images_allowed": ["jpg", "jpeg", "png"],
 	"image_size": 416,
 
-	"signal_model": {
-		"path": "signal_model/yolov8-signals-240707-2106",
-		"model_filename": "model.pt",
-		"classes_filename": "classes.names",
-		"yolo_threshold": 0.10,
-		"yolo_iou": 0.45,
-		"yolo_max_detections": 100
-	},
-
 	"paviment_model": {
+		"enabled": true,
 		"path": "paviment_model/yolov8-road-damage-old-classes-240724-1800",
 		"model_filename": "model.pt",
 		"classes_filename": "classes.names",
@@ -33,7 +25,18 @@
 		"classes_codes_to_exclude": ["OT0"]
 	},
 
+	"signal_model": {
+		"enabled": false,
+		"path": "signal_model/yolov8-signals-240707-2106",
+		"model_filename": "model.pt",
+		"classes_filename": "classes.names",
+		"yolo_threshold": 0.10,
+		"yolo_iou": 0.45,
+		"yolo_max_detections": 100
+	},
+
 	"siamese_model": {
+		"enabled": false,
 		"path": "siamese_model/siamese_128",
 		"model_filename": "onnx_siamese_model.onnx",
 		"embeddings_filename": "embeddings_references.pickle",

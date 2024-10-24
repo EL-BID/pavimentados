@@ -39,6 +39,7 @@ class YoloV8Model(BaseModel):
         else:
             self.general_path = Path(self.config["general_path"])
 
+        self.enabled = self.config[model_config_key].get("enabled", False)
         self.yolo_model_path = self.general_path / self.config[model_config_key]["path"]
         self.model_filename = self.config[model_config_key]["model_filename"]
         self.classes_filename = self.config[model_config_key]["classes_filename"]
@@ -73,6 +74,10 @@ class YoloV8Model(BaseModel):
         Returns:
             None
         """
+        if not self.enabled:
+            self.model = None
+            return
+
         self.classes_names_idx = {
             name: idx for idx, name in enumerate(open(self.yolo_model_path / self.classes_filename).read().splitlines())
             if name not in self.classes_codes_to_exclude
@@ -96,6 +101,10 @@ class YoloV8Model(BaseModel):
         Returns:
             tuple: A tuple containing the predicted boxes, scores, and classes.
         """
+        if not self.enabled:
+            empty = [[] for r in range(len(data))]
+            return empty, empty, empty
+
         results = self.model(
             list(data),
             conf=self.yolo_threshold,

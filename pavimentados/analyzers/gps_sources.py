@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 import pynmea2
 from PIL import Image
-from PIL.ExifTags import TAGS
+from PIL.ExifTags import TAGS, GPSTAGS
 from scipy.interpolate import interp1d
 from tqdm import tqdm
 
-from pavimentados.analyzers.utils import total_distance
+from pavimentados.analyzers.utils import total_distance, decimal_coords
 
 
 class GPS_Processer:
@@ -162,13 +162,14 @@ class GPS_Image_Route_Loader(GPS_Processer):
 
     def load_gps_data(self):
         routes = [route for route in self.routes if route.suffix[1:].lower() in self.config["images_allowed"]]
-        self.gps_df = pd.DataFrame(list(tqdm(map(lambda img_path: self.load_single_value(img_path), routes))))
+        self.gps_df = pd.DataFrame(list(tqdm(map(lambda img_path: self.load_single_value(img_path), routes), desc="Loading GPS from images...", total=len(routes))))
         self.gps_df["seconds"] = list(map(lambda x: (x.hour * 3600) + (x.minute * 60) + (x.second), self.gps_df.timestamp))
 
-    def load_single_value(self, img_path):
-        d = {}
+    def load_exif_data(self, img_path):
         image = Image.open(img_path)
         exifdata = image.getexif()
+
+        d = {}
         for tag_id in exifdata:
             tag = TAGS.get(tag_id, tag_id)
             data = exifdata.get(tag_id)
@@ -178,18 +179,50 @@ class GPS_Image_Route_Loader(GPS_Processer):
                 d[tag] = data
             except ValueError:  # noqa: E722
                 pass
+        return d
 
+    def get_gpsdata_from_exif(self, filename):
+        exif = Image.open(filename)._getexif()
+        exif_data = {}
+        gps_data = {}
+        if exif is not None:
+            for key, value in exif.items():
+                name = TAGS.get(key, key)
+                data = exif[key].decode() if isinstance(exif[key], bytes) else exif[key]
+                exif_data[name] = data
+
+            if 'GPSInfo' in exif_data:
+                for key in exif_data['GPSInfo'].keys():
+                    name = GPSTAGS.get(key, key)
+                    gps_data[name] = exif_data['GPSInfo'].get(key)
+
+            gps_data['DateTimeOriginal'] = exif_data.get('DateTimeOriginal', None)
+
+        return gps_data
+
+
+    def load_single_value(self, img_path):
         try:
+            # get from exif
+            d = self.load_exif_data(str(img_path))
             lat = np.array(d["GPSInfo"][2])
             lon = np.array(d["GPSInfo"][4])
             lat = sum(np.array(lat[:, 0] / lat[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][1] == "S" else 1)
             lon = sum(np.array(lon[:, 0] / lon[:, 1]) * np.array([1.0, 1.0 / 60.0, 1.0 / 3600.0])) * (-1 if d["GPSInfo"][3] == "W" else 1)
             time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
         except:  # noqa: E722
-            random_float = secrets.SystemRandom().random()
-            lat = -24.0 + random_float
-            lon = -49.0 + random_float
-            time = dt.datetime.now()
+            try:
+                # get from gpsinfo
+                d = self.get_gpsdata_from_exif(str(img_path))
+                lat = decimal_coords(d['GPSLatitude'], d['GPSLatitudeRef'])
+                lon = decimal_coords(d['GPSLongitude'], d['GPSLongitudeRef'])
+                time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
+            except:
+                # random values
+                random_float = secrets.SystemRandom().random()
+                lat = -24.0 + random_float
+                lon = -49.0 + random_float
+                time = dt.datetime.now()
 
         return {"timestamp": time, "longitude": lon, "latitude": lat}
 

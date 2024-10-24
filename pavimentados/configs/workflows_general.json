@@ -1,8 +1,6 @@
 {
 	"images_allowed": ["jpg", "jpeg", "png"],
 
-	"paviment_model_enabled": true,
-	"signal_model_enabled": false,
 	"raw_results_enabled": false,
 
 	"paviment_class_mapping": {

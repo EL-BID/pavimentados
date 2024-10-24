@@ -24,6 +24,8 @@ class Workflow_Processor(Config_Basic):
         config_file_default = pavimentados_path / "configs" / "workflows_general.json"
         self.load_config(config_file_default, None)
 
+        self.raw_results_enabled = self.config.get("raw_results_enabled", True)
+
         image_source_type = kwargs.get("image_source_type", "image_folder")
         gps_source_type = kwargs.get("gps_source_type", "image_folder")
         gps_in = kwargs.get("gps_input", images_input if gps_source_type == image_source_type else None)
@@ -63,18 +65,24 @@ class Workflow_Processor(Config_Basic):
         Returns:
             None
         """
-        logger.info("Processing results...")
-        self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
-            self.config,
-            self.results,
-            self.img_obj,
-            self.gps_data,
-            columns_to_have=self.classes_names_yolo_paviment,
-            min_fotogram_distance=min_fotogram_distance,
-        )
-        self.signals_summary = calculator.generate_final_results_signal(
-            self.config, self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal
-        )
+        logger.info("Processing paviment results...")
+        if self.processor.paviment_model_enabled:
+            self.classes_names_yolo_paviment = self.processor.processor.yolov8_paviment_model.classes_names
+            self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
+                self.config,
+                self.results,
+                self.img_obj,
+                self.gps_data,
+                columns_to_have=self.classes_names_yolo_paviment,
+                min_fotogram_distance=min_fotogram_distance,
+            )
+
+        logger.info("Processing signals results...")
+        if self.processor.signal_model_enabled:
+            self.classes_names_yolo_signal = self.processor.processor.yolov8_signal_model.classes_names
+            self.signals_summary = calculator.generate_final_results_signal(
+                self.config, self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal
+            )
 
     def get_results(self) -> dict[str, any]:
         """Get the results of the workflow.
@@ -86,17 +94,17 @@ class Workflow_Processor(Config_Basic):
             raise ValueError("Workflow not yet executed, use execute method to store the results after executing models")
 
         results = {}
-        if self.config.get("signal_model_enabled", True):
+        if self.processor.signal_model_enabled:
             results |= {"signals_summary": self.signals_summary}
 
-        if self.config.get("paviment_model_enabled", True):
+        if self.processor.paviment_model_enabled:
             results |= {
                 "table_summary_sections": self.table_summary_sections,
                 "data_resulting": self.data_resulting,
                 "data_resulting_fails": self.data_resulting_fails,
             }
 
-        if self.config.get("raw_results_enabled", True):
+        if self.raw_results_enabled:
             results = results | {"raw_results": self.results}
 
         return results
@@ -137,9 +145,8 @@ class Workflow_Processor(Config_Basic):
             video_output_file = None
             image_folder_output = None
 
-        self.classes_names_yolo_paviment = processor.processor.yolov8_paviment_model.classes_names
-        self.classes_names_yolo_signal = processor.processor.yolov8_signal_model.classes_names
-        self._execute_model(processor, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output)
+        self.processor = processor
+        self._execute_model(self.processor, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output)
         self.process_result(min_fotogram_distance=min_fotogram_distance)
         results = self.get_results()
 

@@ -47,13 +47,11 @@ class Siamese_Model(BaseModel):
         else:
             self.general_path = Path(self.config["general_path"])
 
+        self.enabled = self.config[model_config_key].get("enabled", False)
         self.siamese_path = self.general_path / self.config[model_config_key]["path"]
         self.image_size = tuple(self.config[model_config_key]["image_size"])
         self.embeddings_filename = self.config[model_config_key]["embeddings_filename"]
         self.model_filename = self.config[model_config_key]["model_filename"]
-
-        with open(str(self.siamese_path / self.embeddings_filename), "rb") as f:
-            self.embeddings_references = pickle.load(f)  # nosec B301
 
         self.load_model()
 
@@ -63,6 +61,12 @@ class Siamese_Model(BaseModel):
         Returns:
             None
         """
+        if not self.enabled:
+            self.model = None
+            return
+
+        with open(str(self.siamese_path / self.embeddings_filename), "rb") as f:
+            self.embeddings_references = pickle.load(f)  # nosec B301
 
         self.model = onnxruntime.InferenceSession(str(self.siamese_path / self.model_filename))
 
@@ -86,6 +90,10 @@ class Siamese_Model(BaseModel):
         5. Sorts the predictions based on the dot product with the embeddings references and retrieves the class labels.
         6. Returns the maximum score, predicted class labels, and the predicted class labels.
         """
+        if not self.enabled:
+            empty = []
+            return empty, empty, empty, empty
+
         img = np.float32(data)
         input_name = self.model.get_inputs()[0].name
         output_name = self.model.get_outputs()[0].name

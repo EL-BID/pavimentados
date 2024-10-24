@@ -20,10 +20,9 @@ pavimentados_path = Path(__file__).parent.parent
 class Image_Processor:
     """Predicts the signals over frames."""
 
-    def __init__(self, yolo_device: str = "0", siamese_device: str = "0", artifacts_path: str = None, config: dict = None):
+    def __init__(self, yolo_device: str = "0", artifacts_path: str = None, config: dict = None):
         self.artifacts_path = artifacts_path
         self.yolo_device = yolo_device
-        self.siamese_device = siamese_device
         self.config = config
         self.load_models()
 
@@ -50,7 +49,7 @@ class Image_Processor:
             device=self.yolo_device, model_config_key="paviment_model", artifacts_path=self.artifacts_path, config=self.config
         )
         self.siamese_model = Siamese_Model(
-            device=self.siamese_device, model_config_key="siamese_model", artifacts_path=self.artifacts_path, config=self.config
+            device=self.yolo_device, model_config_key="siamese_model", artifacts_path=self.artifacts_path, config=self.config
         )
 
     def crop_img(self, box: list[float], img: np.ndarray) -> np.ndarray:
@@ -81,8 +80,6 @@ class Image_Processor:
         if len(box) > 0:
             crop_images = list(map(lambda x: self.crop_img(x, image), box))
             signal_pred_scores, pred_signal_base, pred_signal, embeddings = self.siamese_model.predict(np.array(crop_images))
-
-            # self.save_images_and_scores(image, crop_images, signal_pred_scores, embeddings, pred_signal, box)
             return pred_signal, pred_signal_base, pred_signal
         else:
             return [], [], []
@@ -119,20 +116,22 @@ class Image_Processor:
 
 
 class MultiImage_Processor(Config_Basic):
-    def __init__(self, config_file: Path = None, yolo_device: str = "0", siamese_device: str = "0", artifacts_path=None):
+    def __init__(self, config_file: Path = None, artifacts_path=None):
         super().__init__()
-        self.yolo_device = yolo_device
-        self.siamese_device = siamese_device
+        self.yolo_device = "0"
 
         logger.info("Loading model config...")
         config_file_default = pavimentados_path / "configs" / "models_general.json"
         self.load_config(config_file_default, config_file)
 
+        self.signal_model_enabled = self.config["signal_model_enabled"] = self.config["signal_model"].get("enabled", True)
+        self.paviment_model_enabled = self.config["paviment_model_enabled"] = self.config["paviment_model"].get("enabled", True)
+
         self.processor = Image_Processor(
-            yolo_device=self.yolo_device, siamese_device=self.siamese_device, artifacts_path=artifacts_path, config=self.config
+            yolo_device=self.yolo_device, artifacts_path=artifacts_path, config=self.config
         )
 
-    def _process_batch(self, img_batch, video_output=None, image_folder_output=None):
+    def _process_batch(self, offset, img_batch, video_output=None, image_folder_output=None):
         boxes_pav, scores_pav, classes_pav = self.processor.yolov8_paviment_model.predict(img_batch)
         boxes_signal, scores_signal, classes_signal = self.processor.yolov8_signal_model.predict(img_batch)
         final_signal_classes, signal_base_predictions, state_predictions = self.processor.predict_signal_state(img_batch, boxes_signal)
@@ -154,7 +153,7 @@ class MultiImage_Processor(Config_Basic):
                 if video_output:
                     video_output.write(img)
                 if image_folder_output:
-                    frame_file = str(Path(image_folder_output) / f"frame_{j:0>6}.png")
+                    frame_file = str(Path(image_folder_output) / f"frame_{offset+j:0>6}.png")
                     cv2.imwrite(frame_file, img)
                 j += 1
         return (
@@ -181,7 +180,7 @@ class MultiImage_Processor(Config_Basic):
         results = list(
             tqdm(
                 map(
-                    lambda x: self._process_batch(
+                    lambda x: self._process_batch(x,
                         img_obj.get_batch(x, batch_size), video_output=video_output, image_folder_output=image_folder_output
                     ),
                     [offset for offset in range(0, len_imgs, batch_size)],
