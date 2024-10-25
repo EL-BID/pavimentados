@@ -2,14 +2,12 @@ import logging
 from pathlib import Path
 from typing import Union
 
-import pandas as pd
-
 from pavimentados.analyzers.calculators import Results_Calculator as calculator
 from pavimentados.analyzers.gps_sources import GPS_Data_Loader
 from pavimentados.configs.utils import Config_Basic
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.sources import Image_Source_Loader
-from pavimentados.processing.utils import create_video_from_results
+from pavimentados.processing.utils import create_output_from_results
 
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
@@ -117,7 +115,7 @@ class Workflow_Processor(Config_Basic):
         return_results: bool = True,
         image_folder_output: str = None,
         video_output_file: str = None,
-        video_from_results: bool = True
+        output_from_results: bool = True,
     ) -> Union[None, dict[str, any]]:
         """Execute the workflow.
 
@@ -128,8 +126,8 @@ class Workflow_Processor(Config_Basic):
             return_results: Whether to return the results of the workflow.
             video_output_file: Output file for the processed video.
             image_folder_output: Output folder for the processed images.
-            video_from_results: Whether to create a video from the results of the workflow. If it is `false`,
-                the video will be created with unprocessed detections which is useful to test the models.
+            output_from_results: Whether to create a video or images from the results of the workflow. If it is `false`,
+                the video or images will be created with unprocessed detections which is useful to test the models.
 
         Returns:
             None | dict[str, any]: None if return_results is False, otherwise a dictionary containing the results of the workflow.
@@ -139,24 +137,24 @@ class Workflow_Processor(Config_Basic):
         if video_output_file and image_folder_output:
             raise ValueError("Cannot use video_output_file and image_folder_output at the same time")
 
-        video_output_results_file = ""
-        if video_from_results and video_output_file:
-            video_output_results_file = video_output_file
-            video_output_file = None
-            image_folder_output = None
-
         self.processor = processor
-        self._execute_model(self.processor, batch_size=batch_size, video_output_file=video_output_file, image_folder_output=image_folder_output)
+        self._execute_model(
+            self.processor,
+            batch_size=batch_size,
+            video_output_file=None if output_from_results else video_output_file,
+            image_folder_output=None if output_from_results else image_folder_output,
+        )
         self.process_result(min_fotogram_distance=min_fotogram_distance)
         results = self.get_results()
 
-        if video_from_results and video_output_results_file and results:
-            logger.info("Creating video from results...")
-            create_video_from_results(
+        if output_from_results and results:
+            logger.info("Creating output from results...")
+            create_output_from_results(
                 processor=self.img_obj,
                 signals_detections=results.get("signals_summary", None),
                 fails_detections=results.get("data_resulting", None),
-                video_output_results_file=video_output_results_file,
+                video_output_file=video_output_file,
+                image_folder_output=image_folder_output,
             )
 
         logger.info("Workflow executed successfully")

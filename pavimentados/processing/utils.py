@@ -6,7 +6,11 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from pavimentados.processing.sources import VideoCaptureImages
+from pavimentados.processing.sources import (
+    ListImages,
+    ListRoutesImages,
+    VideoCaptureImages,
+)
 
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
@@ -95,12 +99,15 @@ def put_text(frame, text, position, color=(255, 255, 255)):
         cv2.putText(frame, line, (x, y), font, font_scale, color, thickness, line_type)
 
 
-def create_video_from_results(
-    processor: VideoCaptureImages,
-    signals_detections: list[dict] | None,
-    fails_detections: list[dict] | None,
-    video_output_results_file: str
+def create_output_from_results(
+    processor: VideoCaptureImages | ListImages | ListRoutesImages,
+    signals_detections: list[dict] | None = None,
+    fails_detections: list[dict] | None = None,
+    video_output_file: str | None = None,
+    image_folder_output: str | None = None,
 ):
+    is_video_output = isinstance(processor, VideoCaptureImages)
+
     # Signals detections
     df_signals = pd.DataFrame(signals_detections if signals_detections is not None else [])
     if len(df_signals) > 0:
@@ -142,18 +149,26 @@ def create_video_from_results(
     df = pd.concat(df_list)
     df = df.sort_values(["fotogram"])
 
-    # Create video
+    # Create output
     altura, base = processor.get_altura_base()
-    fourcc = cv2.VideoWriter.fourcc("m", "p", "4", "v")
-    video_output = cv2.VideoWriter(video_output_results_file, fourcc, 20.0, (base, altura))
+
+    if is_video_output:
+        fourcc = cv2.VideoWriter.fourcc("m", "p", "4", "v")
+        video_output = cv2.VideoWriter(video_output_file, fourcc, 20.0, (base, altura))
 
     for fotogram_idx in tqdm(sorted(list(df.fotogram.unique())), desc="Processing frames: "):
-        fotogram = processor.selected_frames[fotogram_idx]
 
-        processor.vidcap.set(cv2.CAP_PROP_POS_FRAMES, fotogram)
-        ret, frame = processor.vidcap.read()
+        frame_text = "id# "
+        if is_video_output:
+            fotogram = processor.selected_frames[fotogram_idx]
+            processor.vidcap.set(cv2.CAP_PROP_POS_FRAMES, fotogram)
+            ret, frame = processor.vidcap.read()
+            frame_text += f"{fotogram_idx} - frame# {fotogram}"
+        else:
+            frame = processor.get_batch(fotogram_idx, 1)[0]
+            frame_text += f"{fotogram_idx}"
 
-        put_text(frame, f"id# {fotogram_idx} - frame# {fotogram}", (20, 30), color=(255, 0, 0))
+        put_text(frame, frame_text, (20, 30), color=(255, 0, 0))
 
         for idx, row in df[df.fotogram == fotogram_idx].iterrows():
             boxes = [float(b) for b in row.boxes]
@@ -172,6 +187,11 @@ def create_video_from_results(
 
             frame = cv2.rectangle(frame, x1y1, x2y2, color, 2)
 
-        video_output.write(frame)
+        if is_video_output:
+            video_output.write(frame)
+        else:
+            frame_file = str(Path(image_folder_output).resolve() / f"frame_{fotogram_idx:0>6}.png")
+            cv2.imwrite(frame_file, frame)
 
-    video_output.release()
+    if is_video_output:
+        video_output.release()
