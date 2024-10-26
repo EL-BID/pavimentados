@@ -12,7 +12,7 @@ Pavimentados is a tool that allows the identification of pavement faults located
 This library provides an environment to use computer vision models developed to detect different elements. 
 The detected elements are then used to generate metrics that aid the process of planning road maintenance.
 
-The models files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
+The model files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
 
 > **Important changes**: Unlike the previous version, this new version does not include traffic sign detection. We hope to be able to 
 > include it again in future versions. 
@@ -37,10 +37,11 @@ Install the library using the following command:
 pip install pavimentados
 ```
 
-Next, download the model artifact and decompress it.
+Next, 
+* [download the model](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=) from this link
 
-```
-wget -O models.tar.gz https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=
+* Decompress it using the following command
+```bash
 tar -xzvf models.tar.gz
 ```
 
@@ -69,10 +70,10 @@ Among the allowed image sources are:
 
 Among the allowed GPS data sources are:
 
- - image_routes: A list of the routes of the images that have the gps data embedded in them.
- - image_folder: A folder with all the images that have the gps data embedded in them.
- - loc: A file in GPRRA format.
- - csv: A gps file with the gps information in columns and rows.
+ - image_routes: A list of paths to the routes of the images that have the gps data embedded in them.
+ - image_folder: A path to a folder with all the images that have the gps data embedded in them.
+ - loc: A file in [NMEA format](docs%2Fgps_data_formats.md).
+ - csv: A gps file with the gps information in columns and rows in [csv format](docs%2Fgps_data_formats.md).
 
 Once these elements are imported, the processor is instantiated as follows:
 
@@ -138,7 +139,7 @@ In the `results` object you will find the following:
  2. data_resulting: DataFrame with results per frame.
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
 
-To see more details about the results please refer to [this page.](docs%2Fresults.md)
+To see more details about the results please refer to [this page](docs%2Fresults.md).
 
 
 ## Project structure

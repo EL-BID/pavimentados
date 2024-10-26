@@ -12,7 +12,7 @@ if __name__ == "__main__":
     input_path = Path("road_images")
     models_path = Path("../models/artifacts")
 
-    output_path = Path("./outputs")
+    output_path = Path("./outputs/road_images")
     output_path.mkdir(parents=True, exist_ok=True)
 
     # Setup logging
