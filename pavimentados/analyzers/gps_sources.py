@@ -121,7 +121,10 @@ class GPS_CSV_Loader(GPS_Processer):
         decimal_character = kwargs.get("decimal_character", ",")
 
         self.route = Path(route)
+        self.default_column_names = ["timestamp", "longitude", "latitude"]
+        self.decimal_character = decimal_character
         self.columns_names = []
+
         if time_column is not None:
             self.columns_names.append(time_column)
         if date_column is not None:
@@ -130,14 +133,15 @@ class GPS_CSV_Loader(GPS_Processer):
             self.columns_names.append(longitud_column)
         if latitud_column is not None:
             self.columns_names.append(latitud_column)
-        self.decimal_character = decimal_character
+
+        self.columns_names = self.default_column_names if len(self.columns_names) == 0 else self.columns_names
         self.load_gps_data()
         super().__init__()
 
     def load_gps_data(self):
         self.gps_df = pd.read_csv(self.route, sep=";", encoding="latin1", decimal=self.decimal_character)[
             self.columns_names]
-        if self.columns_names == 3:
+        if len(self.columns_names) == 3:
             self.gps_df.columns = ["timestamp", "longitude", "latitude"]
             self.gps_df["timestamp"] = list(
                 map(lambda x: dt.datetime.strptime(x, "%Y-%m-%d %H:%M:%S"), self.gps_df["timestamp"]))
