@@ -65,7 +65,6 @@ Among the allowed image sources are:
 
  - image_routes: A list of image routes.
  - image_folder: A folder with all images.
- - images: Images already loaded in numpy format.
  - video: The path to a video file.
 
 Among the allowed GPS data sources are:
@@ -73,8 +72,7 @@ Among the allowed GPS data sources are:
  - image_routes: A list of paths to the routes of the images that have the gps data embedded in them.
  - image_folder: A path to a folder with all the images that have the gps data embedded in them.
  - loc: A file in [NMEA format](docs%2Fgps_data_formats.md).
- - csv: A gps file with the gps information in columns and rows in [csv format](docs%2Fgps_data_formats.md).
-
+ 
 Once these elements are imported, the processor is instantiated as follows:
 
 ```python
