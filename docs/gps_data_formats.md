@@ -1,18 +1,6 @@
 # GPS Data Formats
 ---
 
-## CSV format
-
-> Rows and columns are separated by a `;` field delimiter. 
-
-| Field     | Description                           | Example              |
-|-----------|---------------------------------------|----------------------|
-| time      | Time in format HH:MM:SS               | 15:10:00             |
-| date      | Date in format YYYY-MM-DD             | 2024-05-24           |
-| latitude  | Latitude of the specific location.    | -24.1457549          |
-| longitude | Longitude of the specific location.   | -49.827651299972224  |
-
-
 ## LOC format 
 
 > NMEA like file with the GPS data.
