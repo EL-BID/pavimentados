@@ -1,10 +1,14 @@
+<div align="center">
+  <h1>Pavimentados</h1>
+
+[User Manual](docs/manual_202410.pdf)
+
 ![analytics image (flat)](https://raw.githubusercontent.com/vitr/google-analytics-beacon/master/static/badge-flat.gif)
-![analytics](https://www.google-analytics.com/collect?v=1&cid=555&t=pageview&ec=repo&ea=open&dp=/pavimentados/readme&dt=&tid=UA-4677001-16)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_pavimentados&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=EL-BID_pavimentados)
 [![Downloads](https://pepy.tech/badge/pavimentados)](https://pepy.tech/project/pavimentados)
-# Pavimentados
 
 ![video_results.gif](docs/assets/video_results.gif)
+</div>
 
 ## Description
 ---
@@ -42,7 +46,7 @@ Next,
 
 * Decompress it using the following command
 ```bash
-tar -xzvf models.tar.gz
+tar -xzvf model_20240818.tar.gz
 ```
 
 ## Quick Start

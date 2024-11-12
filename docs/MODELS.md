@@ -4,7 +4,8 @@
 ## Detection of pavement failures
 ---
 
-This model is based on Yolo version 8, which allows to identify objects or elements within an image. It was retrained to detect 8 types of faults:
+This model is based on Yolo version 8, which allows to identify objects or elements within an image. 
+It was retrained from a base model to detect 8 types of faults:
 
 1. Longitudinal Linear Cracks (D00): these are cracks in the pavement that are longitudinally located.
 2. Transverse Linear Cracks (D10): These are cracks in the pavement that are transversely located.
@@ -14,7 +15,8 @@ This model is based on Yolo version 8, which allows to identify objects or eleme
 6. White line blur (D43): Occurs when the delineation or demarcation on the pavement is out of focus or blurred.
 
 The model returns the following information:
-
  - Class of the identified object
  - Location within the image
  - Probability with which that detection is considered
+
+> **Note**: This model was retrained using the folowing base model: [RoadDamageDetection](https://github.com/oracl4/RoadDamageDetection).
