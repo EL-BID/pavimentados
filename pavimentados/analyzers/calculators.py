@@ -103,7 +103,6 @@ class Results_Calculator:
         data_resulting["height"] = list(map(lambda x: box_height(x, altura), data_resulting.boxes.values))
         data_resulting["width"] = list(map(lambda x: box_width(x, base), data_resulting.boxes.values))
         data_resulting["total_area"] = base * altura
-        # data_resulting["perc_area"] = data_resulting.area.values / data_resulting.total_area.values
 
         # Generamos la ID de fail.
         data_resulting = fail_id_generator(data_resulting, min_fotogram_distance)
@@ -145,9 +144,10 @@ class Results_Calculator:
         table_summary_sections["end_latitude"] = np.array(gps_obj.section_latitude)[index_sections_location_end]
         table_summary_sections["end_longitude"] = np.array(gps_obj.section_longitude)[index_sections_location_end]
         table_summary_sections["section_distance"] = np.array(gps_obj.section_distances)[index_sections_location]
-        for col in columns_to_have:
-            if col not in table_summary_sections.columns:
-                table_summary_sections[col] = 0
+        if columns_to_have is not None:
+            for col in columns_to_have:
+                if col not in table_summary_sections.columns:
+                    table_summary_sections[col] = 0
         table_summary_sections = table_summary_sections.reset_index()
         table_summary_sections = pd.DataFrame(table_summary_sections.values, columns=list(table_summary_sections.columns))
         table_summary_sections = table_summary_sections[
