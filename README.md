@@ -16,7 +16,7 @@ Pavimentados is a tool that allows the identification of pavement faults located
 This library provides an environment to use computer vision models developed to detect different elements. 
 The detected elements are then used to generate metrics that aid the process of planning road maintenance.
 
-The model files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=).
+The model files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/release/v1.0.0/models/model_20240818.tar.gz?download=).
 
 > **Important changes**: Unlike the previous version, this new version does not include traffic sign detection. We hope to be able to 
 > include it again in future versions. 
@@ -42,7 +42,7 @@ pip install pavimentados
 ```
 
 Next, 
-* [download the model](https://github.com/EL-BID/pavimentados/raw/feature/v1.0.0/models/model_20240818.tar.gz?download=) from this link
+* [download the model](https://github.com/EL-BID/pavimentados/raw/release/v1.0.0/models/model_20240818.tar.gz?download=) from this link
 
 * Decompress it using the following command
 ```bash
