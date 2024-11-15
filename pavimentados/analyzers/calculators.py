@@ -13,7 +13,7 @@ from pavimentados.analyzers.utils import (  # total_distance,
     stack_columns_dataset,
 )
 
-first_aggregation_dict = {"ind": "count", "perc_area": "sum"}
+first_aggregation_dict = {"ind": "count"}  # , "perc_area": "sum"
 
 second_aggregation_dict = {
     "distances": "sum",
@@ -24,11 +24,11 @@ second_aggregation_dict = {
     "end_latitude": "last",
     "end_longitude": "last",
     "width": "mean",
-    "area": "sum",
+    # "area": "sum",
     "boxes": "sum",
 }
 
-third_aggregation_dict = {"width": "sum", "distances": np.mean, "boxes": "count"}
+third_aggregation_dict = {"width": "sum", "distances": "mean", "boxes": "count"}
 
 
 def dist(lat1, lon1, lat2, lon2):
@@ -49,28 +49,41 @@ def dist(lat1, lon1, lat2, lon2):
 class Results_Calculator:
     @staticmethod
     def generate_paviment_results(
+        config,
         results_obj,
         img_obj,
         gps_obj,
         min_fotogram_distance=5,
-        columns_to_have=[
-            "Grieta Lineal Longitudinal",
-            "Intervalo Lineal Longitudinal",
-            "Grieta Lineal Transversal",
-            "Intervalo Lineal Transversal",
-            "Piel de Cocodrilo",
-            "Protuberancia, Bache",
-            "Otras fallas",
-        ],
+        columns_to_have=None,
     ):
         """
-        Genera la table final de resultados de pavimentos.
+        Genera la tabla final de resultados de pavimentos.
+        Args:
+            results_obj: Results object.
+            img_obj: Image object.
+            gps_obj: GPS object.
+            min_fotogram_distance: Distancia mínima entre fotogramas para considerarlos.
+            columns_to_have: Columnas a incluir en la tabla.
+
+        Returns:
+            Table of paviment results.
         """
+        # Reemplazo de clases
+        paviment_class_mapping = config["paviment_class_mapping"]
+        final_pav_clases = [
+            [paviment_class_mapping[item] if item in paviment_class_mapping.keys() else item for item in sublist]
+            for sublist in results_obj["final_pav_clases"]
+        ]
+
+        # Eliminamos las columnas del mapping.
+        if columns_to_have is not None:
+            columns_to_have = [col for col in columns_to_have if col not in list(paviment_class_mapping.keys())]
+
         # Genero el dataset.
         data = gps_obj.gps_df.copy()
         data["scores"] = results_obj["scores_pav"]
         data["boxes"] = results_obj["boxes_pav"]
-        data["classes"] = results_obj["final_pav_clases"]
+        data["classes"] = final_pav_clases
         data["fotograma"] = data.index
         altura, base = img_obj.get_altura_base()
 
@@ -90,27 +103,8 @@ class Results_Calculator:
         data_resulting["height"] = list(map(lambda x: box_height(x, altura), data_resulting.boxes.values))
         data_resulting["width"] = list(map(lambda x: box_width(x, base), data_resulting.boxes.values))
         data_resulting["total_area"] = base * altura
-        data_resulting["perc_area"] = data_resulting.area.values / data_resulting.total_area.values
-
-        # Agrupamos data.
-        # data_resulting_g = (
-        #     data_resulting.groupby(["latitude", "longitude", "fotograma", "distances", "classes", "section"])
-        #     .aggregate(first_aggregation_dict)
-        #     .reset_index()
-        #     .rename({"ind": "cantidad"}, axis=1)
-        #     .sort_values(["fotograma"])
-        #     .reset_index(drop=True)
-        # )
-        # data_resulting_g_total = (
-        #     data_resulting.groupby(["classes"])
-        #     .aggregate(first_aggregation_dict)
-        #     .reset_index()
-        #     .rename({"ind": "quantity"}, axis=1)
-        #     .reset_index(drop=True)
-        # )
 
         # Generamos la ID de fail.
-        # variables = list(data_resulting.classes.unique())
         data_resulting = fail_id_generator(data_resulting, min_fotogram_distance)
 
         # Agrupamos data por sections.
@@ -150,9 +144,10 @@ class Results_Calculator:
         table_summary_sections["end_latitude"] = np.array(gps_obj.section_latitude)[index_sections_location_end]
         table_summary_sections["end_longitude"] = np.array(gps_obj.section_longitude)[index_sections_location_end]
         table_summary_sections["section_distance"] = np.array(gps_obj.section_distances)[index_sections_location]
-        for col in columns_to_have:
-            if col not in table_summary_sections.columns:
-                table_summary_sections[col] = 0
+        if columns_to_have is not None:
+            for col in columns_to_have:
+                if col not in table_summary_sections.columns:
+                    table_summary_sections[col] = 0
         table_summary_sections = table_summary_sections.reset_index()
         table_summary_sections = pd.DataFrame(table_summary_sections.values, columns=list(table_summary_sections.columns))
         table_summary_sections = table_summary_sections[
@@ -162,34 +157,36 @@ class Results_Calculator:
 
     @staticmethod
     def generate_final_results_signal(
+        config,
         results_obj,
         gps_obj,
-        classes_names_yolo_signal=[
-            "ADTCIA",
-            "CIRCROJO",
-            "CRUZAMLLA",
-            "CUADBCO",
-            "CUADCAFE",
-            "CUADVERDE",
-            "CUADZUL",
-            "CUAMLLO",
-            "CURVA",
-            "INDAZUL",
-            "OBRA",
-            "OTRO",
-            "PROBROJO",
-            "ROMAMLLO",
-            "RUTA",
-            "SEMAFORO",
-            "STOP",
-            "TRIROJO",
-        ],
+        classes_names_yolo_signal=None,
     ):
+        # Reemplazo de clases
+        # signals_class_mapping = config["signals_class_mapping"]
+
+        signal_base_predictions = results_obj["signal_base_predictions"]
+        final_signal_classes = results_obj["final_signal_classes"]
+        state_predictions = results_obj["state_predictions"]
+
+        # signal_base_predictions = [
+        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+        #     for sublist in results_obj["signal_base_predictions"]
+        # ]
+        # final_signal_classes = [
+        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+        #     for sublist in results_obj["final_signal_classes"]
+        # ]
+        # state_predictions = [
+        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
+        #     for sublist in results_obj["state_predictions"]
+        # ]
+
         BOXES_SIGNAL = results_obj["boxes_signal"]
         CLASSES_SIGNAL = results_obj["classes_signal"]
-        SIGNAL_CLASSES_siames = results_obj["final_signal_classes"]
-        SIGNAL_CLASSES_BASE = results_obj["signal_base_predictions"]
-        SIGNAL_STATE = results_obj["state_predictions"]
+        SIGNAL_CLASSES_siames = final_signal_classes
+        SIGNAL_CLASSES_BASE = signal_base_predictions
+        SIGNAL_STATE = state_predictions
         SCORES_SIGNAL = results_obj["scores_signal"]
         final_latitude = gps_obj.gps_df.latitude.values
         final_longitude = gps_obj.gps_df.longitude.values
