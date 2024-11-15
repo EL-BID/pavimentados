@@ -1,28 +1,29 @@
+import logging
 from pathlib import Path
 
 import pandas as pd
-import tensorflow as tf
 
+from pavimentados.configs.utils import setup_logging
 from pavimentados.processing.processors import MultiImage_Processor
 from pavimentados.processing.workflows import Workflow_Processor
 
 if __name__ == "__main__":
     # Parameters
-    GPU = False
     input_path = Path("./road_videos")
-    models_path = Path("../models/artifacts")
+    models_path = Path("./artifacts")
+    input_video_name = "sample"
 
-    input_video_file = input_path / "sample.mp4"
-    input_gps_file = input_path / "sample.LOG"
+    output_path = Path("./outputs") / input_video_name
+    output_path.mkdir(parents=True, exist_ok=True)
 
-    # Check CPU/GPU Status
-    if GPU:
-        print(tf.config.list_physical_devices("GPU"))
-    else:
-        print(tf.config.list_physical_devices("CPU"))
+    input_video_file = input_path / f"{input_video_name}.mp4"
+    input_gps_file = input_path / f"{input_video_name}.log"
+
+    # Setup logging
+    setup_logging(level=logging.INFO)
 
     # Create processor
-    ml_processor = MultiImage_Processor(assign_devices=True, gpu_enabled=GPU, artifacts_path=str(models_path))
+    ml_processor = MultiImage_Processor(artifacts_path=str(models_path), config_file="./models_config.json")
 
     # Create workflow
     workflow = Workflow_Processor(
@@ -30,8 +31,10 @@ if __name__ == "__main__":
     )
 
     # Process inputs
-    results = workflow.execute(ml_processor)
+    results = workflow.execute(
+        ml_processor, video_output_file=f"{output_path}/processed_video.mp4"
+    )
 
     # Save results to outputs directory
     for result_name in results.keys():
-        pd.DataFrame(results[result_name]).to_csv(f"./outputs/{result_name}.csv")
+        pd.DataFrame(results[result_name]).to_csv(f"{output_path}/{result_name}.csv")

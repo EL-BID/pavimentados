@@ -1,27 +1,37 @@
+import logging
 import os
 import secrets
 from pathlib import Path
+from time import sleep
 
 import cv2
 import numpy as np
 
-from pavimentados.configs.utils import Config_Basic
-
+logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
 
 def load_video(video_path):
-    """
-    Carga el video.
-    """
+    """Loads a video from the specified path."""
+    logger.info("Opening video: %s", video_path)
     vidcap = cv2.VideoCapture(video_path)
+    retries = 10
+    while not vidcap.isOpened():
+        logger.debug("Waiting for video to open...")
+        sleep(0.1)
+        if retries == 0:
+            raise ValueError(f"Could not open video: {video_path}")
+        retries -= 1
+
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
     number_of_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+    logger.info("fps: %s, number_of_frames: %s", fps, number_of_frames)
     return vidcap, fps, number_of_frames
 
 
 class ListImages:
-    def __init__(self, images):
+    def __init__(self, config, images):
+        self.config = config
         self.images = images
 
     def get_altura_base(self):
@@ -38,7 +48,8 @@ class ListImages:
 
 
 class ListRoutesImages:
-    def __init__(self, routes):
+    def __init__(self, config, routes):
+        self.config = config
         self.routes = routes
 
     def get_altura_base(self):
@@ -51,34 +62,42 @@ class ListRoutesImages:
         return self.routes[idx_inicial:idx_final]
 
     def get_batch(self, idx_inicial, batch_size=8):
-        return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
+        return np.array(
+            [cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
-class FolderRoutesImages(ListRoutesImages, Config_Basic):
-    def __init__(self, route, config_file=pavimentados_path / "configs" / "images_processor.json"):
-        self.load_config(config_file)
+class FolderRoutesImages(ListRoutesImages):
+    def __init__(self, config, route):
+        self.config = config
         folder = Path(route)
         self.routes = list(
-            filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
+            filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"],
+                   map(lambda x: folder / x, os.listdir(folder)))
         )
+        self.routes = sorted(self.routes)
 
 
 class VideoCaptureImages:
-    def __init__(self, route, images_per_second=2):
-        self.images_per_second = images_per_second
+    def __init__(self, config, route, images_per_second=2):
+        self.config = config
         self.route = str(route)
+        self.images_per_second = images_per_second
+        self.load_video_capture()
+
+    def load_video_capture(self):
         vidcap, self.fps, self.number_of_frames = load_video(self.route)
         self.images_dict = {
             item: True
             for item in filter(
                 lambda x: x < self.number_of_frames,
                 (
-                    np.arange(0, self.number_of_frames, self.fps).reshape(-1, 1)
-                    + np.arange(0, self.fps, self.fps // self.images_per_second)[: self.images_per_second]
+                        np.arange(0, self.number_of_frames, self.fps).reshape(-1, 1)
+                        + np.arange(0, self.fps, self.fps // self.images_per_second)[: self.images_per_second]
                 ).reshape(-1),
             )
         }
         self.lenght = len(self.images_dict.keys())
+        self.selected_frames = list(map(int, list(self.images_dict.keys())))
         vidcap.set(cv2.CAP_PROP_POS_FRAMES, secrets.randbelow(self.number_of_frames))
         state, img = vidcap.read()
         self.img_shape = img.shape[:2]
@@ -102,6 +121,7 @@ class VideoCaptureImages:
                 if self.images_dict.get(self.actual_vidcap_count, False):
                     img = img if not (img is None) else past_img
                     if not (img is None):
+                        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                         images.append(img)
                     past_img = np.full((*self.img_shape, 3), 255)
                     i += 1

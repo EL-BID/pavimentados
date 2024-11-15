@@ -3,9 +3,7 @@ import pandas as pd
 
 
 def total_distance(lat1, lon1, lat2, lon2):
-    """
-    Calcula la distancia entre dos puntos (lat1, lon1) y (lat2, lon2).
-    """
+    """Calcula la distancia entre dos puntos (lat1, lon1) y (lat2, lon2)."""
 
     R = 6373.0  # approximate radius of earth in km.
 
@@ -25,9 +23,7 @@ def total_distance(lat1, lon1, lat2, lon2):
 
 
 def area_calc(boxes, altura, base):
-    """
-    Calcula el area de la caja.
-    """
+    """Calcula el area de la caja."""
     if len(boxes) > 0:
         return ((boxes[2] - boxes[0]) * altura) * ((boxes[3] - boxes[1]) * base)
     else:
@@ -35,9 +31,7 @@ def area_calc(boxes, altura, base):
 
 
 def box_center(boxes, altura, base):
-    """
-    Calcula el centro de la caja.
-    """
+    """Calcula el centro de la caja."""
     if len(boxes) > 0:
         return (((boxes[3] + boxes[1]) / 2) * base), (((boxes[2] + boxes[0]) / 2) * altura)
     else:
@@ -45,9 +39,7 @@ def box_center(boxes, altura, base):
 
 
 def box_height(boxes, altura):
-    """
-    Calcula la altura de la caja.
-    """
+    """Calcula la altura de la caja."""
     if len(boxes) > 0:
         return (boxes[2] - boxes[0]) * altura
     else:
@@ -55,9 +47,7 @@ def box_height(boxes, altura):
 
 
 def box_width(boxes, base):
-    """
-    Calcula la base de la caja.
-    """
+    """Calcula la base de la caja."""
     if len(boxes) > 0:
         return (boxes[3] - boxes[1]) * base
     else:
@@ -65,9 +55,10 @@ def box_width(boxes, base):
 
 
 def fail_id_generator(df, min_photogram_distance):
-    """
-    Genera un ID de fail. Esto se realiza ya que cada fail es detectada en
-    fotogramas simultaneos y es necesario identificarla como una misma fail.
+    """Genera un ID de fail.
+
+    Esto se realiza ya que cada fail es detectada en fotogramas
+    simultaneos y es necesario identificarla como una misma fail.
     """
 
     df_id_fails = []
@@ -104,7 +95,7 @@ def stack_columns_dataset(df, variables, static_variables):
 
 
 def assign_group_calculations(df):
-    df["area"] = df.width.values * df.distances.values
+    # df["area"] = df.width.values * df.distances.values
     df["start_coordinate"] = list(map(lambda x, y: (x, y), df.latitude.values, df.longitude.values))
     df["end_coordenate"] = list(map(lambda x, y: (x, y), df.latitude.values, df.longitude.values))
     df["start_latitude"] = df.latitude
@@ -112,3 +103,10 @@ def assign_group_calculations(df):
     df["start_longitude"] = df.longitude
     df["end_longitude"] = df.longitude
     return df
+
+
+def decimal_coords(coords, ref):
+    decimal_degrees = float(coords[0]) + float(coords[1]) / 60 + float(coords[2]) / 3600
+    if ref == "S" or ref == 'W':
+        decimal_degrees = -1 * decimal_degrees
+    return decimal_degrees
