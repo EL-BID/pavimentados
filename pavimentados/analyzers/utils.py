@@ -1,5 +1,8 @@
+import math
 import numpy as np
+
 import pandas as pd
+import xmltodict
 
 
 def total_distance(lat1, lon1, lat2, lon2):
@@ -110,3 +113,52 @@ def decimal_coords(coords, ref):
     if ref == "S" or ref == 'W':
         decimal_degrees = -1 * decimal_degrees
     return decimal_degrees
+
+
+def decdeg2nmea(dd, tipo):
+    dd = float(dd)
+    num = abs(dd)
+    d = float(math.floor(num))
+    m = num - d
+    sign = '-' if dd < 0 else ''
+    if tipo == 'lat':
+        return sign+'%03i%08.5f' % (int(d), m * 60.00)
+    elif tipo == 'lon':
+        return sign+'%02i%08.5f' % (int(d), m * 60.00)
+
+
+def read_gpx(file_name):
+    with open(file_name, 'r', encoding='utf-8') as file:
+        gpx = file.read()
+    gpx = xmltodict.parse(gpx)['gpx']['trk']['trkseg']['trkpt']
+    return [[g['@lat'], g['@lon'], g['time']] for g in gpx]
+
+
+def convert_gpx_to_nmea(input_file_name, output_file_name):
+    data = read_gpx(input_file_name)
+    data = pd.DataFrame(data, columns=['lat', 'lon', 'timestamp'])
+    data['lat'] = data['lat'].astype(float)
+    data['lon'] = data['lon'].astype(float)
+    data['timestamp'] = pd.to_datetime(data['timestamp'])
+
+    data['DateTimeNumbers'] = list(map(lambda x: float((x.hour * 10000) + (x.minute * 100) + x.second), data.timestamp))
+    data['latitud_nmea'] = list(map(lambda x: decdeg2nmea(x, tipo='lat'), data.lat.values))
+    data['longitud_nmea'] = list(map(lambda x: decdeg2nmea(x, tipo='lon'), data.lon.values))
+
+    data['N/S'] = 'S'
+    data['E/W'] = 'W'
+
+    data['GPGGA'] = list(
+        map(lambda x: '$GPGGA,{0:.4f},{1},{2},{3},{4},1,0,,,M,,M,,\n'.format(x[0], x[1], x[2], x[3], x[4]),
+            data[['DateTimeNumbers', 'latitud_nmea', 'N/S', 'longitud_nmea', 'E/W']].values))
+    data['GPRMC'] = list(
+        map(lambda x: '$GPRMC,{0:.4f},A,{1},{2},{3},{4},19.31,,250620,,,\n'.format(x[0], x[1], x[2], x[3], x[4]),
+            data[['DateTimeNumbers', 'latitud_nmea', 'N/S', 'longitud_nmea', 'E/W']].values))
+    data['lines'] = data.GPGGA.values + data.GPRMC.values
+
+    PRE_TEXT = '@Sonygps/ver5.0/wgs-84/20200625135753.000/\n@Sonygpsoption/0/20200625135754.000/20200625135754.000/\n'
+
+    with open(output_file_name, 'w') as file:
+        file.write(PRE_TEXT)
+        for line in data.lines.values:
+            file.write(line)

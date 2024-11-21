@@ -8,3 +8,5 @@ scipy>=1.4.1
 onnxruntime>=1.18.0
 onnxruntime-gpu>=1.18.0
 ultralytics~=8.2.0
+xmltodict
+
