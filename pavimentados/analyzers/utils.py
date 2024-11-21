@@ -120,11 +120,11 @@ def decdeg2nmea(dd, tipo):
     num = abs(dd)
     d = float(math.floor(num))
     m = num - d
-    sign = '-' if dd < 0 else ''
+    # sign = '-' if dd < 0 else ''
     if tipo == 'lat':
-        return sign+'%03i%08.5f' % (int(d), m * 60.00)
+        return '%03i%08.5f' % (int(d), m * 60.00)
     elif tipo == 'lon':
-        return sign+'%02i%08.5f' % (int(d), m * 60.00)
+        return '%02i%08.5f' % (int(d), m * 60.00)
 
 
 def read_gpx(file_name):
