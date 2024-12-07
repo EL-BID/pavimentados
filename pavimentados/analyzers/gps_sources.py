@@ -1,5 +1,5 @@
-import logging
 import datetime as dt
+import logging
 import os
 from pathlib import Path
 
@@ -11,9 +11,11 @@ from PIL.ExifTags import TAGS, GPSTAGS
 from scipy.interpolate import interp1d
 from tqdm import tqdm
 
+from pavimentados.analyzers.exceptions import InvalidGPSData
 from pavimentados.analyzers.utils import total_distance, decimal_coords
 
 logger = logging.getLogger(__name__)
+
 
 class GPS_Processer:
     def __init__(self):
@@ -90,6 +92,11 @@ class GPS_Standard_Loader(GPS_Processer):
                     data.append(pynmea2.parse(line))
                 except pynmea2.ParseError:
                     continue
+
+        # Check data load
+        if data is None or len(data) == 0:
+            raise InvalidGPSData("Empty GPS data, please review the input file")
+
         gps = {}
         for value in data:
             salida = gps.get(value.sentence_type, None)
@@ -139,8 +146,18 @@ class GPS_CSV_Loader(GPS_Processer):
         super().__init__()
 
     def load_gps_data(self):
-        self.gps_df = pd.read_csv(self.route, sep=";", encoding="latin1", decimal=self.decimal_character)[
-            self.columns_names]
+        try:
+            self.gps_df = pd.read_csv(self.route, sep=";", encoding="latin1", decimal=self.decimal_character)
+        except pd.errors.ParserError:
+            raise InvalidGPSData("Error parsing GPS data, please review the input file")
+        except pd.errors.EmptyDataError:
+            raise InvalidGPSData("Empty GPS data, please review the input file")
+
+        try:
+            self.gps_df = self.gps_df[self.columns_names]
+        except KeyError:
+            raise InvalidGPSData(f"Invalid GPS data, please review the input file columns names {self.columns_names}")
+
         if len(self.columns_names) == 3:
             self.gps_df.columns = ["timestamp", "longitude", "latitude"]
             self.gps_df["timestamp"] = list(
@@ -161,6 +178,10 @@ class GPS_CSV_Loader(GPS_Processer):
             self.gps_df["seconds"] = list(
                 map(lambda x: (x.hour * 3600) + (x.minute * 60) + (x.second), self.gps_df.timestamp))
 
+        # Check data load
+        if self.gps_df is None or self.gps_df.shape[0] == 0:
+            raise InvalidGPSData("Empty GPS data, please review the input file")
+
 
 class GPS_Image_Route_Loader(GPS_Processer):
     def __init__(self, config, images_routes, **kwargs):
@@ -171,6 +192,9 @@ class GPS_Image_Route_Loader(GPS_Processer):
 
     def load_gps_data(self):
         routes = [route for route in self.routes if route.suffix[1:].lower() in self.config["images_allowed"]]
+        if routes is None or len(routes) == 0:
+            raise InvalidGPSData("Invalid GPS data, please review the input file")
+
         self.gps_df = pd.DataFrame(list(
             tqdm(map(lambda img_path: self.load_single_value(img_path), routes), desc="Loading GPS from images...",
                  total=len(routes))))
@@ -234,8 +258,7 @@ class GPS_Image_Route_Loader(GPS_Processer):
                 lon = decimal_coords(d['GPSLongitude'], d['GPSLongitudeRef'])
                 time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
             except:
-                logger.debug("Could not load GPS data from image: %s", img_path)
-                return
+                raise InvalidGPSData(f"Could not load GPS data from image: {img_path}")
 
         return {"timestamp": time, "longitude": lon, "latitude": lat}
 

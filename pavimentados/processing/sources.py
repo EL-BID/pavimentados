@@ -7,6 +7,8 @@ from time import sleep
 import cv2
 import numpy as np
 
+from pavimentados.processing.exceptions import InvalidInputVideo
+
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
@@ -20,7 +22,7 @@ def load_video(video_path):
         logger.debug("Waiting for video to open...")
         sleep(0.1)
         if retries == 0:
-            raise ValueError(f"Could not open video: {video_path}")
+            raise InvalidInputVideo(f"Please check the input video: {video_path}")
         retries -= 1
 
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
