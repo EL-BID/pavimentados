@@ -116,6 +116,15 @@ class GPS_Standard_Loader(GPS_Processer):
             self.gps_df["seconds"] = list(
                 map(lambda x: (x.hour * 3600) + (x.minute * 60) + (x.second), self.gps_df.timestamp.values))
 
+class GPS_GPX_Loader(GPS_Standard_Loader):
+    def load_gps_data(self):
+        from pavimentados.analyzers.utils import convert_gpx_to_nmea
+        input_file = self.route
+        output_file = self.route.with_suffix('.log')
+        logger.info("Converting gps file gpx to loc...")
+        convert_gpx_to_nmea(input_file, output_file)
+        self.route = output_file
+        super().load_gps_data()
 
 class GPS_CSV_Loader(GPS_Processer):
     def __init__(self, config, route, **kwargs):
@@ -276,6 +285,7 @@ gps_source_options_dict = {
     "image_folder": GPS_Image_Folder_Loader,
     "csv": GPS_CSV_Loader,
     "loc": GPS_Standard_Loader,
+    "gpx": GPS_GPX_Loader,
 }
 
 

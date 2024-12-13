@@ -63,8 +63,8 @@ class Workflow_Processor(Config_Basic):
         Returns:
             None
         """
-        logger.info("Processing paviment results...")
         if self.processor.paviment_model_enabled:
+            logger.info("Processing paviment results...")
             self.classes_names_yolo_paviment = self.processor.processor.yolov8_paviment_model.classes_names
             self.table_summary_sections, self.data_resulting, self.data_resulting_fails = calculator.generate_paviment_results(
                 self.config,
@@ -75,8 +75,8 @@ class Workflow_Processor(Config_Basic):
                 min_fotogram_distance=min_fotogram_distance,
             )
 
-        logger.info("Processing signals results...")
         if self.processor.signal_model_enabled:
+            logger.info("Processing signals results...")
             self.classes_names_yolo_signal = self.processor.processor.yolov8_signal_model.classes_names
             self.signals_summary = calculator.generate_final_results_signal(
                 self.config, self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal

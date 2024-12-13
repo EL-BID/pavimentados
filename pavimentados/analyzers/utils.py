@@ -44,7 +44,7 @@ def box_center(boxes, altura, base):
 def box_height(boxes, altura):
     """Calcula la altura de la caja."""
     if len(boxes) > 0:
-        return (boxes[2] - boxes[0]) * altura
+        return (boxes[3] - boxes[1]) * altura
     else:
         return None
 
@@ -52,7 +52,7 @@ def box_height(boxes, altura):
 def box_width(boxes, base):
     """Calcula la base de la caja."""
     if len(boxes) > 0:
-        return (boxes[3] - boxes[1]) * base
+        return (boxes[2] - boxes[0]) * base
     else:
         return None
 

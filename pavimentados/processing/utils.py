@@ -158,7 +158,7 @@ def create_output_from_results(
 
     for fotogram_idx in tqdm(sorted(list(df.fotogram.unique())), desc="Processing frames: "):
 
-        frame_text = "id# "
+        frame_text = "fotogram# "
         if is_video_output:
             fotogram = processor.selected_frames[fotogram_idx]
             processor.vidcap.set(cv2.CAP_PROP_POS_FRAMES, fotogram)

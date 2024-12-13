@@ -76,6 +76,7 @@ Among the allowed GPS data sources are:
  - image_routes: A list of paths to the routes of the images that have the gps data embedded in them.
  - image_folder: A path to a folder with all the images that have the gps data embedded in them.
  - loc: A file in [NMEA format](docs%2Fgps_data_formats.md).
+ - gpx: A file in  GPX format
  
 Once these elements are imported, the processor is instantiated as follows:
 
