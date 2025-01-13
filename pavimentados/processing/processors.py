@@ -127,9 +127,7 @@ class MultiImage_Processor(Config_Basic):
         self.signal_model_enabled = self.config["signal_model_enabled"] = self.config["signal_model"].get("enabled", True)
         self.paviment_model_enabled = self.config["paviment_model_enabled"] = self.config["paviment_model"].get("enabled", True)
 
-        self.processor = Image_Processor(
-            yolo_device=self.yolo_device, artifacts_path=artifacts_path, config=self.config
-        )
+        self.processor = Image_Processor(yolo_device=self.yolo_device, artifacts_path=artifacts_path, config=self.config)
 
     def _process_batch(self, offset, img_batch, video_output=None, image_folder_output=None):
         boxes_pav, scores_pav, classes_pav = self.processor.yolov8_paviment_model.predict(img_batch)
@@ -180,8 +178,8 @@ class MultiImage_Processor(Config_Basic):
         results = list(
             tqdm(
                 map(
-                    lambda x: self._process_batch(x,
-                        img_obj.get_batch(x, batch_size), video_output=video_output, image_folder_output=image_folder_output
+                    lambda x: self._process_batch(
+                        x, img_obj.get_batch(x, batch_size), video_output=video_output, image_folder_output=image_folder_output
                     ),
                     [offset for offset in range(0, len_imgs, batch_size)],
                 ),

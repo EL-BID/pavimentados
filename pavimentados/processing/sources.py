@@ -7,6 +7,8 @@ from time import sleep
 import cv2
 import numpy as np
 
+from pavimentados.processing.exceptions import InvalidInputVideo
+
 logger = logging.getLogger(__name__)
 pavimentados_path = Path(__file__).parent.parent
 
@@ -20,7 +22,7 @@ def load_video(video_path):
         logger.debug("Waiting for video to open...")
         sleep(0.1)
         if retries == 0:
-            raise ValueError(f"Could not open video: {video_path}")
+            raise InvalidInputVideo(f"Please check the input video: {video_path}")
         retries -= 1
 
     fps = int(vidcap.get(cv2.CAP_PROP_FPS))
@@ -62,8 +64,7 @@ class ListRoutesImages:
         return self.routes[idx_inicial:idx_final]
 
     def get_batch(self, idx_inicial, batch_size=8):
-        return np.array(
-            [cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
+        return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
 
 
 class FolderRoutesImages(ListRoutesImages):
@@ -71,8 +72,7 @@ class FolderRoutesImages(ListRoutesImages):
         self.config = config
         folder = Path(route)
         self.routes = list(
-            filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"],
-                   map(lambda x: folder / x, os.listdir(folder)))
+            filter(lambda x: str(x).lower().split(".")[-1] in self.config["images_allowed"], map(lambda x: folder / x, os.listdir(folder)))
         )
         self.routes = sorted(self.routes)
 
@@ -91,8 +91,8 @@ class VideoCaptureImages:
             for item in filter(
                 lambda x: x < self.number_of_frames,
                 (
-                        np.arange(0, self.number_of_frames, self.fps).reshape(-1, 1)
-                        + np.arange(0, self.fps, self.fps // self.images_per_second)[: self.images_per_second]
+                    np.arange(0, self.number_of_frames, self.fps).reshape(-1, 1)
+                    + np.arange(0, self.fps, self.fps // self.images_per_second)[: self.images_per_second]
                 ).reshape(-1),
             )
         }

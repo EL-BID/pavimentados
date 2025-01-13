@@ -79,7 +79,8 @@ class YoloV8Model(BaseModel):
             return
 
         self.classes_names_idx = {
-            name: idx for idx, name in enumerate(open(self.yolo_model_path / self.classes_filename).read().splitlines())
+            name: idx
+            for idx, name in enumerate(open(self.yolo_model_path / self.classes_filename).read().splitlines())
             if name not in self.classes_codes_to_exclude
         }
         self.classes_idx_names = {idx: name for name, idx in self.classes_names_idx.items()}
@@ -90,7 +91,6 @@ class YoloV8Model(BaseModel):
         model_path = Path(self.yolo_model_path) / self.model_filename
         logger.debug(f"Loading YOLO model: {model_path}...")
         self.model = YOLO(model_path, task="detect")
-
 
     def predict(self, data: np.ndarray) -> tuple[list, list, list]:
         """Predict boxes, scores, and classes for the given data.
