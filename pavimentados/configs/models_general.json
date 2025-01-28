@@ -26,20 +26,12 @@
 	},
 
 	"signal_model": {
-		"enabled": false,
-		"path": "signal_model/yolov8-signals-240707-2106",
+		"enabled": true,
+		"path": "signal_model/yolo11-signals-datasetWOotherysem-250115-2342",
 		"model_filename": "model.pt",
 		"classes_filename": "classes.names",
 		"yolo_threshold": 0.10,
 		"yolo_iou": 0.45,
 		"yolo_max_detections": 100
-	},
-
-	"siamese_model": {
-		"enabled": false,
-		"path": "siamese_model/siamese_128",
-		"model_filename": "onnx_siamese_model.onnx",
-		"embeddings_filename": "embeddings_references.pickle",
-		"image_size": [128, 128, 3]
 	}
 }

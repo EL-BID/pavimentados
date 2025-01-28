@@ -79,7 +79,7 @@ class Workflow_Processor(Config_Basic):
             logger.info("Processing signals results...")
             self.classes_names_yolo_signal = self.processor.processor.yolov8_signal_model.classes_names
             self.signals_summary = calculator.generate_final_results_signal(
-                self.config, self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal
+                self.results, self.gps_data, classes_names_yolo_signal=self.classes_names_yolo_signal
             )
 
     def get_results(self) -> dict[str, any]:

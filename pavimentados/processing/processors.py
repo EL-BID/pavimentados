@@ -9,7 +9,6 @@ import numpy as np
 from tqdm.autonotebook import tqdm
 
 from pavimentados.configs.utils import Config_Basic
-from pavimentados.models.siamese import Siamese_Model
 from pavimentados.models.yolov8 import YoloV8Model
 from pavimentados.processing.utils import draw_outputs
 
@@ -33,7 +32,6 @@ class Image_Processor:
         This function initializes and loads the following models:
         - `yolov8_signal_model`: A YoloV8Model object for detecting signals in the input images.
         - `yolov8_paviment_model`: A YoloV8Model object for detecting pavements in the input images.
-        - `siamese_model`: A Siamese_Model object for tracking objects across frames.
 
         Args:
             None
@@ -47,9 +45,6 @@ class Image_Processor:
         )
         self.yolov8_paviment_model = YoloV8Model(
             device=self.yolo_device, model_config_key="paviment_model", artifacts_path=self.artifacts_path, config=self.config
-        )
-        self.siamese_model = Siamese_Model(
-            device=self.yolo_device, model_config_key="siamese_model", artifacts_path=self.artifacts_path, config=self.config
         )
 
     def crop_img(self, box: list[float], img: np.ndarray) -> np.ndarray:
@@ -132,7 +127,8 @@ class MultiImage_Processor(Config_Basic):
     def _process_batch(self, offset, img_batch, video_output=None, image_folder_output=None):
         boxes_pav, scores_pav, classes_pav = self.processor.yolov8_paviment_model.predict(img_batch)
         boxes_signal, scores_signal, classes_signal = self.processor.yolov8_signal_model.predict(img_batch)
-        final_signal_classes, signal_base_predictions, state_predictions = self.processor.predict_signal_state(img_batch, boxes_signal)
+        # final_signal_classes, signal_base_predictions, state_predictions = self.processor.predict_signal_state(img_batch, boxes_signal)
+        # final_signal_classes, signal_base_predictions, state_predictions = classes_signal, classes_signal, classes_signal
 
         if video_output or image_folder_output:
             j = 0
@@ -145,7 +141,7 @@ class MultiImage_Processor(Config_Basic):
                     img,
                     ([boxes_signal[j]], [scores_signal[j]], [classes_signal[j]]),
                     self.processor.yolov8_signal_model.classes_names,
-                    final_signal_classes[j],
+                    classes_signal[j],
                 )
 
                 if video_output:
@@ -161,9 +157,9 @@ class MultiImage_Processor(Config_Basic):
             list(scores_signal),
             list(classes_pav),
             list(classes_signal),
-            final_signal_classes,
-            signal_base_predictions,
-            state_predictions,
+            # final_signal_classes,
+            # signal_base_predictions,
+            # state_predictions,
         )
 
     def process_images_group(self, img_obj, batch_size=8, video_output_file=None, image_folder_output=None):
@@ -198,9 +194,6 @@ class MultiImage_Processor(Config_Basic):
             "final_pav_clases": [
                 [self.processor.yolov8_paviment_model.classes_idx_names.get(elem, "<UNK>") for elem in item] for item in sum(results[4], [])
             ],
-            "final_signal_classes": sum(results[6], []),
-            "signal_base_predictions": sum(results[7], []),
-            "state_predictions": sum(results[8], []),
         }
 
     def process_folder(self, folder, batch_size=8):

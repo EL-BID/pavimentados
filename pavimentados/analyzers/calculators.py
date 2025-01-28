@@ -157,36 +157,12 @@ class Results_Calculator:
 
     @staticmethod
     def generate_final_results_signal(
-        config,
         results_obj,
         gps_obj,
         classes_names_yolo_signal=None,
     ):
-        # Reemplazo de clases
-        # signals_class_mapping = config["signals_class_mapping"]
-
-        signal_base_predictions = results_obj["signal_base_predictions"]
-        final_signal_classes = results_obj["final_signal_classes"]
-        state_predictions = results_obj["state_predictions"]
-
-        # signal_base_predictions = [
-        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
-        #     for sublist in results_obj["signal_base_predictions"]
-        # ]
-        # final_signal_classes = [
-        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
-        #     for sublist in results_obj["final_signal_classes"]
-        # ]
-        # state_predictions = [
-        #     [signals_class_mapping[item] if item in signals_class_mapping.keys() else item for item in sublist]
-        #     for sublist in results_obj["state_predictions"]
-        # ]
-
         BOXES_SIGNAL = results_obj["boxes_signal"]
         CLASSES_SIGNAL = results_obj["classes_signal"]
-        SIGNAL_CLASSES_siames = final_signal_classes
-        SIGNAL_CLASSES_BASE = signal_base_predictions
-        SIGNAL_STATE = state_predictions
         SCORES_SIGNAL = results_obj["scores_signal"]
         final_latitude = gps_obj.gps_df.latitude.values
         final_longitude = gps_obj.gps_df.longitude.values
@@ -210,9 +186,6 @@ class Results_Calculator:
                     f,
                     position_boxes[f][i],
                     SCORES_SIGNAL[f][i],
-                    SIGNAL_STATE[f][i],
-                    SIGNAL_CLASSES_siames[f][i],
-                    SIGNAL_CLASSES_BASE[f][i],
                     int(CLASSES_SIGNAL[f][i]),
                     final_latitude[f],
                     final_longitude[f],
@@ -226,9 +199,6 @@ class Results_Calculator:
                 "fotogram",
                 "position_boxes",
                 "score",
-                "signal_state",
-                "signal_class_siames",
-                "signal_class_base",
                 "signal_class",
                 "latitude",
                 "longitude",
@@ -236,24 +206,10 @@ class Results_Calculator:
             ],
         )
 
-        df["signal_class_siames_names"] = df["signal_class_siames"].values
         df["signal_class_names"] = df["signal_class"].apply(lambda x: classes_names_yolo_signal[x])
-
-        yolo_classes_to_keep = []
-
-        x = tuple(zip(df["signal_class_siames_names"].values, df["signal_class_names"].values))
-
-        final_classes = []
-        for i in range(len(x)):
-            if x[i][1] in yolo_classes_to_keep:
-                final_classes.append(x[i][1])
-            else:
-                final_classes.append(x[i][0])
-
-        df["final_classes"] = final_classes
         df["ID"] = range(len(df))
 
-        df = df.sort_values(["final_classes", "position_boxes", "fotogram"]).reset_index(drop=True)
+        df = df.sort_values(["signal_class_names", "position_boxes", "fotogram"]).reset_index(drop=True)
 
         # cantidad de fotogramas a sacar repetidas.
         N_fotogram = 5
@@ -262,7 +218,7 @@ class Results_Calculator:
 
         for i in range(len(df) - 1, 0, -1):
             if (
-                (df.loc[i - 1, "final_classes"] == df.loc[i, "final_classes"])
+                (df.loc[i - 1, "signal_class_names"] == df.loc[i, "signal_class_names"])
                 & (df.loc[i - 1, "position_boxes"] == df.loc[i, "position_boxes"])
                 & (
                     (np.abs(df.loc[i - 1, "fotogram"] - df.loc[i, "fotogram"]) <= N_fotogram)
@@ -271,7 +227,7 @@ class Results_Calculator:
                         <= meters_dist
                     )
                 )
-                & (df.loc[i, "final_classes"] != "OTRO")
+                & (df.loc[i, "signal_class_names"] != "OTRO")
             ):
                 df.loc[i - 1, "ID"] = df.loc[i, "ID"]
 
