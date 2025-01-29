@@ -13,7 +13,7 @@ from pavimentados.analyzers.utils import (  # total_distance,
     stack_columns_dataset,
 )
 
-first_aggregation_dict = {"ind": "count"}  # , "perc_area": "sum"
+first_aggregation_dict = {"ind": "count"}
 
 second_aggregation_dict = {
     "distances": "sum",
