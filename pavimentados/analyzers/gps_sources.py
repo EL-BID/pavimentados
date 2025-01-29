@@ -23,6 +23,7 @@ class GPS_Processer:
 
     def _calculate_seconds_from_start(self):
         self.gps_df["seconds_from_start"] = self.gps_df.seconds.values - self.gps_df.seconds.values[0]
+        self.gps_duration = self.gps_df["seconds_from_start"].max()
 
     def adjust_gps_data(self, number_images):
         # Interpolación lineal por cada segundo (corrección de outliers)
@@ -230,7 +231,7 @@ class GPS_Image_Route_Loader(GPS_Processer):
                 try:
                     data = exif[key].decode() if isinstance(exif[key], bytes) else exif[key]
                     exif_data[name] = data
-                except:
+                except:  # noqa: E722
                     logger.debug(f"Error decoding exif in key: {key}")
 
             if "GPSInfo" in exif_data:
@@ -258,7 +259,7 @@ class GPS_Image_Route_Loader(GPS_Processer):
                 lat = decimal_coords(d["GPSLatitude"], d["GPSLatitudeRef"])
                 lon = decimal_coords(d["GPSLongitude"], d["GPSLongitudeRef"])
                 time = dt.datetime.strptime(d["DateTimeOriginal"], "%Y:%m:%d %H:%M:%S")
-            except:
+            except:  # noqa: E722
                 raise InvalidGPSData(f"Could not load GPS data from image: {img_path}")
 
         return {"timestamp": time, "longitude": lon, "latitude": lat}

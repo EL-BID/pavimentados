@@ -48,6 +48,9 @@ class ListImages:
     def get_batch(self, idx_inicial, batch_size=8):
         return self.get_section(idx_inicial, idx_inicial + batch_size)
 
+    def get_duration(self):
+        return None
+
 
 class ListRoutesImages:
     def __init__(self, config, routes):
@@ -65,6 +68,9 @@ class ListRoutesImages:
 
     def get_batch(self, idx_inicial, batch_size=8):
         return np.array([cv2.imread(str(img_path)) for img_path in self.get_section(idx_inicial, idx_inicial + batch_size)])
+
+    def get_duration(self):
+        return None
 
 
 class FolderRoutesImages(ListRoutesImages):
@@ -130,6 +136,9 @@ class VideoCaptureImages:
             else:
                 break
         return np.array(images)
+
+    def get_duration(self):
+        return self.number_of_frames / self.fps if self.number_of_frames else 0
 
 
 source_options_dict = {

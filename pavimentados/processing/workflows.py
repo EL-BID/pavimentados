@@ -137,6 +137,16 @@ class Workflow_Processor(Config_Basic):
         if video_output_file and image_folder_output:
             raise ValueError("Cannot use video_output_file and image_folder_output at the same time")
 
+        # Checks on video and gps durations
+        if video_duration := self.img_obj.get_duration():
+            gps_duration = self.gps_data.gps_duration
+            duration_delta = gps_duration * 0.2
+            if not (gps_duration - duration_delta) <= video_duration <= (gps_duration + duration_delta):
+                raise ValueError(
+                    f"The GPS duration is {self.gps_data.gps_duration} seconds, it must be "
+                    f"between {gps_duration - duration_delta} and {gps_duration + duration_delta} seconds"
+                )
+
         self.processor = processor
         self._execute_model(
             self.processor,
