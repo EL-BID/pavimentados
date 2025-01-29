@@ -4,7 +4,7 @@ import pkg_resources
 from setuptools import find_packages, setup
 
 this_directory = Path(__file__).parent
-VERSION = "1.1.0-dev0"
+VERSION = "1.1.0-dev1"
 DESCRIPTION = (
     "A python package Library which implement IA algorithms to detect cracks and failures on roads. "
     "The package is wrapper around all the models and provides an interfaces to use them properly"
@@ -32,11 +32,10 @@ setup(
         "Development Status :: 3 - Alpha",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     include_package_data=True,
 )
