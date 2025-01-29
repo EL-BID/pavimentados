@@ -10,7 +10,7 @@ from pavimentados.processing.workflows import Workflow_Processor
 if __name__ == "__main__":
     # Parameters
     input_path = Path("./road_videos")
-    models_path = Path("../models/artifacts")
+    models_path = Path("./artifacts")
     input_video_name = "sample"
 
     output_path = Path("./outputs") / input_video_name
