@@ -115,9 +115,7 @@ def create_output_from_results(
         df_signals = df_signals[df_signals.position_boxes != 0]  # Remove position_boxes = 0 (left signals)
         df_signals.rename(
             columns={
-                "signal_class_siames": "signal_classes_siames",
-                "signal_class_base": "signal_classes_base",
-                "signal_class_names": "classes_signal_names",
+                "signal_class_names": "final_classes",
             },
             inplace=True,
         )  # Rename columns
