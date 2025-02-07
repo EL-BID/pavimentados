@@ -6,5 +6,22 @@
 	"paviment_class_mapping": {
             "D01": "D00",
             "D11": "D10"
+	},
+
+	"signals_class_mapping": {
+			"ADTCIA": "PREVENCION",
+			"CIRCROJO": "REGLAMENTARIA",
+			"CUADBCO": "REGRAMENTARIA",
+			"CUADCAFE": "INFORMATIVA",
+			"CUADVERDE": "INFORMATIVA",
+			"CUADZUL": "INFORMATIVA",
+			"CURVA": "CURVA",
+			"INDAZUL": "PERMITE",
+			"OBRA": "OBRA",
+			"PROBROJO": "PROHIBICION",
+			"ROMAMLLO": "ADVERTENCIA",
+			"CUAMLLO": "ADVERTENCIA",
+			"STOP": "STOP",
+			"TRIROJO": "CEDAPASO"
 	}
 }

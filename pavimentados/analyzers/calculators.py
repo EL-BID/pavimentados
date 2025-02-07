@@ -157,6 +157,7 @@ class Results_Calculator:
 
     @staticmethod
     def generate_final_results_signal(
+        config,
         results_obj,
         gps_obj,
         classes_names_yolo_signal=None,
@@ -171,11 +172,11 @@ class Results_Calculator:
         # Nos dice el cuadrante.
         def position(center):
             if center < 0.33:
-                return 0
+                return "left"
             elif center < 0.66:
-                return 1
+                return "center"
             else:
-                return 2
+                return "right"
 
         position_boxes = [[position((box[0] + box[2]) / 2) for box in BOXES_SIGNAL[f]] for f in range(len(BOXES_SIGNAL))]
 
@@ -207,6 +208,8 @@ class Results_Calculator:
         )
 
         df["signal_class_names"] = df["signal_class"].apply(lambda x: classes_names_yolo_signal[x])
+        df["signal_class_names"] = df["signal_class_names"].apply(lambda x: config["signals_class_mapping"][x])
+        df.drop(columns=["signal_class"], inplace=True)
         df["ID"] = range(len(df))
 
         df = df.sort_values(["signal_class_names", "position_boxes", "fotogram"]).reset_index(drop=True)
