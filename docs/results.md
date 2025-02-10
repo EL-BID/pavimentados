@@ -73,11 +73,10 @@ Information about signals detected in each frame.
 | Field              | Type   | Description                                              | Example                      |
 |--------------------|--------|----------------------------------------------------------|------------------------------|
 | fotogram           | int    | Frame number of the video.                               | 52                           |
-| position_boxes     | int    | Position of the bounding box in the frame.               | 1                            |
+| position_boxes     | string | Position of the bounding box in the frame.               | left                         |
 | score              | float  | Confidence score of the detection.                       | 0.40509921312332153          |
-| signal_class       | int    | Identifier of the signal class.                          | 8                            |
 | latitude           | float  | Latitude of the location.                                | 10.380599907222223           |
 | longitude          | float  | Longitude of the location.                               | -84.36906742202616           |
 | boxes              | string | Bounding box coordinates in the format [x1, y1, x2, y2]. | [0.540, 0.205, 0.550, 0.219] |
-| signal_class_names | string | Name of the signal class.                                | INDAZUL                      |
+| signal_class_names | string | Name of the signal class.                                | ADVERTENCIA                  |
 | ID                 | int    | Unique identifier of the detection.                      | 0                            |
