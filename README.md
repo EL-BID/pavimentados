@@ -100,6 +100,11 @@ Example of the configuration file:
 		"yolo_threshold": 0.20,
 		"yolo_iou": 0.45,
 		"yolo_max_detections": 100
+	},
+	"signal_model": {
+		"yolo_threshold": 0.40,
+		"yolo_iou": 0.45,
+		"yolo_max_detections": 100
 	}
 }
 ```
