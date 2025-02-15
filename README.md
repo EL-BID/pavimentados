@@ -1,7 +1,7 @@
 <div align="center">
   <h1>Pavimentados</h1>
 
-[User Manual](docs/manual_202410.pdf)
+[User Manual](docs/manual.pdf)
 
 ![analytics image (flat)](https://raw.githubusercontent.com/vitr/google-analytics-beacon/master/static/badge-flat.gif)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_pavimentados&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=EL-BID_pavimentados)
@@ -16,7 +16,7 @@ Pavimentados is a tool that allows the identification of pavement faults located
 This library provides an environment to use computer vision models developed to detect different elements. 
 The detected elements are then used to generate metrics that aid the process of planning road maintenance.
 
-The model files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/refs/heads/main/models/model_20240818.tar.gz).
+The model files can be downloaded from this [link](https://github.com/EL-BID/pavimentados/raw/refs/heads/release/v1.1.0/models/model.tar.gz).
 
 > **Important changes**: Unlike the previous version, this new version does not include traffic sign detection. We hope to be able to 
 > include it again in future versions. 
@@ -42,7 +42,7 @@ pip install pavimentados
 ```
 
 Next, 
-* [download the model](https://github.com/EL-BID/pavimentados/raw/refs/heads/main/models/model_20240818.tar.gz) from this link
+* [download the model](https://github.com/EL-BID/pavimentados/raw/refs/heads/release/v1.1.0/models/model.tar.gz) from this link
 
 * Decompress it using the following command
 ```bash
@@ -141,6 +141,7 @@ In the `results` object you will find the following:
  1. table_summary_sections: DataFrame with summary table by sections.
  2. data_resulting: DataFrame with results per frame.
  3. data_resulting_fails: DataFrame with results by unique faults encountered.
+ 4. signals_summary : DataFrame with results by signal.
 
 To see more details about the results please refer to [this page](docs%2Fresults.md).
 

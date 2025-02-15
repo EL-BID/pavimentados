@@ -20,3 +20,25 @@ The model returns the following information:
  - Probability with which that detection is considered
 
 > **Note**: This model was retrained using the folowing base model: [RoadDamageDetection](https://github.com/oracl4/RoadDamageDetection).
+
+## Detection of signals
+---
+
+This model is based on Yolo version 11, which allows to identify objects or elements within an image. 
+It was retrained from a base model to detect 10 types of signals:
+
+1. PREVENCION
+2. REGLAMENTARIA
+3. INFORMATIVA
+4. CURVA
+5. PERMITE
+6. OBRA
+7. PROHIBICION
+8. ADVERTENCIA
+9. STOP
+10. CEDAPASO
+
+The model returns the following information:
+ - Class of the identified object
+ - Location within the image
+ - Probability with which that detection is considered

@@ -3,8 +3,8 @@
 
 As a result of processing a video or images, the library returns the following datasets:
 
-
 ## data_resulting
+
 Information about the individual detections made on each image / photogram.
 
 | Field           | Type         | Description                                                                         | Example                                                                        |
@@ -27,9 +27,9 @@ Information about the individual detections made on each image / photogram.
 | total_area      | int          | Total area of the analyzed image.                                                   | 2073600                                                                        |
 | fail_id_section | int          | Identifier of the failure.                                                          | 0                                                                              |
 
-
 ## data_resulting_fails
-Information about each of the failures. A failure is the aggregation of several detections that are considered part of 
+
+Information about each of the failures. A failure is the aggregation of several detections that are considered part of
 the same problem (failures have a single type and can have many detections).
 
 | Field            | Type   | Description                                                               | Example                                     |
@@ -47,8 +47,8 @@ the same problem (failures have a single type and can have many detections).
 | width            | float  | Average width of faults measured in pixels.                               | 789.3660466811236                           |
 | boxes            | int    | Number of bounding boxes representing the failure.                        | 19                                          |
 
-
 ## table_summary_sections
+
 Information about what is detected every 100 meters.
 
 | Field            | Type  | Description                                        | Example Value       |
@@ -65,3 +65,18 @@ Information about what is detected every 100 meters.
 | end_longitude    | float | Ending longitude of the section.                   | -77.15626066666667  |
 | end_latitude     | float | Ending latitude of the section.                    | -11.7830935         |
 | section_distance | float | Distance of the section in meters.                 | 106.6830640804603   |
+
+## signals_summary
+
+Information about signals detected in each frame.
+
+| Field              | Type   | Description                                              | Example                      |
+|--------------------|--------|----------------------------------------------------------|------------------------------|
+| fotogram           | int    | Frame number of the video.                               | 52                           |
+| position_boxes     | string | Position of the bounding box in the frame.               | left                         |
+| score              | float  | Confidence score of the detection.                       | 0.40509921312332153          |
+| latitude           | float  | Latitude of the location.                                | 10.380599907222223           |
+| longitude          | float  | Longitude of the location.                               | -84.36906742202616           |
+| boxes              | string | Bounding box coordinates in the format [x1, y1, x2, y2]. | [0.540, 0.205, 0.550, 0.219] |
+| signal_class_names | string | Name of the signal class.                                | ADVERTENCIA                  |
+| ID                 | int    | Unique identifier of the detection.                      | 0                            |
